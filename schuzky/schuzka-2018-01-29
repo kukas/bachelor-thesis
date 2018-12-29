@@ -1,0 +1,46 @@
+do úvodu bakalářky:
+- motivace
+- přínosy
+
+minimální bakalářka
+vzít multif0 existující algoritmus a výstup změnit na melody extraction
+
+- (zkusit ten logaritmus)
+
+pc build for deep learning
+
+18. května = minimální odevzdatelná bakalářka
+
+vzít THK multi-f0 a udělat z něj jednoduchou f0
+
+
+TODO 9.2. 14:00 další schůzka
+- baseline (nejvyšší tón) + implementace 
+- doplnit do bakalářky věci ze specifikace
+- doplnit kapitoly
+	- doplnit nadpisy všech kapitol
+	- placeholdery = popis obsahu kapitol "tady bude"
+	- v datech připravit tabulku pro baseline
+		- rozběhat mir_eval
+
+TODAY TODO (dodělat)
+4) Vyzkoušet si nějaké hraní s TF na MNISTu, klidně malé modýlky, co zběhnou i na CPU. (Obecně platí, že když model nefunguje na MNISTu, tak nebude fungovat vůbec.) Potom zkusit něco s těmi datasety na sledování melodie — klidně třeba jenom vytáhnout spektrogram a klasifikovat, ze kterého datasetu spektrogram pochází. Seznámit se při tom také s TensorBoard, jestli jste to ještě nezkoušel.
+
+5) Vyrobit jeden úplně tupý baseline systém, klidně pravidlový (spočítá spektrogram a vrátí nejsilnější frekvenci…), ale integrovat ho na server a vyhodnotit ho. Tohle nemusí být hotové do schůzky.
+
+
+machine learning ranking
+
+datasety
+* melodie
+
+   |                 | MedleyDB | MusicNet
+1. | mix audio       | ✔        | ✔
+2. | stem audio      | ✔        | x
+3. | MIDI = multi f0 | ✔        | ✔
+4. | Stem MIDI *     | ✔        | ✔
+5. | Stem priority   | ✔        | x
+6. | Melody f0       | ✔        | x
+7. | Melody pitch    | ✔        | x
+
+* MIDI přiřazené k nástrojům

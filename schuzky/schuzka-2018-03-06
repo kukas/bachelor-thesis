@@ -1,0 +1,24 @@
+01-03
+zkouším zprovoznit crepe
+https://github.com/marl/massage
+https://github.com/marl/crepe
+
+
+todo:
+- [OK] napsat email Salamonovi
+- napsat do datasetů o medly a neúspěchu
+- do related work o pyinu a jeho nedostatcích a přednostech
+- [OK] dobře anotovaná (úplně anotované tracky) podmnožina z medley -> z toho vytvořím svůj umělý melodický dataset
+	- udělat si tabulku
+	- úplně anotované trcaky = zkrontrlovat na chybějící anotace uvnitř jednotlivých tracků
+		- pomocí Voicing prec. z pYIN + spektrogramy
+- pokračovat v původním nápadu audio+multimelody => melody
+- podívat se na music net - chybějící anotace, 
+
+- do části o datasetech: je rozdíl mezi hraním na nástroj a zněním nástrje
+- struktura false positives - pokud jsou v bloku nebo rozházené
+
+zatím se podívat jen na tracky bez bleedu, udělat opravdu čistý dataset
+	- podívám se i na neklasický skladby
+
+intuice od chytřejších lidí: čistota dat lze vykoupit nepoměrně větším počtem nečistým

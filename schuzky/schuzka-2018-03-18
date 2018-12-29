@@ -1,0 +1,13 @@
+schuzka-2018-03-18
+
+vytřídil jsem klasiku medleydb, vznikl tedy medleydb_clean, obsahuje 28 minut hudby... Nicméně s velmi dobrými anotacemi.
+	- dělal jsem si k jednotlivým stemům poznámky, některé jsou použitelné, ale obsahují neanotované části
+	- zatím jsem neprocházel ostatní skladby, počkal bych podle výsledků na tomhle setu, protože je to dřina.
+
+- zeptat se na počítač
+
+kde jsem skončil:
+načtu wavy, ke každému anotovanému bodu vyříznu kus nahrávky.
+problém 1: v tuhle chvíli házím data přímo do modelu, což znamená, že se ukládají i do checkpointu na disk. Musím tam místo variable použít placeholder, nicméně jak to řeším vysokoúrovňově, tak to není tak snadné.
+	- už mi kvůli tomu jednou killnuli proces na metacentru
+problém 2: chtěl bych mít nějaký dev dataset, kterému taky budu vyhodnocovat accuracy, jako training datasetu (kvůli kontrole overfitování)

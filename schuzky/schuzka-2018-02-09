@@ -1,0 +1,65 @@
+schuzka-09-02-2018
+
+http://ufal.mff.cuni.cz/courses/npfl114/1718-summer
+
+https://github.com/CPJKU/madmom
+podobná lib. jako Essentia, akorát s ní pracoval Hajič
+
+- naškálovat spektrum podle citlivosti lidského ucha
+- najít si ještě zběžně ty spektrogramy - lze zajistit temporal+frequency resolution?
+
+X,Y = train_data['2075'] # data X and labels Y for recording id 2494
+	- pěkný příklad do úvodu, je zde label fagotu, který není vidět na spektrogramu
+
+TODO
+
+- {určitě} analýza MedleyDB - triviální baseline z multif0->f0 (vzít nejvyšší)
+- a pak to samý s THK
+	- a pak je sepsat do bakalářky, výsledky a proč jsou důležitý
+		- protože zjistíme, jestli je možný práci postavit jen jako modul nad multif0, pak je totiž zároveň snadnější dělat melody extraction (kvůli menší dimenzialitě dat a yaddayadda) a zároveň se naše predikce zlepší s každým pokrokem v multif0
+		- to je ale možné jen v případě, že ta nová, vnesená chyba bude malá...
+
+- podívat se na Orchset - jestli má komplet MIDI
+	nemá, jsou to jen melodie
+
+- připravit testing set medleydb: vytáhnout z
+https://ismir2017.smcnus.org/wp-content/uploads/2017/10/85_Paper.pdf
+
+	není popsaná metodika
+	https://raw.githubusercontent.com/rabitt/ismir2017-deepsalience/master/outputs/data_splits.json
+
+		AClassicEducation_NightOwl_MIX.wav
+		Auctioneer_OurFutureFaces_MIX.wav
+		CelestialShore_DieForUs_MIX.wav
+		ChrisJacoby_BoothShotLincoln_MIX.wav
+		ChrisJacoby_PigsFoot_MIX.wav
+		Creepoid_OldTree_MIX.wav
+	[Classical] Debussy_LenfantProdigue_MIX.wav
+		MatthewEntwistle_DontYouEver_MIX.wav
+	[Classical] MatthewEntwistle_FairerHopes_MIX.wav
+	[Classical] MatthewEntwistle_ImpressionsOfSaturn_MIX.wav
+	[Classical] MatthewEntwistle_Lontano_MIX.wav
+	[Classical] MatthewEntwistle_TheArch_MIX.wav
+	[Classical] MatthewEntwistle_TheFlaxenField_MIX.wav
+	[Classical] Mozart_DiesBildnis_MIX.wav
+		MusicDelta_FusionJazz_MIX.wav
+		MusicDelta_Gospel_MIX.wav
+	[Classical] MusicDelta_Pachelbel_MIX.wav
+		MusicDelta_SwingJazz_MIX.wav
+		Phoenix_BrokenPledgeChicagoReel_MIX.wav
+		Phoenix_ColliersDaughter_MIX.wav
+		Phoenix_ElzicsFarewell_MIX.wav
+		Phoenix_LarkOnTheStrandDrummondCastle_MIX.wav
+		Phoenix_ScotchMorris_MIX.wav
+		Phoenix_SeanCaughlinsTheScartaglen_MIX.wav
+		PortStWillow_StayEven_MIX.wav
+	[Classical] Schubert_Erstarrung_MIX.wav
+		StrandOfOa	ks_Spacestation_MIX.wav
+
+
+
+minimální bakalářka
+	- vstup - multipitch + audio => melodie
+	- různým škálováním hraním si se spektrem atd.
+
+další sch 19.2. 10.00

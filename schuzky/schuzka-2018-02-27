@@ -1,0 +1,14 @@
+Co jsem dělal:
+- MedleyDB - není multif0
+- další přípravy na metacentru - miniconda
+- příprava dat do Tensorflow, input-pipeline
+	- jaká je best practice? Načíst do RAM? Trvá to dost dlouho
+
+TODO:
+https://www.tensorflow.org/versions/master/tutorials/audio_recognition#custom_training_data
+
+- popsat trainning/testing split - vytvořit si na to soubor, ve kterém to bude popsané
+- začít vždy popisem, co chci udělat a proč, minimálně do jupyter notebooku
+- zkusit anotovat medley - pár tracků
+	- případně napsat do newyorku
+

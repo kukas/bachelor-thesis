@@ -1,0 +1,32 @@
+audio + polyfonní midi = melodie
+
+klasifikační úloha - výstiip je onehot vector
+vstup: frame spektra, frame polymelodie (tady jako vektor, asi můžu zkrouhnout počet tónů podle vstupních dat)
+výstup: onehot melodie
+
+na konci softmax
+
+training na medley
+evaluace na medley
+
+cíl:
+udělat z MusicNet trénovací data pro model audio -> MELODIE
+
+do půlky března maximálně
+
+
+todo:
+- napsat o schůzce příští úterý
+- připravit learning baseline (audio + polyfonní midi = melodie)
+- sepsat výsledky baseline s medley do bakalářky
+- připravit pravidlovou baseline
+- zkusit THK + nejvyšší tón
+- doplnit do průzkumníka dat multif0
+
+z minulých
+- a pak je sepsat do bakalářky, výsledky a proč jsou důležitý
+	- protože zjistíme, jestli je možný práci postavit jen jako modul nad multif0, pak je totiž zároveň snadnější dělat melody extraction (kvůli menší dimenzialitě dat a yaddayadda) a zároveň se naše predikce zlepší s každým pokrokem v multif0
+	- to je ale možné jen v případě, že ta nová, vnesená chyba bude malá...
+4) Vyzkoušet si nějaké hraní s TF na MNISTu, klidně malé modýlky, co zběhnou i na CPU. (Obecně platí, že když model nefunguje na MNISTu, tak nebude fungovat vůbec.) Potom zkusit něco s těmi datasety na sledování melodie — klidně třeba jenom vytáhnout spektrogram a klasifikovat, ze kterého datasetu spektrogram pochází. Seznámit se při tom také s TensorBoard, jestli jste to ještě nezkoušel.
+
+5) Vyrobit jeden úplně tupý baseline systém, klidně pravidlový (spočítá spektrogram a vrátí nejsilnější frekvenci…), ale integrovat ho na server a vyhodnotit ho. Tohle nemusí být hotové do schůzky.
