@@ -1,4 +1,6 @@
-h
+- Poslední review je z roku 2014 - \cite{Salamon2014}
+
+
 - Deep learning pro audio
     + WaveNet
 - Transkripce hlavní melodie vícehlasé nahrávky
