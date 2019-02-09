@@ -101,6 +101,17 @@ GuitarSet - polyphonic guitar
     - 23 minut hudby
     - MIDI hlavní melodie
 
+
+
+Track : Beethoven-S7-II-ex2
+- použít jako příklad pro složitost přepisu - chyba o ooktávu flétny+ dřeva
+Track : Beethoven-S5-II-ex3
+- podobný příklad, akorát porovnat oktávy - zjistit anotačn politiku (každopádně to ukazuje složitost anotace)
+
+Track : Beethoven-S5-II-ex1
+- nejdřív orchestr společně, pak se rozdělí do akordu. Pak v tercii
+
+
 #### Syntéza
 - The Lakh MIDI Dataset v0.1
 

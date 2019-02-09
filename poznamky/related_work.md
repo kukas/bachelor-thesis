@@ -1,5 +1,7 @@
 - Poslední review je z roku 2014 - \cite{Salamon2014}
 
+- sekce "state-of-the-art" - s těma metodama, které jsem změřil
+
 
 - Deep learning pro audio
     + WaveNet

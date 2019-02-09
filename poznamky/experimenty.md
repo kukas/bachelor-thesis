@@ -1,3 +1,7 @@
+# autocorrelation
+- jako FFT - ale vytváří to jenom strašně chaotické predikce (zkusit to znovu a udělat obrázek)
+- zjistit, jestli to doopravdy je stejný jako FFT
+
 # Baseline perceptron
 
 - pro ukázku, že úloha nelze vyřešit jednoduchým modelem, ale také jako fajn baseline, který by snad mělo být snadné překonat
