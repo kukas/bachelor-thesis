@@ -1,7 +1,37 @@
 # Datasety
 
+
+## MedleyDB
+- melody f0 annotations
+- instrument activations
+- multitrack
+    - rozmanité žánry
+- částečně automatizováno, spuštěním pYINu na stemy
+    - multitrack usnadnuje anotaci
+    - problém - tracky můžou mít bleed
+        - v paperu tracky source-separovány s ručně doladěnými parametry
+
+- problémem většiny existujících datasetů je buď žánrová homogenita a nebo celkově krátká délka
+    - sem spadají všechny datasety používané v soutěži MIREX, tedy ADC2004, MIREX05, MIREX09, MIR1K, ORCHSET
+
+- kvůli nepřesnostem v anotacích, krátké délky jednotlivých excerptů a malému množství nahrávek nemusí MIREX datasety dobře reflektovat opravdový výkon testovaných algoritmů.
+    - jediný dataset, který je dostatečně velký (MIREX09) je velmi homogenní (čínský pop). To samé platí i o MIR1K a RWC
+
+- definice melodie:
+    1. The f0 curve of the predominant melodic line drawn from a single source.
+    2. The f0 curve of the predominant melodic line drawn from multiple sources.
+    3. The f0 curves of all melodic lines drawn from multiple sources.
+
+    - definice 1. je shodná s definicí používanou v ostatních datasetech vyhodnocovaných v MIREXu
+        "pitch is expressed as the fundamental frequency of the main melodic voice, and is reported in a frame-based manner on an evenly-spaced time- grid."
+- The annotations were created by five annotators, all of which were musicians and had at least a bachelor’s degree in music. Each annotation was evaluated by one annotator and validated by another. The annotator/validator pairs were randomized to make the final annotations as unbiased as possible.
+
+
+## Obecně
 - co vlastně od datasetu chci:
-    - přesnou anotaci, nejlépe f0
+    - přesnou anotaci
+        - frame-level annotation
+        - note-level annotation
     - bez chyb
     - objektivní
 - typy datasetů
