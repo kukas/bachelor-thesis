@@ -1,7 +1,7 @@
 # Datasety
 
 
-## MedleyDB
+## MedleyDB \cite{Bittner2014}
 - melody f0 annotations
 - instrument activations
 - multitrack
@@ -26,8 +26,39 @@
         "pitch is expressed as the fundamental frequency of the main melodic voice, and is reported in a frame-based manner on an evenly-spaced time- grid."
 - The annotations were created by five annotators, all of which were musicians and had at least a bachelor’s degree in music. Each annotation was evaluated by one annotator and validated by another. The annotator/validator pairs were randomized to make the final annotations as unbiased as possible.
 
+## MDB-synth
+In this paper we propose a frame- work for automatically generating continuous f0 annota- tions without requiring manual refinement: the estimate of a pitch tracker is used to drive an analysis/synthesis pipeline which produces a synthesized version of the track
+- potenciálně řeší problém s datasety automatickým generováním dat z multitracků
+    - nicméně není zveřejněný kód
+    - syntetické stemy zní divně
+        - onsety umí ujet
+            - vokály s frikativy - sinusoidal modeling umí zachytit pouze harmonický signál, chybí šum
+- method
+    1. pitch tracking
+        - pomocí SAC = E. Gomez and J. Bonada. Towards computer-assisted flamenco transcription: An experimental comparison of automatic transcription algorithms from a cappella singing. Computer Music journal, 37(2):73–90, 2013.
+        - nicméně je to nezávislé na 
+    2. sinusoidal modeling
+        - přesné zjistění harmonických parametrů
+    3. synthesis
+        - pomocí banky sinusových oscilátorů na základě parametrů zjištěných v 2.
+    4. remixing
+        - protože mix není triviální součet stemů, používá se vážená lineární kombinace s odhadem vah na základě původních stemů
+- umí resyntetizovat pouze monofonní nástroje, což je mírně omezující pro AME (přepisovaný bude vždy monofonní, ostatní mohou být polyfonní) a dost omezující pro multi-f0 (mix je složen jen z monofonních nástrojů a perkusí)
+    - demonstruje to filtrování při výrobě mdb-melody-synth - musely se vyhodit písně, kde je hlavní nástroj kytara
+- ve výsledku tedy máme nový dataset s menší chybou transkripce, který je ale založený na známých datech z MedleyDB
+    - mdb-melody-synth má 65 tracků
+    - změřeny podobné výsledky z různých AME metod => reprezentuje to reálná data, snad
+
+
+
 
 ## Obecně
+- oproti jiným MIR odvětvím, speech recognition nebo image recognition je to málo dat \cite{Salamon2017}
+    - možné zlepšení:
+        - augumentace
+            - pokud je ale málo dat, augumentace neudělá zázraky
+        - syntéza
+        - multitask learning (cite Bittnerová)
 - co vlastně od datasetu chci:
     - přesnou anotaci
         - frame-level annotation
@@ -38,10 +69,18 @@
     - multitrack
     - melody midi/f0
 - vznik datasetů
-    - ruční přepis
-        - MedleyDB \cite{Bittner2014}: 
-    - alignment
+    - automatic f0 estimation z monofonních stemů + ruční kontrola
+        - MedleyDB
+        - time consuming and labor intensive
+            - For example, manual corrections for Med- leyDB (108 songs, most 3–5 minutes long) required ap- proximately 50 hours of effort across annotators [7,29]
+    - audio to MIDI alignment
+        - omezeno robustností alignment algoritmu a dostupností kvalitních MIDI dat
         - musicnet
+    - MIDI klavír + partitura + klavírista, který hraje přes nahrávku
+        - nicméně negeneruje f0, ale noty
+    - hudební nástroje se senzory, které generují anotace
+        - ale logicky omezeno na jeden druh nástroje
+        - GuitarSet
     - syntéza
     - jen drobně zmínit: crowdsourcing - https://s18798.pcdn.co/ismir2016/wp-content/uploads/sites/2294/2016/07/072_Paper.pdf
 - srovnání dostupných datasetů:
