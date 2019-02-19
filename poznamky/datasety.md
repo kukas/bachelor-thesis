@@ -49,7 +49,25 @@ In this paper we propose a frame- work for automatically generating continuous f
     - mdb-melody-synth má 65 tracků
     - změřeny podobné výsledky z různých AME metod => reprezentuje to reálná data, snad
 
+## Orchset
 
+- vycházejí z rozšíření definice MedleyDB, 
+    Such definitions are more useful in the context of symphonic music, which presents further challenges, since melodies are played by alternating instruments or instrument sections *(playing in unison, octave relation, or with harmonised melodic lines)*, and which might not be energetically predominant.
+- a z původní definice (Poliner 2007) - dataset vznikl přezpíváváním a zpracováním těchto nahrávek
+- neexistuje obecně přijímaná metodologie přepisu melodie pro nahrávky s více nástroji hrajícími melodickou linku
+
+popis a statistika:
+- dataset orientovaný na orchestrální repertoár
+- z většiny romantismus, obsahuje ale i další skladby, včetně 20. století
+- výběr byl omezený na výňatky, které potenciálně obsahují hlavní melodii
+    - což bylo ověřeno (a anotace získána) pomocí nahrávek zpívání od anotátorů
+    - celkem 64 nahrávek, z původních 86. 22 jich bylo zahozeno na základě neshody nahrávek od účastníků
+
+    - pouze v jedné nahrávce hraje melodii jediný nástroj
+    - In the rest of the dataset, the melody is played by several instruments from an instrument section, or a combination of sections, or even alternating sections within the same excerpt.
+    - After selecting the excerpts, we manually transcribed the notes sung by the participants, adjusting onsets and offsets to the audio.
+    - Since vocal pitch range is different to the range of the instruments playing the main melody, notes were transposed to match the audio.
+    - For excerpts in which melody notes are simultaneously played by several instruments in different octaves, we resolved the ambiguity by maximising the melodic contour smoothness (minimising jumps between notes)
 
 
 ## Obecně
