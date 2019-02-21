@@ -10,14 +10,15 @@
 - nová augumentace dat - lidská persepce a identifikace tónu a nástroje je nezávislá na vynechání několika harmonických frekvencích. Vlastně zvuk zní hodně podobně, až stejně. Známý efekt je "phantom fundamental" - lidské ucho slyší fundamentální frekvenci, i když neexistuje. Co kdyby tedy jedna z augumentací fungovala tak, že vymaže některé harmonické frekvence?
     - ale nevím, to je jako kdyby v image recognition byla augumentace vkládání poloprůhledných obdélníků přes části obrázku, jo, lidi poznají obsah obrázku i tak, ale pomohlo by to sítím se líp naučit, co na obrázku je?
 
-- Použít jazztube jako ME dataset http://mir.audiolabs.uni-erlangen.de/jazztube/
-
 - onset detection - pro piano velmi zepšuje výsledky, co to zkusit pro ostatní nástroje? (já vím, piano je charakteristické, ale..?)
     - FFT s různými window size pro onset detection
 
 - pravděpodobně blbost: použít banku bandpass filtrů a pak feedovat do sítě přefiltrované raw signály
 
 - Multitask/autoencoder/regularizace AMT
+    - zkusit ať se naučí dělat z raw dat spektrogram a někde z prostředního bottlenecku udělat melody extraction
 
 - evoluční algoritmy v AMT, nebo v piano transcription
 	- https://www.google.cz/search?q=evolution+algorithm+music+transcription
+
+- pak pro temporální závislosti - seq2seq, transformer, attention atd.

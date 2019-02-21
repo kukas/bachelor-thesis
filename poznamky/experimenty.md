@@ -1,3 +1,10 @@
+obecně zmínit:
+- je potřeba řešit shuffle, data se nevejdou do RAMky
+
+# CREPE replication
+- v paperu autorů nedostatečně popsané jak replikovat
+- dodal jsem tam L2 regularizaci - popsat proč a jak to pomohlo
+
 # autocorrelation
 - jako FFT - ale vytváří to jenom strašně chaotické predikce (zkusit to znovu a udělat obrázek)
 - zjistit, jestli to doopravdy je stejný jako FFT
