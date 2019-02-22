@@ -66,7 +66,7 @@ popis a statistika:
     - pouze v jedné nahrávce hraje melodii jediný nástroj
     - In the rest of the dataset, the melody is played by several instruments from an instrument section, or a combination of sections, or even alternating sections within the same excerpt.
         - díky analýzy pomocí informed source separation autoři potvrdili, že melodie nemusí být energeticky nejsilnější zdroj.
-        
+
     - After selecting the excerpts, we manually transcribed the notes sung by the participants, adjusting onsets and offsets to the audio.
     - Since vocal pitch range is different to the range of the instruments playing the main melody, notes were transposed to match the audio.
     - For excerpts in which melody notes are simultaneously played by several instruments in different octaves, we resolved the ambiguity by maximising the melodic contour smoothness (minimising jumps between notes)

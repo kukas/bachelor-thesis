@@ -66,7 +66,7 @@
         - obecně jsou nejjednodušší zeště, pro všechny testované algoritmy
         - Durrieu umí poznat smyčce
         - co se týče tvaru melodie, algoritmům nejvíc vadí pitch complexity (předvídatelnost melodie) a pitch density (amout of notes per second)
-        
+
 
 - Transkripce f0 jednohlasé nahrávky
     - Podle \cite{Salamon2014} historicky extrakce melodie vychází z úlohy f0 estimation
