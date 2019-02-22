@@ -12,3 +12,10 @@ po algoritmu chceme:
     - Raw pitch accuracy: The proportion of melody frames in the ground truth for which fτ is considered correct
     - Raw Chroma Accuracy: As raw pitch accuracy, except that both the estimated and ground truth f0 sequences are mapped onto a single octave.
     - Overall Accuracy: this measure combines the perfor- mance of the pitch estimation and voicing detection tasks to give an overall performance score for the system.
+
+    - upozornit, že voicing metriky a pitch metriky jsou na sobě nezávislé (algoritmy mohou udávat pitch v záporných hodnotách). 
+
+- Bosch metrics \cite{Bosch2016}
+    - Weighted Raw Chroma accuracy - počítá vzdálenost v oktávách
+    - Octave Jumps - vyjadřuje skokovitost o oktávy v po sobě následujících framech v rámci správných chroma odhadů
+    - Chroma continuity - 

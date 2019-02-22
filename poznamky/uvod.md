@@ -42,6 +42,10 @@ U intuitivního zavedení pojmu melodie ale komplexnost problému nekončí.
     * proč je extrakce melodie těžká?
         * definice melodie
             * To frame the technical task of melody extraction, we should start by examining the musicological concept of “melody”, which ultimately relies on the  judgement of human listeners, and will therefore tend to vary across application contexts (e.g. symbolic melodic similarity or symbolic melodic similarity or music transcription). Centuries of musicological study have resulted in no clear consensus regarding the definition of “melody”, but faced with the need for a common interpretation, the MIR community has opted for simplified, pragmatic definitions that result in a task amenable to signal processing. One popular definition \cite{Poliner2007} holds that “the melody is the single (monophonic) pitch sequence that a listener might reproduce if asked to whistle or hum a piece of polyphonic music, and that a listener would recognize as being the essence of that music when heard in comparison”. This definition is still open to a considerable degree of subjectivity, since different listeners might hum different parts after listening to the same song (e.g., lead vocals versus guitar solo
+                * v MIREXu a v praxi:
+                    research has focused on what we term “single source predominant fundamental frequency estimation”. That is, the melody is constrained to belong to a single sound source throughout the piece being analyzed, where this sound source is considered to be the most predominant instrument or voice in the mixture. \cite{Salamon2014}
+                    * takže jeden nástroj za celou skladbu! => Omezující (MedleyDB má více definicí).
+
                 * v praxi se výzkum často omezuje na "extrakci melodie hlasu hlavního zpěváka nebo nástroje"
                 * a aby se i tak vyhnulo co nejvíce subjektivitě, pracuje se více s materiálem, který není sporný
                 * \cite{Salamon2014}
@@ -77,6 +81,7 @@ U intuitivního zavedení pojmu melodie ale komplexnost problému nekončí.
                     + Mauch, M., Dixon, S.: PYIN: a Fundamental Frequency Estimator Using Probabilistic Threshold Distributions. In: ICASSP, pp. 659–663. IEEE (2014)
 
             * zvuk má veliké rozlišení, srovnání s imagenetem třeba
+            - tradeoff spektrogramů
         * case study? - Rozebrat příklady chyb, viz \cite{Salamon2014}
             - jedna úspěšná extrakce (s netriviálním pozadím)
             - jedna s voicing error a pitch error - kvůli doprovodným vokálům
