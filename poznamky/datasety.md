@@ -1,15 +1,24 @@
 # Datasety
-Množství dostupných dat k úloze extrakce melodie představuje největší úskalí pro použití metod strojového učení pomocí hlubokých sítí. Obecně tyto metody vyžadují dat co nejvíce, aby 
+
+
+- datasetů je málo
+- proč je datasetů málo
+    - jednak celková náročnost
+    - jednak subjektivita, definice atd.
+- proč je to problém
+- co s tím kdo zkoušel dělat
 
 ## MedleyDB \cite{Bittner2014}
-- melody f0 annotations
-- instrument activations
-- multitrack
-    - rozmanité žánry
-- částečně automatizováno, spuštěním pYINu na stemy
-    - multitrack usnadnuje anotaci
-    - problém - tracky můžou mít bleed
-        - v paperu tracky source-separovány s ručně doladěnými parametry
+- obsahuje
+    - melody f0 annotations
+    - instrument activations
+    - multitrack
+        - rozmanité žánry
+- anotace
+    - částečně automatizováno, spuštěním pYINu na stemy
+        - multitrack usnadnuje anotaci
+        - problém - tracky můžou mít bleed
+            - v paperu tracky source-separovány s ručně doladěnými parametry
 
 - problémem většiny existujících datasetů je buď žánrová homogenita a nebo celkově krátká délka
     - sem spadají všechny datasety používané v soutěži MIREX, tedy ADC2004, MIREX05, MIREX09, MIR1K, ORCHSET
@@ -27,7 +36,7 @@ Množství dostupných dat k úloze extrakce melodie představuje největší ú
 - The annotations were created by five annotators, all of which were musicians and had at least a bachelor’s degree in music. Each annotation was evaluated by one annotator and validated by another. The annotator/validator pairs were randomized to make the final annotations as unbiased as possible.
 
 ## MDB-synth
-In this paper we propose a frame- work for automatically generating continuous f0 annota- tions without requiring manual refinement: the estimate of a pitch tracker is used to drive an analysis/synthesis pipeline which produces a synthesized version of the track
+In this paper we propose a framework for automatically generating continuous f0 annotations without requiring manual refinement: the estimate of a pitch tracker is used to drive an analysis/synthesis pipeline which produces a synthesized version of the track
 - potenciálně řeší problém s datasety automatickým generováním dat z multitracků
     - nicméně není zveřejněný kód
     - syntetické stemy zní divně
@@ -73,6 +82,32 @@ popis a statistika:
     - The length of the excerpts ranges from 10 to 32 seconds. 93.69% of the frames of the dataset are labelled as voiced while 6.31% are unvoiced (in which case the pitch is set to be 0).
 
 
+## Wjazzd \cite{Pfleiderer}
+- monofonní sóla, transkripce obsahuje pouze hlavní nástroj, nikoli doprovod
+    - "polyfonní by bylo obtížné anotovat"
+    - tudíž se zde nemusí příliš řešit problém, jaký hlas je hlavní, dobře tu funguje původní MIREXová definice melodie
+- manuální transkripce přímo z audia pomocí Sonic Visualizer
+
+The twelve staff members involved in the transcription and annotation pro- cess were students of either musicology, music education or the jazz program at the Music University ‘Franz Liszt’ Weimar. They had various musical backgrounds but were in general familiar with jazz, mostly by both listening to and playing jazz. Despite a high level of expertise, the quality of the tran- scriptions inevitably varied according to the respective solos, transcribers and their form on the day
+
+Moreover, the transcribed pitches are highly accurate since they are cross-checked several times by several persons. Nevertheless, the transcriptions still involve a moment of fuzziness due to several subjective factors and algorithmic short-comings in regard to the metrical beat grid, pitch notation and the annotation of phrases and midlevel units. One has to keep these aspects in mind whenever one explores the data.
+
+Pitch transcription
+In regard to pitches, uncertainties were rather scarce. At the most, it some- times turned out to be difficult to determine a definite pitch within fast lines, very low tones and glissandi, as well as in the case of slides, ambiguously intoned tones and appoggiaturas or grace notes. While the cross-checked pitch notation is, in general, very precise, one has to keep in mind that every tone—even a very short appoggiatura or the many tones within a longer glissando—is notated in the same way an as, e. g., a long tone played over a whole bar. Slides at the beginning of a tone, ‘bends’ (raising or lowering the pitch within a tone) and ‘fall-offs’ at its ending were either notated as two (or more) separate tones or as one tone with an additional note (‘slide’, ‘bend’, ‘fall-off’) in the annotation text layer (see the glossary for further explanation).
+
+the transcribed part of the original audio recording is separated into a backing track, which includes the accompanying instruments, and a solo track, which includes the improvising soloist (cf. p. 101). Then, the underlying tuning frequency is estimated from the backing track (cf. p. 101). In the next step, we estimate tone-wise fundamental frequency contours and intensity contours from the isolated solo instrument track (cf. p. 104 and p. 109). Finally, we describe each contour using more abstract features such as the fundamental frequency modulation range or the median tone intensity (cf. p. 104).
+
+- ladění
+    - první nahrávky jsou z dvacátých let, přitom A4=440 bylo definováno 1955
+    - piana se postupně rozlaďují
+    - artefakty nahrávek - zrychlování a zpomalování ovlivňuje ladění
+    -> proto se musí z doprovodu před extrakcí f0 získat ladění
+        - piano a kontrabas jsou pro odhad f0 spolehlivější než sólové nástroje, které si s laděním v průběhu sóla hrají
+- fundamental frequency contour tracking
+    - dvě možnosti:
+        - sledovat nejbližší peak na spektrogramu
+        - spustit pYIN na hlavní nástroj
+
 ## Obecně
 - oproti jiným MIR odvětvím, speech recognition nebo image recognition je to málo dat \cite{Salamon2017}
     - možné zlepšení:
@@ -90,10 +125,14 @@ popis a statistika:
     - multitrack
     - melody midi/f0
 - vznik datasetů
+    - přezpívání a manuální korekce
+        - Orchset
     - automatic f0 estimation z monofonních stemů + ruční kontrola
+        - ADC2004, zdroj: http://ismir2004.ismir.net/melody_contest/results.html
+        - MIREX05, zdroj
         - MedleyDB
         - time consuming and labor intensive
-            - For example, manual corrections for Med- leyDB (108 songs, most 3–5 minutes long) required ap- proximately 50 hours of effort across annotators [7,29]
+            - For example, manual corrections for MedleyDB (108 songs, most 3–5 minutes long) required approximately 50 hours of effort across annotators [7,29]
     - audio to MIDI alignment
         - omezeno robustností alignment algoritmu a dostupností kvalitních MIDI dat
         - musicnet
@@ -209,12 +248,6 @@ The Lakh MIDI dataset is a collection of 176,581 unique MIDI files, 45,129 of wh
 
 - https://www.classicalarchives.com/
 
-
-
-
-
-
-
 \chapter{Dostupné datasety k úloze}
 Obecně je vytváření kvalitních datasetů otevřený problém, kvalitních dat je oproti jiným oborům, kde se využívá strojové učení, poměrně málo. Neexistuje spolehlivá, levná a rychlá metoda pro jejich vytváření, nejblíže se takové zatím blíží nová publikovaná metoda \citep{Salamon2017}. 
 
@@ -257,14 +290,8 @@ Pouze klavír, 31GB nahrávek, část syntetická, část hraná disklavírem.
 Rozmanitý a kvalitní dataset s jednotlivými audiostopami, celkem 7 hodin hudby. Anotace byly generovány z oddělených audiostop a poté prošly ruční korekcí. Obsahuje tři druhy anotací, podle různých definic melodie. Jako jediný ze zmíněných nemá frekvenci melodie zaokrouhlenou na nejbližší tón. U jednotlivých stop je informace o nástroji.
 Dalším specifikem je, že krom hlavní melodie také obsahuje anotace ostatních melodických linek, autoři v doprovodném článku považují zapsání všech melodií v daném časovém úseku za nejobecnější definici melodie.
 
-Citovaný články: \url{https://scholar.google.cz/scholar?um=1&ie=UTF-8&lr&cites=14156318070025785121}
-
-
 - ORCHSET \\
 Created within the PHENICX project, it contains 64 audio excerpts from symphonies, symphonic poems, ballets suites and other musical forms interpreted by symphonic orchestras. The ground truth melody pitch is human-labeled with semitone quantisation and a hop size of 10 ms. The length of the excerpts ranges from 10 to 32 seconds.
-
-článek: \url{https://www.upf.edu/web/mdm-dtic/-/-audio-orchset-a-dataset-for-melody-extraction-in-symphonic-music-recordings?inheritRedirect=true}
-používají: \url{https://scholar.google.cz/scholar?um=1&ie=UTF-8&lr&cites=9877761979300687466}
 
 Celkově 23 minut hudby.
 

@@ -2,6 +2,7 @@ po algoritmu chceme:
 - správnou výšku tónů melodie (pitch estimation)
 - jestli melodie zní nebo ne (voicing detection)
 
+- opravil jsem chroma accuracy v mir_eval
 
 - (mirex formát) - 10 ms hop, seznam časů a frekvencí, 0 = žádná melodie
 

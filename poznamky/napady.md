@@ -1,9 +1,10 @@
 # Nápady
-
 ## Architektury (od nejjednodušších)
 ### Obecně
 - použít musicnet a předtrénovat síť. Nejjednodušší by bylo vzít nejvyšší frekvenci jako melodii a třeba by to pomohlo
 - sloučit notes a probs do jednoho grafu, dát do něj i spektrogram
+- histogram intervalů o které se metoda spletla
+- histogram přesnosti anotace podle výšky tónu
 
 ### Raw samples
 - crepe spíš odhaduje jen jednu frekvenci v daném okně - zkusit méně penalizovat, když bude zkoušet víc frekvencí?
