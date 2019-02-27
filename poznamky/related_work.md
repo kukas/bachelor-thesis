@@ -26,6 +26,9 @@
                             - multirate filterbank, constant-Q transform, multi-resolution FFT
                             - argumentují, že MRFFT pro některé přístupy nemá přidanou hodnotu (některé metody ale možná vyžadují)
                                 - to samé psala Karin Drassler
+                        - \cite{Durrieu2011}: Mid-level representations
+                            - něco jako spektrální transformace, ale za cenu neexistující inverzní funkce líp zachytí jiné charakteristiky než sílu frekvencí
+                            
                     - spectral peak processing
                         - většina algoritmů ze spektrogramu extrahuje pouze peaky, splňující různé podmínky, tím se odfiltruje část nemelodických šumů
                     - Salience function

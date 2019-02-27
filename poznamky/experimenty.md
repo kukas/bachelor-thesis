@@ -2,8 +2,19 @@ obecně zmínit:
 - je potřeba řešit shuffle, data se nevejdou do RAMky
 
 # CREPE replication
-- v paperu autorů nedostatečně popsané jak replikovat
 - dodal jsem tam L2 regularizaci - popsat proč a jak to pomohlo
+    - nakonec to vypadá, že to zas tak nepomáhá, problémy vyřešil správný shuffle
+
+- data mdb-stem-synth, neudělal jsem 5 fold cross validation, použil jsem pevně daný split podle splitu z ISMIR2017, jelikož jsem měl stem data připravená pro melody experimenty
+- původně se mi nedařilo replikovat výsledky
+    - špatně zamíchaná data
+    - granularita vstupu a výstupu dělá hodně - model se pak plete o půltóny
+        - RPA <98% vs >99%
+- jakmile jsem opravil nedostatky, je naopak těžké se nedostat na 99%
+    - předpokládám, že 5 fold cross validation to stáhne dolů na jejich čísla
+    - šlo by udělat větší rozdíly pomocí přísnější evaluace (hranice správné anotace +-50 centů vs +-10 centů)
+        - o tom ale bakalářka není, takže uzavírám s tím, že pokud se nějaký model neumí dostat nad 98%, tak je s ním něco špatně
+
 
 # autocorrelation
 - jako FFT - ale vytváří to jenom strašně chaotické predikce (zkusit to znovu a udělat obrázek)
@@ -19,6 +30,7 @@ obecně zmínit:
 
 # CREPE for Melody Extraction
 - pokus bez voicingu
+- !! není granulární výstup, což značně ovlivňuje výsledky !!
 
 - vzal jsem architekturu CREPE a zkusil ji na extrakci melodie
     - rozdíl je, že síť odhaduje přímo tóny (softmax classification), ne distribuci
@@ -35,6 +47,7 @@ obecně zmínit:
         - Bittner: 79%, 76%
         - Basaran: 87%, 86%
     - tedy dokážu docela snadno porazit Salamona
+
 
 ## CREPE s více daty
 - asi bych to měl přetrénovat, protože data nebyla pořádně zamíchaná

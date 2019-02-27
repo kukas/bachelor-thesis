@@ -1,3 +1,29 @@
+# Nápady
+
+## Architektury (od nejjednodušších)
+### Obecně
+- použít musicnet a předtrénovat síť. Nejjednodušší by bylo vzít nejvyšší frekvenci jako melodii a třeba by to pomohlo
+- sloučit notes a probs do jednoho grafu, dát do něj i spektrogram
+
+### Raw samples
+- crepe spíš odhaduje jen jednu frekvenci v daném okně - zkusit méně penalizovat, když bude zkoušet víc frekvencí?
+- větší stride na okrajích celého kontextu - síť nepotřebuje tak přesnou informaci o kontextu daleko od prostředka
+    - případně nějak attention?
+- přednastavení kernelu první vrstvy na sinusovky
+- WaveNet   
+    - nejdřív zkusit jako monopitch tracker
+- Banka filtrů, vstup vícekanálový raw signál
+
+### Spectrogram
+- Bittnerová
+- Source separation multitask
+
+### Temporal dependencies
+- LSTM
+- seq2seq + attention
+
+
+
 - inspirovat se multitask learningem od Bittnerové, ale zkusit přidat source separation jako další task.
     > Multitask Learning for Fundamental Frequency Estimation in Music
     > http://ismir2018.ircam.fr/doc/pdfs/138_Paper.pdf, https://www.youtube.com/watch?v=oGHC0ric6wo
@@ -12,8 +38,6 @@
 
 - onset detection - pro piano velmi zepšuje výsledky, co to zkusit pro ostatní nástroje? (já vím, piano je charakteristické, ale..?)
     - FFT s různými window size pro onset detection
-
-- pravděpodobně blbost: použít banku bandpass filtrů a pak feedovat do sítě přefiltrované raw signály
 
 - Multitask/autoencoder/regularizace AMT
     - zkusit ať se naučí dělat z raw dat spektrogram a někde z prostředního bottlenecku udělat melody extraction

@@ -56,6 +56,7 @@ U intuitivního zavedení pojmu melodie ale komplexnost problému nekončí.
                 * Fuga
             * jeden nástroj může být zároveň doprovod a zároveň jindy nést melodii
                 * Jazz
+            * polyfonie obecně - existuje spousta kombinací nástrojů
         * další nepříjemnosti
             * rezonance nástroje po zahrání tónu
             * dozvuk místnosti

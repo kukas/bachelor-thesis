@@ -1,5 +1,5 @@
 # Datasety
-
+Množství dostupných dat k úloze extrakce melodie představuje největší úskalí pro použití metod strojového učení pomocí hlubokých sítí. Obecně tyto metody vyžadují dat co nejvíce, aby 
 
 ## MedleyDB \cite{Bittner2014}
 - melody f0 annotations
