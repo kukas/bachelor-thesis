@@ -57,17 +57,50 @@ obecně zmínit:
 - bottleneck architektura, z prostředka se dělá melody extraction
 - možná by to mohlo pomoct, výstupy sítě nejsou tak sebejistý jako u předchozího pokusu, což mi přijde fajn - funguje to asi trochu jako druh regularizace
 
+## CREPE bez granulárního výstupu
+
+nejlepší výsledky na MedleyDB validačních datech po šesti epochách
+
+0302_204351-crepe-dmdb-bs32-apw1-fw93-cw466-s16000-inTrue-lr0.0002-cm4-cg0.0-llw0.0-mc0-bps1-as0.0-mw1.0-vsFalse-flc1
+    Raw Pitch Accuracy,0.5744710174010863
+    Raw Chroma Accuracy,0.6979197393378155
+    Total parameter count: 808496
+
+0302_222616-crepe-dmdb-bs32-apw1-fw93-cw466-s16000-inTrue-lr0.0002-cm8-cg0.0-llw0.0-mc0-bps1-as0.0-mw1.0-vsFalse-flc1
+    Raw Pitch Accuracy,0.597870447188386
+    Raw Chroma Accuracy,0.7039810520266852
+    Total parameter count: 3035104
+
+0303_004825-crepe-dmdb-bs32-apw1-fw93-cw466-s16000-inTrue-lr0.0002-cm16-cg0.0-llw0.0-mc0-bps1-as0.0-mw1.0-vsFalse-flc1
+    Raw Pitch Accuracy,0.6065284333418696
+    Raw Chroma Accuracy,0.7091437352118173
+    Total parameter count: 11743040
 
 ## CREPE s granulárními výstupy
 trénovány pět epoch
 
 ### Šířka okna
+obecně širší okno potřebuje víc času na natrénování (a taky trénování trvá déle)
 experimenty:
 0226_233744-crepe-dmdb,orchset-bs32-apw1-fw93-cw210-s16000-inTrue-lr0.0002-cm8-cg0.0-llw0.0-mc0-bps5-as0.25
+Raw Pitch Accuracy,0.6368829881474476
+Raw Chroma Accuracy,0.7493289984470894
+
 0227_003017-crepe-dmdb,orchset-bs32-apw1-fw93-cw466-s16000-inTrue-lr0.0002-cm8-cg0.0-llw0.0-mc0-bps5-as0.25
+Raw Pitch Accuracy,0.6568594554411157
+Raw Chroma Accuracy,0.761003923554659
+
 0227_013427-crepe-dmdb,orchset-bs32-apw1-fw93-cw978-s16000-inTrue-lr0.0002-cm8-cg0.0-llw0.0-mc0-bps5-as0.25
+Raw Pitch Accuracy,0.6598948339848353
+Raw Chroma Accuracy,0.7670859514272944
+
 0227_025011-crepe-dmdb,orchset-bs32-apw1-fw93-cw2002-s16000-inTrue-lr0.0002-cm8-cg0.0-llw0.0-mc0-bps5-as0.25
+Raw Pitch Accuracy,0.6645687961957129
+Raw Chroma Accuracy,0.7688330561778753
+
 0227_045758-crepe-dmdb,orchset-bs32-apw1-fw93-cw4050-s16000-inTrue-lr0.0002-cm8-cg0.0-llw0.0-mc0-bps5-as0.25
+Raw Pitch Accuracy,0.6751112990020703
+Raw Chroma Accuracy,0.7749715186497634
 
 
 ### Multiresolution first layer
