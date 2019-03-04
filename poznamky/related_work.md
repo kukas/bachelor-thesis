@@ -1,6 +1,9 @@
+# Related Work
 - Poslední review je z roku 2014 - \cite{Salamon2014}
 
 - sekce "state-of-the-art" - s těma metodama, které jsem změřil
+## State-of-the-art
+### Salamon 2012
 
 
 - Deep learning pro audio
@@ -12,6 +15,7 @@
         - Melody Extraction se snaží získat $\hat{f} = \argmax_f \sum_{\tau}{S_x(f_\tau, \tau) + C(f)}$ ze signálu obohaceného o melodický šum $y(t) = x(t) + n(t)$
         - dvě možnosti, jak monopitch trackery zobecnit:
             - Metody založené na salienci: zlepšit funkci $S_x$ tak, aby byla robustní proti dalším periodickým signálům.
+                - největší skupina (asi cite Salamon2014, kdyžtak Salamon2012)
                 - tady třeba Salamon salience
                 - je potřeba určitě zlepšit i $C(f)$, tedy temporal constraint
                     - tracking techniques: Viterbi decoding, tracking agents, clustering, etc.
@@ -44,7 +48,8 @@
             - Metody založené na source separation (dekompozici signálu na jednotlivé zdroje?): Jeden ze zdrojů bude náležet hlavní melodii, na něj pak můžeme spustit obyčejný monopitch tracker.
                 - decomposition, matrix factorization techniques
             - Data-based metody
-                - 2005 Poliner and Ellis A classification approach to melody transcription
+                - Jeden z prvních: 2005 Poliner and Ellis A classification approach to melody transcription
+                    - dosáhl tehdejšího state-of-the-art
                     - SVM klasifikace na základě velmi ořezaných spektrogramů - 256 featur -> 60 midi not !
         - mnoho algoritmů se soustředí hlavně na transkripci zpěvu, jednak z komerčních důvodů (jsou nejčastější a nejpopulárnější) a jednak kvůli tomu, že zpěv má oproti hlasu nástrojů svoje unikátní charakteristiky, které metody dokážou využít pro lepší výsledky
     - obvyklá struktura melody extraction pipeline, Dressler, \cite{Salamon2014}:

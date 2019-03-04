@@ -1,11 +1,12 @@
 # Nápady
-## Architektury (od nejjednodušších)
-### Obecně
+## Obecně
 - použít musicnet a předtrénovat síť. Nejjednodušší by bylo vzít nejvyšší frekvenci jako melodii a třeba by to pomohlo
+    - musicnet by šel možná zpřesnit na multif0 (teď je midi) pomocí vyhledávání nejbližších peaků
 - ✓ sloučit notes a probs do jednoho grafu, dát do něj i spektrogram
 - ✓ histogram intervalů o které se metoda spletla
 - ✓ histogram přesnosti anotace podle výšky tónu
-
+- L2 a BatchNorm? jak to spolu funguje?
+## Architektury (od nejjednodušších)
 ### Raw samples
 - crepe spíš odhaduje jen jednu frekvenci v daném okně - zkusit méně penalizovat, když bude zkoušet víc frekvencí?
 - přidat resnetové propojení do crepe
@@ -16,8 +17,11 @@
     - nejdřív zkusit jako monopitch tracker
 - Banka filtrů, vstup vícekanálový raw signál
 - kouknout se na instantaneous frequency
-- kouknout se na pYIN, cross-correlation
+- kouknout se na pYIN, auto-correlation
+- konvoluce vs. fourierka https://en.wikipedia.org/wiki/Convolution_theorem
+https://librosa.github.io/librosa/generated/librosa.core.iirt.html
 
+- extrémně široký okna (onsets and frames měli 20 sekund)
 ### Spectrogram
 - Bittnerová
 - Source separation multitask

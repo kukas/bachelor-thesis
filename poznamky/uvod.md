@@ -91,6 +91,7 @@ U intuitivního zavedení pojmu melodie ale komplexnost problému nekončí.
 
 * definice a vysvětlení
     * jednohlasá=monofonní/vícehlasá=polyfonní nahrávka
+        * polyfonní používám ve smyslu, že dva simultánní tóny mohou znít ze stejného nástroje, tedy i nahrávka o jednom nástroji může být polyfonní
     * f0 estimation = co je f0
         + digital signal processing: je to nejnižší frekvence periodického signálu
         
