@@ -1,14 +1,25 @@
 # Datasety
 
+Nedostupnost dostatečného množství dat pro automatickou transkripci melodie představuje zejména pro metody strojového učení otevřený problém. Zatímco pro vzdáleně příbuznou úlohu automatického přepisu mluveného slova existuje tisíce hodin nahrávek (například dataset LibriSpeech, který vznikl na základě audioknih), největší dataset s přepsanou melodickou linkou MedleyDB má celkovou délku pod osm hodin. Do roku 2014, kdy MedleyDB vznikl, existovaly datasety, které byly buď rozmanité, ale příliš krátké (ADC04, MIREX05, INDIAN08) nebo naopak celkově větší, ale žánrově a hudebně homogenní (MIREX09, MIR1K, RWC). V roce 2015 byl vydán dataset Orchset, který obsahuje 23 minut výňatků z orchestrálních skladeb různých období. Za dataset pro extrakci melodie by se také dal považovat Weimar Jazz Database, který je sice primárně zaměřený na využití v muzikologii, nicméně obsahuje přes 450 přepsaných jazzových sól. Novinkou z roku 2017 je vydání datasetu MDB-melody-synth, který byl automaticky vygenerován základě vstupní vícestopé hudby (převzaté z MedleyDB), existuje tedy naděje, že současný korpus pro přepis melodie by se mohl v budoucnu rozšířit o velkou část veřejně dostupných vícestopých nahrávek.
 
-- datasetů je málo
-- proč je datasetů málo
-    - jednak celková náročnost
-    - jednak subjektivita, definice atd.
-- proč je to problém
-- co s tím kdo zkoušel dělat
+Co se týče blízké úlohy transkripce hudby, velikost největších datasetů se pohybuje v řádu desítek hodin, tudíž jde stále o omezené kolekce. Mezi největší se řadí MusicNet (orchestrální, 34 hodin), MAPS (klavír, 18 hodin), MDB-mf0-synth (multižánrový, 4,7 hodin), GuitarSet (kytara, 3 hodiny) a URMP (komorní orchestr, 1,3 hodiny). I když jde o úlohu, která je lépe definovaná (na rozdíl od extrakce melodie v celkovém přepisu nehraje takovou roli subjektivita při volbě hlavního hlasu), s použitím polyfonních nástrojů vyvstává problém náročné ruční anotace.
+
+Vytváření nových datasetů je obecně velmi pracné a nákladné. Obvyklý postup totiž zahrnuje buď kompletní ruční přepis nahrávky nebo alespoň ruční opravu výstupu automatického přepisu, přičemž tuto práci odvedou nejkvalitněji pouze zaškolení hudebníci. Každá vzniklá anotace by se také měla překontrolovat, a to nejlépe jiným hudebníkem. Dalším problémem je vůbec identifikace melodie - jelikož je určení hlavní melodické linie subjektivní, musí se na výsledné anotaci shodnout co nejvíce posluchačů, ve výsledku se proto vybírají takové nahrávky, které nejsou sporné. S tím souvisí také zavedení a pečlivé dodržování anotační politky u komplexnějších skladeb (zejména orchestrálních), kde může melodii nést více hlasů zároveň (současně či střídajíc se). Také množství výchozích dat pro vznik datasetů není velké, jednak musí být skladby šiřitelné, pokud má být dataset volně dostupný a jednak by k nim měly být dostupné audiostopy, ze kterých je smíchán finální mix, jelikož ruční anotace pouze s pomocí finálního mixu je mnohem náročnější než anotace stop.
+
+Existence dostatenčně velkého množství dat je obecně vzato zásadním předpokladem pro využití metod strojového učení pomocí hlubokých neuronových sítí, zejména pak pro netriviální úlohy, jakou je například přepis melodie, jelikož dovoluje zvětšení celkové kapacity modelu, aniž by docházelo k overfittingu. Také pro evaluaci metod, například i v soutěži MIREX, jsou potřeba takové datasety, které dobře reprezentují reálná data, přitom MedleyDB vzniklo mimo jiné z důvodu, že stávající datasety nestačily ani pro tento účel. 
+
+Možností řešení nastíněného probému nedostatku dat je více. Přímým řešením by byl návrh metody, která by celý proces vzniku datasetů výrazně ulehčila. O to se snaží článek \cite{Salamon2017} a princip této metody popisuje kapitola XXX. 
+nepřímé metody:
+    - augumentace dat \cite{Thickstun2018}, \cite{Kum2016}
+        - pitch, noise
+        - remixování mdb-mf0-synth
+    - syntetická data \cite{Bittner2018}
+    - multitask learning \cite{Bittner2018}
+    - crowdsourcing \cite{Tse2016}
+
 
 ## MedleyDB \cite{Bittner2014}
+Multimodální dataset obsahující 122 písní, k 108 z nich je dostupná anotace melodie. 
 - obsahuje
     - melody f0 annotations
     - instrument activations
@@ -19,12 +30,6 @@
         - multitrack usnadnuje anotaci
         - problém - tracky můžou mít bleed
             - v paperu tracky source-separovány s ručně doladěnými parametry
-
-- problémem většiny existujících datasetů je buď žánrová homogenita a nebo celkově krátká délka
-    - sem spadají všechny datasety používané v soutěži MIREX, tedy ADC2004, MIREX05, MIREX09, MIR1K, ORCHSET
-
-- kvůli nepřesnostem v anotacích, krátké délky jednotlivých excerptů a malému množství nahrávek nemusí MIREX datasety dobře reflektovat opravdový výkon testovaných algoritmů.
-    - jediný dataset, který je dostatečně velký (MIREX09) je velmi homogenní (čínský pop). To samé platí i o MIR1K a RWC
 
 - definice melodie:
     1. The f0 curve of the predominant melodic line drawn from a single source.
@@ -163,8 +168,8 @@ the transcribed part of the original audio recording is separated into a backing
 | Melody MIDI     | Y        | Y       | Y        | N        | N    | Y         | Y       | N      |
 | Hours of audio  | 7.3      | 23min   | N        | 34       | 1.3  | 4.65      | ? >10 ? | 7      |
 
-přidat:
-    - poměr voiced/unvoiced
+**přidat další řádek:**
+    - poměr voiced/unvoiced framů
 
 * pouze monofonické nástroje, pouze melodie (tj. doprovod není anotován)
 ** část stemů s větším či menším bleedem (toto je anotované)
@@ -283,6 +288,7 @@ Pouze klavír, 31GB nahrávek, část syntetická, část hraná disklavírem.
 
 - RWC dataset \\
 100 populárních písní, 50 klasických skladeb, 50 jazzových nahrávek, přístup k datasetu je ale zpoplatněn.
+pouze MIDI, nikoli f0
 
 \section{Datasety s hlavní melodií}
 
@@ -297,14 +303,24 @@ Celkově 23 minut hudby.
 
 Ostatní, používané při evaluaci v MIREXu:
 
-MIREX09 database: 374 Karaoke recordings of Chinese songs. Each recording is mixed at three different levels of Signal-to-Accompaniment Ratio \{-5dB, 0dB, +5 dB\} for a total of 1122 audio clips. Instruments: singing voice (male, female), synthetic accompaniment. The groundtruth pitch of each clip is human labeled, with a frame size of 40ms, a hop size of 20 ms. Note that the center of the first frame is located at 20ms starting from the very beginning of a clip. The human labeled pitch is then interpolated to have a hop size of 10ms. Thus the time sequence of the pitch vector are 20ms, 30ms, 40ms, 50ms, and so on.
+MIREX09 database
+- 374 Karaoke recordings of Chinese songs. Each recording is mixed at three different levels of Signal-to-Accompaniment Ratio \{-5dB, 0dB, +5 dB\} for a total of 1122 audio clips. Instruments: singing voice (male, female), synthetic accompaniment. The groundtruth pitch of each clip is human labeled, with a frame size of 40ms, a hop size of 20 ms. Note that the center of the first frame is located at 20ms starting from the very beginning of a clip. The human labeled pitch is then interpolated to have a hop size of 10ms. Thus the time sequence of the pitch vector are 20ms, 30ms, 40ms, 50ms, and so on.
+- 374 Karaoke recordings of Chinese songs (i.e. recorded singing with karaoke accompaniment). Each recording is mixed at three different levels of signal-to-accompaniment ratio {-5dB, 0dB, +5dB} for a total of 1,122 audio clips. Total play time: 10,022s.
+2)
 
-MIREX08 database: 4 excerpts of 1 min. from "north Indian classical vocal performances", instruments: singing voice (male, female), tanpura (Indian instrument, perpetual background drone), harmonium (secondary melodic instrument) and tablas (pitched percussions). There are two different mixtures of each of the 4 excerpts with differing amounts of accompaniment for a total of 8 audio clips.
 
-MIREX05 database: 25 phrase excerpts of 10-40 sec from the following genres: Rock, R\&B, Pop, Jazz, Solo classical piano.
+INDIAN08 database
+- 4 excerpts of 1 min. from "north Indian classical vocal performances", instruments: singing voice (male, female), tanpura (Indian instrument, perpetual background drone), harmonium (secondary melodic instrument) and tablas (pitched percussions). There are two different mixtures of each of the 4 excerpts with differing amounts of accompaniment for a total of 8 audio clips.
+- Four 1 minute long excerpts from north Indian classical vocal performances. There are two mixes per excerpt with differing amounts of accompaniment for a total of 8 audio clips. Total play time: 501s.
 
-ADC04 database: Dataset from the 2004 Audio Description Contest. 20 excerpts of about 20s each.
-manually annotated reference data (10 ms time grid)
+MIREX05 database:
+- 25 phrase excerpts of 10-40 sec from the following genres: Rock, R\&B, Pop, Jazz, Solo classical piano.
+- 25 excerpts of a 10-40s duration in the genres of rock, R&B, pop, jazz and solo classical piano. Includes real recordings and audio generated from MIDI files. Total play time: 686s.
+
+ADC04 database: 
+- Dataset from the 2004 Audio Description Contest. 20 excerpts of about 20s each.
+- manually annotated reference data (10 ms time grid)
+- 20 excerpts of roughly 20s in the genres of pop, jazz and opera. Includes real recordings, synthesized singing and audio generated from MIDI files. Total play time: 369s.
 
 \section{Použité datasety}
 
