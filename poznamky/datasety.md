@@ -9,6 +9,9 @@ Vytváření nových datasetů je obecně velmi pracné a nákladné. Obvyklý p
 Existence dostatenčně velkého množství dat je obecně vzato zásadním předpokladem pro využití metod strojového učení pomocí hlubokých neuronových sítí, zejména pak pro netriviální úlohy, jakou je například přepis melodie, jelikož dovoluje zvětšení celkové kapacity modelu, aniž by docházelo k overfittingu. Také pro evaluaci metod, například i v soutěži MIREX, jsou potřeba takové datasety, které dobře reprezentují reálná data, přitom MedleyDB vzniklo mimo jiné z důvodu, že stávající datasety nestačily ani pro tento účel. 
 
 Možností řešení nastíněného probému nedostatku dat je více. Přímým řešením by byl návrh metody, která by celý proces vzniku datasetů výrazně ulehčila. O to se snaží článek \cite{Salamon2017} a princip této metody popisuje kapitola XXX. 
+
+------------
+
 nepřímé metody:
     - augumentace dat \cite{Thickstun2018}, \cite{Kum2016}
         - pitch, noise
@@ -19,34 +22,52 @@ nepřímé metody:
 
 
 ## MedleyDB \cite{Bittner2014}
-Multimodální dataset obsahující 122 písní, k 108 z nich je dostupná anotace melodie. 
-- obsahuje
-    - melody f0 annotations
-    - instrument activations
-    - multitrack
-        - rozmanité žánry
-- anotace
-    - částečně automatizováno, spuštěním pYINu na stemy
-        - multitrack usnadnuje anotaci
-        - problém - tracky můžou mít bleed
-            - v paperu tracky source-separovány s ručně doladěnými parametry
+Multimodální, vícestopý dataset obsahující 122 nahrávek, k 108 z nich je dostupná anotace melodie. Kromě té obsahuje také metadata o všech písní s informacemi o žánru a instrumentalizaci. S celkovou délkou 7.3 hodiny jde o nejdelší dataset, který se zaměřuje na více hudebních žánrů. O rozmanitosti svědčí i to, že se v datasetu vyskytuje řada nástrojů mimoevropského původu, a že jen přibližně polovina písní obsahuje zpěv. Na rozdíl od ostatních datasetů jsou nahrávky ve většině případů celé písně, tedy nejde pouze o krátké výňatky, a ke každé jsou poskytnuty audiostopy, ze kterých je vytvořen výsledný mix.
+Na základě diskuze, kterou shrnuji v kapitole o definici melodie, autoři poskytují tři verze anotací, na základě různě obecných definic:
 
-- definice melodie:
-    1. The f0 curve of the predominant melodic line drawn from a single source.
-    2. The f0 curve of the predominant melodic line drawn from multiple sources.
-    3. The f0 curves of all melodic lines drawn from multiple sources.
+1. The f0 curve of the predominant melodic line drawn from a single source.
+1. Základní frekvence nejvýraznějšího melodického hlasu, jehož zdroj zůstává po dobu nahrávky neměnný. (Tato definice je shodná pro evaluační datasety používané v soutěži MIREX, s výjimkou Orchsetu)
+2. The f0 curve of the predominant melodic line drawn from multiple sources.
+2. Základní frekvence nejvýraznějšího melodického hlasu, jehož zdroje se mohou měnit.
+3. The f0 curves of all melodic lines drawn from multiple sources.
+3. Základní frekvence všech melodických hlasů, které mohou pocházet z více zdrojů.
 
-    - definice 1. je shodná s definicí používanou v ostatních datasetech vyhodnocovaných v MIREXu
-        "pitch is expressed as the fundamental frequency of the main melodic voice, and is reported in a frame-based manner on an evenly-spaced time- grid."
-- The annotations were created by five annotators, all of which were musicians and had at least a bachelor’s degree in music. Each annotation was evaluated by one annotator and validated by another. The annotator/validator pairs were randomized to make the final annotations as unbiased as possible.
+Ačkoli třetí definice dovoluje, aby v anotaci znělo více melodických linek zároveň, nejedná se o kompletní přepis nahrávek, ten autoři neposkytují.
 
-## MDB-synth
-In this paper we propose a framework for automatically generating continuous f0 annotations without requiring manual refinement: the estimate of a pitch tracker is used to drive an analysis/synthesis pipeline which produces a synthesized version of the track
-- potenciálně řeší problém s datasety automatickým generováním dat z multitracků
-    - nicméně není zveřejněný kód
-    - syntetické stemy zní divně
-        - onsety umí ujet
-            - vokály s frikativy - sinusoidal modeling umí zachytit pouze harmonický signál, chybí šum
+Dataset vznikl obvyklou cestou ruční anotace, ze shromážděného vícestopého materiálu byly vybrány stopy s potenciálním výskytem melodie, stopy s přeslechem byly filtrovány pomocí source-separation algoritmu s ručně doladěnými parametry pro každou jednotlivou stopu, následně byl na monofonní stopy spuštěn pitch-tracker pYIN a výsledné automaticky získané anotace opravilo a vzájemně zkontrolovalo pět anotátorů s hudebním vzděláním. 
+
+------------
+
+- definice 1. je shodná s definicí používanou v ostatních datasetech vyhodnocovaných v MIREXu
+    "pitch is expressed as the fundamental frequency of the main melodic voice, and is reported in a frame-based manner on an evenly-spaced time- grid."
+
+## MDB-synth \cite{Salamon2017}
+
+Hlavním přínosem práce \cite{Salamon2017} je navržení způsobu anotace základní frekvence monofonních audiostop takovým způsobem, že výsledná dvojice zvukové stopy a anotace nevyžaduje další manuální kontrolu. Anotace stopy probíhá ve dvou krocích, nejprve získáme pomocí libovolného monopitch trackeru křivku základní frekvence a poté na základě této křivky, která může obsahovat chybné úseky, syntetizujeme novou stopu, která zachovává barvu nahrávky, ale výšku tónu určuje právě tato anotace. Díky tomu je pak přesnost anotace pro tuto novou, syntetickou nahrávku stoprocentní, přitom (v ideálním případě) neztrácí charakteristiky původní nahrávky.
+Pro vytváření datasetu je toto významné zjednodušení, protože tím algoritmus odstraňuje časově nejnáročnější část práce - ruční kontrolu anotací audiostop. Pokud by se ukázalo, že syntéza významně neubírá na kvalitě dat, použitím navrhované metody by mohlo vzniknout velké množství nových dat (napříkad repozitář Open Multitrack Testbed obsahuje stovky vícestopých nahrávek, které by šlo využít). Autoři v článku provádí kvantitativní analýzu pomocí srovnání state-of-the-art algoritmů pro extrakci melodie a prokazují, že výsledky těchto metod na syntetických datech se významně neliší od výsledků na původních, tím je podle autorů potvrzená možnost použití dat jak pro trénování tak pro evaluaci nových metod.
+Metoda má ale bohužel svá omezení, mezi ty zásadní patří, že se dá aplikovat pouze na stopy, které obsahují monofonní signál, vstupní data tedy nesmí obsahovat přeslech a nahrávaný nástroj může hrát pouze jednohlase, v důsledku nelze zpracovat klavír či kytara, které hrají zpravidla vícehlas. To nevadí tolik u generování datasetu pro přepis melodie, jelikož melodii často hraje jeden hlas a doprovod hrají ostatní, velkým nedostatkem je toto spíše pro generování multif0 datasetů.
+Dále k článku není zveřejněná kompletní refereční implementace algoritmu, tudíž algoritmus nelze snadno spustit na nových datech. Ve výsledku je tudíž největším praktickým přínosem nová sada syntetických datasetů pro úlohy přepisu melodie, basy, monofonních stop a kompletní partitury, každý dataset obsahuje destíky nahrávek. Vícestopá data použitá pro syntézu byla převzata z MedleyDB, tudíž ve výsledku nové datasety nerozšiřují celkový hudební záběr, pouze zpřesňují ten již existující.
+
+_TODO obrázek? Porovnání spektrogramů syntetické a původní nahrávky_
+
+Z kvalitativního pohledu je na výstupních syntetických nahrávkách poznat, že jsou syntetické. Autoři sice prokazují, že současné metody na těchto datech dosahují stejných výsledků, nicméně v článku chybí diskuse o tom, zda-li v datech algoritmus nevytváří nové umělé artefakty, které by mohly zneužít metody strojového učení pro spolehlivější výsledky (které by však negeneralizovaly na reálná data). Při pohledu na spektrogram je například zřejmé, že syntetická nahrávka obsahuje mnohem více výrazných alikvótních frekvencí
+
+
+------------
+
+V článku ale chybí diskuze, zda-li syntetická data neobsahují artefakty, které by mohly využít metody strojového učení
+
+- pohled na spektrogram:    
+    - syntetická data mají mnohem výraznější alikvóty - jdou tam opravdu donekonečna
+    - žádný šum
+    - neobsahuje nic než harmonické frekvence + harmonické frekvence jsou nyní v naprosto přesných násobcích
+        - wikipedie: While it is true that electronically produced periodic tones (e.g. square waves or other non-sinusoidal waves) have "harmonics" that are whole number multiples of the fundamental frequency, practical instruments do not all have this characteristic. For example, higher "harmonics"' of piano notes are not true harmonics but are "overtones" and can be very sharp, i.e. a higher frequency than given by a pure harmonic series. This is especially true of instruments other than stringed or brass/woodwind ones, e.g., xylophone, drums, bells etc., where not all the overtones have a simple whole number ratio with the fundamental frequency. The fundamental frequency is the reciprocal of the period of the periodic phenomenon.[5]
+        https://en.wikipedia.org/wiki/Harmonic
+
+- syntetické stemy zní divně
+    - onsety umí ujet
+        - vokály s frikativy - sinusoidal modeling umí zachytit pouze harmonický signál, chybí šum
+            The synthesis used in this study is purely harmonic, which affects the quality of the synthesis and could potentially affect the perception of note onsets (e.g., vocals with fricatives).
 - method
     1. pitch tracking
         - pomocí SAC = E. Gomez and J. Bonada. Towards computer-assisted flamenco transcription: An experimental comparison of automatic transcription algorithms from a cappella singing. Computer Music journal, 37(2):73–90, 2013.
@@ -57,13 +78,10 @@ In this paper we propose a framework for automatically generating continuous f0 
         - pomocí banky sinusových oscilátorů na základě parametrů zjištěných v 2.
     4. remixing
         - protože mix není triviální součet stemů, používá se vážená lineární kombinace s odhadem vah na základě původních stemů
-- umí resyntetizovat pouze monofonní nástroje, což je mírně omezující pro AME (přepisovaný bude vždy monofonní, ostatní mohou být polyfonní) a dost omezující pro multi-f0 (mix je složen jen z monofonních nástrojů a perkusí)
-    - demonstruje to filtrování při výrobě mdb-melody-synth - musely se vyhodit písně, kde je hlavní nástroj kytara
-- ve výsledku tedy máme nový dataset s menší chybou transkripce, který je ale založený na známých datech z MedleyDB
-    - mdb-melody-synth má 65 tracků
-    - změřeny podobné výsledky z různých AME metod => reprezentuje to reálná data, snad
 
 ## Orchset
+
+Dataset orientovaný na orchestrální repertoár pocházející z různých historických období včetně 20. století. Obsahuje 64 výňatků délky od 10 do 32 sekund. Výňatky byly vybírány tak, aby obsahovaly zřejmou melodii, dataset tedy obsahuje v porovnání málo pasáží bez melodie (6% z celkové délky).  
 
 - vycházejí z rozšíření definice MedleyDB, 
     Such definitions are more useful in the context of symphonic music, which presents further challenges, since melodies are played by alternating instruments or instrument sections *(playing in unison, octave relation, or with harmonised melodic lines)*, and which might not be energetically predominant.
