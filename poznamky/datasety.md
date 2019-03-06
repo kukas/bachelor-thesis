@@ -26,11 +26,11 @@ Multimodální, vícestopý dataset obsahující 122 nahrávek, k 108 z nich je 
 Na základě diskuze, kterou shrnuji v kapitole o definici melodie, autoři poskytují tři verze anotací, na základě různě obecných definic:
 
 1. The f0 curve of the predominant melodic line drawn from a single source.
-1. Základní frekvence nejvýraznějšího melodického hlasu, jehož zdroj zůstává po dobu nahrávky neměnný. (Tato definice je shodná pro evaluační datasety používané v soutěži MIREX, s výjimkou Orchsetu)
+    1. Základní frekvence nejvýraznějšího melodického hlasu, jehož zdroj zůstává po dobu nahrávky neměnný. (Tato definice je shodná pro evaluační datasety používané v soutěži MIREX, s výjimkou Orchsetu)
 2. The f0 curve of the predominant melodic line drawn from multiple sources.
-2. Základní frekvence nejvýraznějšího melodického hlasu, jehož zdroje se mohou měnit.
+    2. Základní frekvence nejvýraznějšího melodického hlasu, jehož zdroje se mohou měnit.
 3. The f0 curves of all melodic lines drawn from multiple sources.
-3. Základní frekvence všech melodických hlasů, které mohou pocházet z více zdrojů.
+    3. Základní frekvence všech melodických hlasů, které mohou pocházet z více zdrojů.
 
 Ačkoli třetí definice dovoluje, aby v anotaci znělo více melodických linek zároveň, nejedná se o kompletní přepis nahrávek, ten autoři neposkytují.
 
@@ -44,8 +44,11 @@ Dataset vznikl obvyklou cestou ruční anotace, ze shromážděného vícestopé
 ## MDB-synth \cite{Salamon2017}
 
 Hlavním přínosem práce \cite{Salamon2017} je navržení způsobu anotace základní frekvence monofonních audiostop takovým způsobem, že výsledná dvojice zvukové stopy a anotace nevyžaduje další manuální kontrolu. Anotace stopy probíhá ve dvou krocích, nejprve získáme pomocí libovolného monopitch trackeru křivku základní frekvence a poté na základě této křivky, která může obsahovat chybné úseky, syntetizujeme novou stopu, která zachovává barvu nahrávky, ale výšku tónu určuje právě tato anotace. Díky tomu je pak přesnost anotace pro tuto novou, syntetickou nahrávku stoprocentní, přitom (v ideálním případě) neztrácí charakteristiky původní nahrávky.
+
 Pro vytváření datasetu je toto významné zjednodušení, protože tím algoritmus odstraňuje časově nejnáročnější část práce - ruční kontrolu anotací audiostop. Pokud by se ukázalo, že syntéza významně neubírá na kvalitě dat, použitím navrhované metody by mohlo vzniknout velké množství nových dat (napříkad repozitář Open Multitrack Testbed obsahuje stovky vícestopých nahrávek, které by šlo využít). Autoři v článku provádí kvantitativní analýzu pomocí srovnání state-of-the-art algoritmů pro extrakci melodie a prokazují, že výsledky těchto metod na syntetických datech se významně neliší od výsledků na původních, tím je podle autorů potvrzená možnost použití dat jak pro trénování tak pro evaluaci nových metod.
+
 Metoda má ale bohužel svá omezení, mezi ty zásadní patří, že se dá aplikovat pouze na stopy, které obsahují monofonní signál, vstupní data tedy nesmí obsahovat přeslech a nahrávaný nástroj může hrát pouze jednohlase, v důsledku nelze zpracovat klavír či kytara, které hrají zpravidla vícehlas. To nevadí tolik u generování datasetu pro přepis melodie, jelikož melodii často hraje jeden hlas a doprovod hrají ostatní, velkým nedostatkem je toto spíše pro generování multif0 datasetů.
+
 Dále k článku není zveřejněná kompletní refereční implementace algoritmu, tudíž algoritmus nelze snadno spustit na nových datech. Ve výsledku je tudíž největším praktickým přínosem nová sada syntetických datasetů pro úlohy přepisu melodie, basy, monofonních stop a kompletní partitury, každý dataset obsahuje destíky nahrávek. Vícestopá data použitá pro syntézu byla převzata z MedleyDB, tudíž ve výsledku nové datasety nerozšiřují celkový hudební záběr, pouze zpřesňují ten již existující.
 
 _TODO obrázek? Porovnání spektrogramů syntetické a původní nahrávky_
