@@ -26,11 +26,11 @@ Multimodální, vícestopý dataset obsahující 122 nahrávek, k 108 z nich je 
 Na základě diskuze, kterou shrnuji v kapitole o definici melodie, autoři poskytují tři verze anotací, na základě různě obecných definic:
 
 1. The f0 curve of the predominant melodic line drawn from a single source.
-    1. Základní frekvence nejvýraznějšího melodického hlasu, jehož zdroj zůstává po dobu nahrávky neměnný. (Tato definice je shodná pro evaluační datasety používané v soutěži MIREX, s výjimkou Orchsetu)
+    - Základní frekvence nejvýraznějšího melodického hlasu, jehož zdroj zůstává po dobu nahrávky neměnný. (Tato definice je shodná pro evaluační datasety používané v soutěži MIREX, s výjimkou Orchsetu)
 2. The f0 curve of the predominant melodic line drawn from multiple sources.
-    2. Základní frekvence nejvýraznějšího melodického hlasu, jehož zdroje se mohou měnit.
+    - Základní frekvence nejvýraznějšího melodického hlasu, jehož zdroje se mohou měnit.
 3. The f0 curves of all melodic lines drawn from multiple sources.
-    3. Základní frekvence všech melodických hlasů, které mohou pocházet z více zdrojů.
+    - Základní frekvence všech melodických hlasů, které mohou pocházet z více zdrojů.
 
 Ačkoli třetí definice dovoluje, aby v anotaci znělo více melodických linek zároveň, nejedná se o kompletní přepis nahrávek, ten autoři neposkytují.
 
@@ -82,31 +82,17 @@ V článku ale chybí diskuze, zda-li syntetická data neobsahují artefakty, kt
     4. remixing
         - protože mix není triviální součet stemů, používá se vážená lineární kombinace s odhadem vah na základě původních stemů
 
-## Orchset
+## Orchset \cite{Bosch2016}
 
-Dataset orientovaný na orchestrální repertoár pocházející z různých historických období včetně 20. století. Obsahuje 64 výňatků délky od 10 do 32 sekund. Výňatky byly vybírány tak, aby obsahovaly zřejmou melodii, dataset tedy obsahuje v porovnání málo pasáží bez melodie (6% z celkové délky).  
+Dataset orientovaný na orchestrální repertoár pocházející z různých historických období včetně 20. století. Obsahuje 64 výňatků délky od 10 do 32 sekund. Výňatky byly vybírány tak, aby obsahovaly zřejmou melodii, dataset tedy obsahuje v porovnání málo pasáží bez melodie (6% z celkové délky). Vzhledem k komplexitě uvažovaných žánrů autoři vycházejí z kombinace rozšířené definice melodie podle \cite{Bittner2014} a definice \cite{Poliner2007}. Melodii ve výňatcích proto zpravidla nese více hudebních nástrojů (nebo celých sekcí), které se v průběhu střídají, případně mohou části hrát společně v rozdílných oktávách (nebo jiných intervalech, tvoříce tak harmonický doprovod). 
 
-- vycházejí z rozšíření definice MedleyDB, 
-    Such definitions are more useful in the context of symphonic music, which presents further challenges, since melodies are played by alternating instruments or instrument sections *(playing in unison, octave relation, or with harmonised melodic lines)*, and which might not be energetically predominant.
-- a z původní definice (Poliner 2007) - dataset vznikl přezpíváváním a zpracováním těchto nahrávek
-- neexistuje obecně přijímaná metodologie přepisu melodie pro nahrávky s více nástroji hrajícími melodickou linku
+Pro zjištění melodie se v takto vrstveném materiálu autoři uchylují k úplnému základu definice melodie (Poliner) a nechávají si skupinou čtyř posluchačů výňatky přezpívávat. Tato hrubá data pak autoři sumarizují a odebírají z datasetu ty výňatky, na jejichž melodii se posluchači neshodli. Přezpívané tóny bylo nutné ručně opravit, aby načasováním přesně seděly na výňatek. Lidský hlas také samozřejmě nemá rozsah plného orchestru, proto bylo dalším krokem transponovat anotace tak, aby zněly ve správných oktávách. Zde se opět může vyskytnout problém subjektivity, pokud melodii hrají dva různé nástroje, pouze v jiných oktávách, pak je sporné, který nástroj označit jako hlavní (v některých případech taková otázka ani nedává příliš smysl.). Částečným řešením je zvolit libovolnou anotační politiku a tu konzistentně dodržovat (žádná společná v komunitě MIR neexistuje), v případě Orchsetu byla snaha minimalizovat skoky v melodické kontuře, což zároveň respektuje obecné pozorování, že v melodii se vyskytují mnohem častěji malé skoky (nejčastěji prima a malá/velká sekunda) než větší. Tedy například pokud pasáži hrané ve dvou různých oktávách předcházela pasáž hraná v jedné, anotace obou pasáží lze transponovat do společné oktávy tak, abychom na rozhraní minimalizovali skok v anotaci.
 
-popis a statistika:
-- dataset orientovaný na orchestrální repertoár
-- z většiny romantismus, obsahuje ale i další skladby, včetně 20. století
-- výběr byl omezený na výňatky, které potenciálně obsahují hlavní melodii
-    - což bylo ověřeno (a anotace získána) pomocí nahrávek zpívání od anotátorů
-    - celkem 64 nahrávek, z původních 86. 22 jich bylo zahozeno na základě neshody nahrávek od účastníků
+Dataset obsahuje pouze hrubé anotace tónů melodie, nikoli přesnou základní frekvenci nástroje, který v danou chvíli melodii hraje. Článek o tomto rozhodnutí příliš nediskutuje, vychází ale opět logicky z volby dat. U orchestrálních dat je tento abstraktnější pojem melodie mnohem méně sporný. Pokud hraje melodii sekce nástrojů v unisonu, přesná základní frekvence není dobře definovaná, jelikož se základní frekvence znějících hlasů vzájemně překrývají.
 
-    - pouze v jedné nahrávce hraje melodii jediný nástroj
-    - In the rest of the dataset, the melody is played by several instruments from an instrument section, or a combination of sections, or even alternating sections within the same excerpt.
-        - díky analýzy pomocí informed source separation autoři potvrdili, že melodie nemusí být energeticky nejsilnější zdroj.
+------------
 
-    - After selecting the excerpts, we manually transcribed the notes sung by the participants, adjusting onsets and offsets to the audio.
-    - Since vocal pitch range is different to the range of the instruments playing the main melody, notes were transposed to match the audio.
-    - For excerpts in which melody notes are simultaneously played by several instruments in different octaves, we resolved the ambiguity by maximising the melodic contour smoothness (minimising jumps between notes)
-    - The length of the excerpts ranges from 10 to 32 seconds. 93.69% of the frames of the dataset are labelled as voiced while 6.31% are unvoiced (in which case the pitch is set to be 0).
-
+* Melodic intervals generally lie in a relatively small range, according to the voice leading principle of pitch proximity (Huron 2001). The most common sequence of two notes is a perfect unison, followed by a major second, and then minor second either descending or ascending. Previous works obtained similar conclusions, such as Dressler (2012b) with a dataset of 6000 MIDI files from varied genres, or Friberg and Ahlb¨ack (2009) in a dataset of polyphonic ring tones. The
 
 ## Wjazzd \cite{Pfleiderer}
 - monofonní sóla, transkripce obsahuje pouze hlavní nástroj, nikoli doprovod
