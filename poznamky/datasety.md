@@ -95,12 +95,17 @@ Dataset obsahuje pouze hrubé anotace tónů melodie, nikoli přesnou základní
 * Melodic intervals generally lie in a relatively small range, according to the voice leading principle of pitch proximity (Huron 2001). The most common sequence of two notes is a perfect unison, followed by a major second, and then minor second either descending or ascending. Previous works obtained similar conclusions, such as Dressler (2012b) with a dataset of 6000 MIDI files from varied genres, or Friberg and Ahlb¨ack (2009) in a dataset of polyphonic ring tones. The
 
 ## Wjazzd \cite{Pfleiderer}
+
+Weimar Jazz Database obsahuje přes 450 transkripcí jazzových sól ze všech období vývoje jazzu. Data původně zamýšlená pro muzikologické studie využívající statistické metody ale lze využít i pro potřeby extrakce melodie, jelikož uvažované nahrávky spadají zřejmě pod nejrestriktivnější definici melodie (definici používanou v soutěži MIREX) - melodii nese jistě právě jeden, sólový nástroj, a po celou dobu výňatku je jistě nejvýraznější. Výběr sólových nástrojů se omezuje pouze na jednohlasé, jelikož ruční anotace vícehlasých je příliš obtížná. Hlavním problémem při využívání je restriktivní licence, která platí na nahrávky, tudíž zdrojové audio, na základě kterého anotace vznikaly, není veřejně přístupné.
+Jelikož pro data neexistují jednotlivé stopy, ruční anotace probíhala přímo z finální nahrávky, což je obtížný úkol - 
+
+
 - monofonní sóla, transkripce obsahuje pouze hlavní nástroj, nikoli doprovod
     - "polyfonní by bylo obtížné anotovat"
     - tudíž se zde nemusí příliš řešit problém, jaký hlas je hlavní, dobře tu funguje původní MIREXová definice melodie
 - manuální transkripce přímo z audia pomocí Sonic Visualizer
 
-The twelve staff members involved in the transcription and annotation pro- cess were students of either musicology, music education or the jazz program at the Music University ‘Franz Liszt’ Weimar. They had various musical backgrounds but were in general familiar with jazz, mostly by both listening to and playing jazz. Despite a high level of expertise, the quality of the tran- scriptions inevitably varied according to the respective solos, transcribers and their form on the day
+The twelve staff members involved in the transcription and annotation process were students of either musicology, music education or the jazz program at the Music University ‘Franz Liszt’ Weimar. They had various musical backgrounds but were in general familiar with jazz, mostly by both listening to and playing jazz. Despite a high level of expertise, the quality of the tran- scriptions inevitably varied according to the respective solos, transcribers and their form on the day
 
 Moreover, the transcribed pitches are highly accurate since they are cross-checked several times by several persons. Nevertheless, the transcriptions still involve a moment of fuzziness due to several subjective factors and algorithmic short-comings in regard to the metrical beat grid, pitch notation and the annotation of phrases and midlevel units. One has to keep these aspects in mind whenever one explores the data.
 
