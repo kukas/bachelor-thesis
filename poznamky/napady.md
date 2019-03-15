@@ -1,11 +1,17 @@
+TODO
+- ✓ zkusit přidat MatthewEntwistle_FairerHopes hluboký tón do všech nahrávek, vypadá to, že to mrví korelaci - promyslet
+- resampling anotací, aby šly použít pro trénování
+- přepínač iterations místo epochs..
 # Nápady
 ## Obecně
+- augmentace dat
 - použít musicnet a předtrénovat síť. Nejjednodušší by bylo vzít nejvyšší frekvenci jako melodii a třeba by to pomohlo
     - musicnet by šel možná zpřesnit na multif0 (teď je midi) pomocí vyhledávání nejbližších peaků
 - ✓ sloučit notes a probs do jednoho grafu, dát do něj i spektrogram
 - ✓ histogram intervalů o které se metoda spletla
 - ✓ histogram přesnosti anotace podle výšky tónu
 - L2 a BatchNorm? jak to spolu funguje?
+- ukládat spektrogramy jako JPEG. Zjistit, jak moc to ovlivní kvalitu zvuku při inverzní transformaci
 ## Architektury (od nejjednodušších)
 ### Raw samples
 - crepe spíš odhaduje jen jednu frekvenci v daném okně - zkusit méně penalizovat, když bude zkoušet víc frekvencí?
@@ -18,6 +24,8 @@
 - Banka filtrů, vstup vícekanálový raw signál
 - kouknout se na instantaneous frequency
 - kouknout se na pYIN, auto-correlation
+    - transformace - auto-correlation a pak, když najdu peaky, tak ještě kolem nich zpřesnit, protože posun o jeden sample může být příliš velký
+
 - konvoluce vs. fourierka https://en.wikipedia.org/wiki/Convolution_theorem
 https://librosa.github.io/librosa/generated/librosa.core.iirt.html
 
@@ -25,6 +33,8 @@ https://librosa.github.io/librosa/generated/librosa.core.iirt.html
 ### Spectrogram
 - Bittnerová
 - Source separation multitask
+    - pomocí informed-sourceseparation lze udělat trénovací data například i z WJazzD
+    - Wave-U-Net
 
 ### Temporal dependencies
 - LSTM
