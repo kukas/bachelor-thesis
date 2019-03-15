@@ -161,30 +161,25 @@ the transcribed part of the original audio recording is separated into a backing
     - syntéza
     - jen drobně zmínit: crowdsourcing - https://s18798.pcdn.co/ismir2016/wp-content/uploads/sites/2294/2016/07/072_Paper.pdf
 - srovnání dostupných datasetů:
-    - MedleyDB
-        - obsahuje pouze melodická data, tedy nemá multif0
-    - MDB-synth
-        - kvantitativně posouzené v článku
-        - kvalitativně u některých nástrojů zní dataset divně - vadí to hlavně u melodických dat
     - tabulka
 
-|                 | MedleyDB | Orchset | MIREX    | MusicNet | URMP | MDB-synth | WJAZZD? | DSD100 |
-|-----------------|----------|---------|----------|----------|------|-----------|---------|--------|
-| mix audio       | Y        | Y       | Y        | Y        | Y    | Y         | Y       | Y      |
-| stem audio      | Y **     | N       | N        | N        | Y    | Y         | N       | Y      |
-| Multi f0        | *        | N       | N        | N        | Y    | Y         | N       | N      |
-| MIDI            | *        | N       | N        | Y        | Y    | Y         | N       | N      |
-| Stem MIDI       | Y        | N       | N        | Y        | Y    | Y         | N       | N      |
-| Stem priority   | Y        | N       | N        | N        | N    | Y         | N       | N      |
-| Melody f0       | Y        | N       | N        | N        | N    | Y         | Y       | N      |
-| Melody MIDI     | Y        | Y       | Y        | N        | N    | Y         | Y       | N      |
-| Hours of audio  | 7.3      | 23min   | N        | 34       | 1.3  | 4.65      | ? >10 ? | 7      |
-
-**přidat další řádek:**
-    - poměr voiced/unvoiced framů
+|                 | MedleyDB | Orchset | ADC2004  | MIREX05  | MDB-synth | WJAZZD? | MusicNet | URMP | DSD100 |
+|-----------------|----------|---------|----------|----------|-----------|---------|----------|------|--------|
+| mix audio       | Y        | Y       | Y        | Y        | Y         | Y       | Y        | Y    | Y      |
+| stem audio      | Y **     | N       | N        | N        | Y         | N       | N        | Y    | Y      |
+| Multi f0        | *        | N       | N        | N        | Y         | N       | N        | Y    | N      |
+| MIDI            | *        | N       | N        | N        | Y         | N       | Y        | Y    | N      |
+| Stem MIDI       | Y        | N       | N        | N        | Y         | N       | Y        | Y    | N      |
+| Stem priority   | Y        | N       | N        | N        | Y         | N       | N        | N    | N      |
+| Melody f0       | Y        | N       | N        | N        | Y         | Y       | N        | N    | N      |
+| Melody MIDI     | Y        | Y       | Y        | Y        | Y         | Y       | N        | N    | N      |
+| Hours of audio  | 7.3***   | 23.4m   | 6.1m     | 6.5m     | 3.19      | 8.85    | 34       | 1.3  | 7      |
+| Voiced frames   | 60.9%    | 93.69%  | 85.7%    | 63.1%    | 50.4%     | 62.8%   |          |      |        |
+| Number of tracks| 122***   | 64      | 20       | 13       | 65        | 299     |          |      |        |
 
 * pouze monofonické nástroje, pouze melodie (tj. doprovod není anotován)
 ** část stemů s větším či menším bleedem (toto je anotované)
+*** 5.59h s anotací, 108 tracků
 
 pěkný podobný seznam datasetů: https://arxiv.org/pdf/1612.08727.pdf
 
