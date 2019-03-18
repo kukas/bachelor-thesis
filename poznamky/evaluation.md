@@ -36,24 +36,105 @@ Omezení plynoucí z potřeby zkrátit výňatky na minimum,
 
 ## Metriky
 
+Celkovou kvalitu metody pro extrakci melodie určuje její schopnost určit výšku tónu hrající melodie (_odhad výšky melodie_) a také rozpoznat části skladby, které melodii neobsahují (_detekce melodie_). Jelikož jsou tyto podúlohy na sobě nezávislé, standardní sada metrik zahrnuje jak celkové vyhodnocení přesnosti, tak dílčí vyhodnocení pro _odhad výšky_ a _detekci melodie_. 
 
-po algoritmu chceme:
-- správnou výšku tónů melodie (pitch estimation)
-- jestli melodie zní nebo ne (voicing detection)
+-------
 
-- (mirex formát) - 10 ms hop, seznam časů a frekvencí, 0 = žádná melodie
+- můžu zmínit to, že je toto rozdělení důležité pro Orchset, který je z většiny voiced, a tedy overall accuracy může být zavádějící u algoritmů s přísným voicing detection.
 
-- per-frame comparison (MIREX 2005)
-    - Voicing Recall Rate: The proportion of frames labeled as melody frames in the ground truth that are estimated as melody frames by the algorithm.
-    - Voicing False Alarm Rate: The proportion of frames labeled as non-melody in the ground truth that are mis- takenly estimated as melody frames by the algorithm.
-    - Raw pitch accuracy: The proportion of melody frames in the ground truth for which fτ is considered correct
-    - Raw Chroma Accuracy: As raw pitch accuracy, except that both the estimated and ground truth f0 sequences are mapped onto a single octave.
-    - Overall Accuracy: this measure combines the perfor- mance of the pitch estimation and voicing detection tasks to give an overall performance score for the system.
+### Formát výstupu
 
-    - upozornit, že voicing metriky a pitch metriky jsou na sobě nezávislé (algoritmy mohou udávat pitch v záporných hodnotách). 
-    - opravil jsem chroma accuracy v mir_eval
+Obvyklý formát výstupu algoritmů je CSV soubor se dvěma sloupci. První sloupec obsahuje pravidelné časové značky, druhý sloupec pak odhad základní frekvence melodie. Některé algoritmy uvádí i odhady výšky základní frekvence mimo detekovanou melodii (může jít například o doprovod, který zní i po hlavním melodickém hlasu). Aby tyto odhady byly odlišené od odhadů hlavní melodie, jsou uvedeny v záporných hodnotách. Díky tomu pak lze nezávisle vyhodnotit přesnost _odhadu výšky_ a _detekce melodie_. Odhad výšky se vyhodnocuje podle absolutní hodnoty frekvence ve všech časových oknech, ke kterým existuje anotace, detekce melodie pak na všech hodnotách vyšších než 0. 
+
+### Definice metrik
+
+Většina metrik je definována na základě porovnávání jednotlivých anotačních oken - tedy typicky srovnáním odhadovaných a pravdivých výšek melodie po konstantních časových skocích. Datasety používané pro vyhodnocování v soutěži MIREX používají časový skok délky 10 ms. V definicích budu vycházet ze značení v práci \cite{Salamon2014}. 
+
+    Označme vektor odhadovaných základních frekvencí $\mathbf{f}$ a referenční vektor $\mathbf{f^*}$, složka $f_\tau$ je buď rovna hodnotě $f_0$ melodie nebo $0$, pokud v daném čase melodie nezní. Obdobně zaveďme vektor indikátorů $\mathbf{v}$, jehož prvek na pozici $\tau$ je roven $v_\tau=1$, pokud je v daném časovém okamžiku detekována melodie a $v_\tau = 0$ v opačném případě. Podobným způsobem zavedeme i vektor referenčních indikátorů melodického hlasu $\mathbf{v^*}$ a také vektor indikátorů absence melodie $\bar{v}_\tau = 1 - v_\tau$. 
+
+#### "Výtěžnost detekce" = Voicing Recall rate
+
+Poměr počtu časových oken, které byly správně označené jakožto obsahující melodii, a počtu časových oken doopravdy obsahujících melodii podle reference.
+
+    $$\mathrm{VR}(\mathbf{v}, \mathbf{v^*}) = \frac{\sum_\tau{v_\tau v^*_\tau}}{\sum_\tau{v^*_\tau}}$$
+
+------
+
+The proportion of frames labeled as melody frames in the ground truth that are estimated as melody frames by the algorithm.
+
+#### "Nesprávné detekce" = Voicing False Alarm rate
+
+Poměr počtu časových oken, které byly nesprávně označené jako melodické, k počtu doopravdy nemelodických oken.
+
+    $$\mathrm{FA}(\mathbf{v}, \mathbf{v^*}) = \frac{\sum_\tau{v_\tau \bar{v}^*_\tau}}{\sum_\tau{\bar{v}^*_\tau}}$$
+
+-------
+
+The proportion of frames labeled as non-melody in the ground truth that are mis- takenly estimated as melody frames by the algorithm.
+
+#### "Přesnost odhadu tónu" = Raw Pitch Accuracy
+
+Poměr správně odhadnutých tónů k celkovému počtu melodických oken. Výška správně určeného tónu se může lišit až o jeden půltón.
+
+
+    $$\mathrm{RPA}(\mathbf{f}, \mathbf{f^*}) = \frac{\sum_\tau{v^*_\tau v_\tau \mathcal{T}[\mathcal{M}(f_\tau) - \mathcal{M}(f^*_\tau)}] }{\sum_\tau{v^*_\tau}}$$
+
+    kde $\mathcal{T}$ je prahová funkce
+
+    \begin{equation*}
+        \mathcal{T}[a] = \begin{cases}
+                1 & \mathrm{pro} \lvert |a| \le 0.5 \\
+                0 & \text{jinak}
+                
+            \end{cases}
+    \end{equation*}
+
+    a $\mathcal{M}$ je funkce zobrazující frekvenci $f$ na reálné číslo počtu půltónů od nějakého referenčního tónu $f_{\mathrm{ref}}$ (například od 440 Hz, tedy komorního A4).
+
+    $$\mathcal{M}(f) = 12 \log_2(\frac{f}{f_{\mathrm{ref}}})$$
+
+
+-------
+
+The proportion of melody frames in the ground truth for which f_τ is considered correct
+
+Raw Pitch Accuracy: The proportion of melody frames in the ground truth for which fτ is considered correct
+(i.e. within half a semitone of the ground truth f∗τ ).
+
+#### "Přesnost odhadu tónu nezávisle na oktávě" = Raw Chroma Accuracy
+
+Počítá se podobně jako _Přesnost odhadu tónu_ s tím rozdílem, že se před výpočtem odhad i reference 
+
+
+    $$\mathrm{RCA}(\mathbf{f}, \mathbf{f^*}) = \frac{\sum_\tau{v^*_\tau v_\tau \mathcal{T}[\langle \mathcal{M}(f_\tau) - \mathcal{M}(f^*_\tau)} \rangle_{12}] }{\sum_\tau{v^*_\tau}}$$
+
+Nezávislost na oktávě zajistíme pomocí zobrazení rozdílu referenčního a odhadovaného tónu na společnou oktávu.
+
+    $$\langle a \rangle_{12} = a - 12 \lfloor \frac{a}{12} + 0.5 \rfloor  $$
+
+-------
+
+As raw pitch accuracy, except that both the estimated and ground truth f0 sequences are mapped onto a single octave.
+
+
+#### "Celková přesnost" = Overall Accuracy
+
+Celková přesnost měří výkon algoritmu jak v odhadu melodie tak v detekci melodie. Počítá se jako podíl správně odhadnutých oken a celkového počtu oken.
+
+    $$\mathrm{OA}(\mathbf{f}, \mathbf{f^*}) = \frac{\sum_\tau{v^*_\tau v_\tau \mathcal{T}[\mathcal{M}(f_\tau) - \mathcal{M}(f^*_\tau)}] + \bar{v}^*_\tau \bar{v}_\tau }{L}$$
+
+---------
+
+this measure combines the perfor- mance of the pitch estimation and voicing detection tasks to give an overall performance score for the system.
+
+#### Poznámka
+
+Definice RPA, RCA a OA zde uvedené se drobně liší od výchozích v práci \cite{Salamon2014}, ty totiž obsahují chybu, která byla přítomna i v implementaci _mir\_eval_. Chyba se týká zejména RCA, kde může způsobit rozdíl oproti správnému výsledku až o 8 procentních bodů. Definice jsem proto upravil tak, aby byla jejich korektní implementace přímočařejší.
+TODO rozepsat
+
 
 - limitace jsou předvedeny v onsets+frames
+    - například je otázka, jestli jsou všechny framy stejně důležité - zejména u perkusivních melodických nástrojů nikoli
 
 - Bosch metrics \cite{Bosch2016}
     - Weighted Raw Chroma accuracy - počítá vzdálenost v oktávách
@@ -61,6 +142,7 @@ po algoritmu chceme:
     - Chroma continuity - 
 
 - moje
+    - chroma overall accuracy
     - harmonic accuracy
     - confusion matrix
     - estimation distance histogram
