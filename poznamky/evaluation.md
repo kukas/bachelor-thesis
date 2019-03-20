@@ -14,11 +14,11 @@ Výsledky soutěže jsou prezentovány na mezinárodní konferenci ISMIR,
 
 ## Trénovací, validační a testovací množina
 
-Z dostupných dat, které pro úlohu máme k dispozici, musíme vyhradit množiny pro trénování, validaci a testování, aby byly metody porovnatelné jak mezi sebou, tak se stávajícími state-of-the-art metodami. Pro trénování se jeví jako nejvhodnější dataset MedleyDB, jednak pro svou délku a jednak pro žánrovou rozmanitost, proto je použit pro většinu popsaných experimentů. Rozdělení na tři části vychází z práce \cite{Bittner2017} a \cite{DBasaranSEssid2018}, aby byly metriky přímo porovnatelné s výsledky v uvedených článcích. Další výhodou použití stejného _splitu_ je možnost reprodukce výsledků, za použití popisované architektury, a tím pádem minimalizování možnosti nějaké velké implementační chyby v kódu. Pokud by se totiž výsledky nepodařilo reprodukovat se stejnými daty i architekturou, musela by být chyba jinde - tedy s největší určitostí v vyvinutém frameworku.
+Z dostupných dat, které pro úlohu máme k dispozici, musíme vyhradit množiny pro trénování, validaci a testování, aby byly metody porovnatelné jak mezi sebou, tak se stávajícími state-of-the-art metodami. Pro trénování se jeví jako nejvhodnější dataset MedleyDB, jednak pro svou délku a jednak pro žánrovou rozmanitost, proto je použit pro většinu popsaných experimentů. Rozdělení na tři části vychází z práce \cite{Bittner2017} a \cite{DBasaranSEssid2018}, aby byly metriky přímo porovnatelné s výsledky v uvedených článcích. Další výhodou použití stejného _splitu_ je možnost replikace výsledků, za použití popisované architektury, a tím pádem minimalizování možnosti nějaké velké implementační chyby v kódu. Pokud by se totiž výsledky nepodařilo replikovat se stejnými daty i architekturou, musela by být chyba jinde - tedy s největší určitostí v vyvinutém frameworku.
 
-Dalším zdrojem dat je dataset _MDB-melody-synth_, který je přesyntetizován z vícestopých nahrávek _MedleyDB_, proto se nabízí použít stejné rozdělení dat, jaké se používá pro _MedleyDB_, ze stejných důvodů uvedených v předchozím odstavci. Jelikož dataset neobsahuje veškerá data, ale pouze jejich podmnožinu, i v experimentech používaný _split_ obsahuje pouze podmnožinu z původního _splitu_ datasetu _MedleyDB_. 
+Dalším užitečným zdrojem dat je dataset _MDB-melody-synth_, který je přesyntetizován z vícestopých nahrávek _MedleyDB_, proto se nabízí použít stejné rozdělení dat, jaké se používá pro _MedleyDB_, ze stejných důvodů uvedených v předchozím odstavci. Jelikož dataset neobsahuje veškerá data, ale pouze jejich podmnožinu, i v experimentech používaný _split_ obsahuje pouze podmnožinu z původního _splitu_ datasetu _MedleyDB_. 
 
-Posledním velkým datasetem, používaným pro trénování, je _Weimar Jazz Database_. Zde žádný doporučený postup ani výběr rozdělení dataestu v relevatní literatuře neexistuje, proto jsem dataset rozdělil podle metody \cite{Bittner2017} na tři části (v celkové délce nahrávek na části velikosti 63%, 14% a 23%). Skladby jsou rozděleny do částí podle interpretů tak, aby se každý interpret vyskytoval právě v jedné části datasetu. Toto omezení na podmnožiny \cite{Bittner2017} nediskutuje, lze však doložit (práce \cite{Sturm2013}), že pro úlohu _rozpoznání žánru_ metody založené na strojovém učení vykazují po trénování a validaci na datech bez tohoto filtru výrazně lepší výsledky než stejné metody spuštěné na roztříděných datech, takové zlepšení výkonu je ale jistě umělým důsledkem špatné volby dat. 
+Posledním velkým datasetem, používaným pro trénování, je _Weimar Jazz Database_. Zde žádný doporučený postup ani výběr rozdělení dataestu v relevatní literatuře neexistuje, proto jsem dataset rozdělil podle metody \cite{Bittner2017} na tři části (v celkové délce nahrávek na části v poměrech 63%, 14% a 23%). Skladby jsou rozděleny do částí podle interpretů tak, aby se každý interpret vyskytoval právě v jedné části datasetu. Toto omezení na podmnožiny \cite{Bittner2017} nediskutuje, lze však doložit (práce \cite{Sturm2013}), že pro úlohu _rozpoznání žánru_ metody založené na strojovém učení vykazují po trénování a validaci na datech bez tohoto filtru výrazně lepší výsledky než stejné metody spuštěné na roztříděných datech, takové zlepšení výkonu je ale jistě umělým důsledkem špatné volby trénovací množiny. 
 
 Ostatní datasety (ADC04, MIREX05, ORCHSET) jsou v práci použity pouze jako testovací data, díky tomu lze korektně výsledky přímo srovnávat s žebříčky úlohy Melody Extraction v soutěži MIREX.
 
@@ -41,6 +41,7 @@ Celkovou kvalitu metody pro extrakci melodie určuje její schopnost určit vý�
 -------
 
 - můžu zmínit to, že je toto rozdělení důležité pro Orchset, který je z většiny voiced, a tedy overall accuracy může být zavádějící u algoritmů s přísným voicing detection.
+- celkové skóre na datasetu je průměr všech písní
 
 ### Formát výstupu
 
@@ -127,10 +128,16 @@ Celková přesnost měří výkon algoritmu jak v odhadu melodie tak v detekci m
 
 this measure combines the perfor- mance of the pitch estimation and voicing detection tasks to give an overall performance score for the system.
 
-#### Poznámka
+#### Poznámka k definicím
 
-Definice RPA, RCA a OA zde uvedené se drobně liší od výchozích v práci \cite{Salamon2014}, ty totiž obsahují chybu, která byla přítomna i v implementaci _mir\_eval_. Chyba se týká zejména RCA, kde může způsobit rozdíl oproti správnému výsledku až o 8 procentních bodů. Definice jsem proto upravil tak, aby byla jejich korektní implementace přímočařejší.
-TODO rozepsat
+Definice RPA, RCA a OA zde uvedené se mírně liší od výchozích v práci \cite{Salamon2014}, jejich přímá implementace podle vzorce totiž vede kvůli nedostatečně dobře zadefinovanému vektoru frekvencí $\mathbf{f}$ k chybě, která byla přítomna i v nejpoužívanější, veřejné implementaci MIR metrik _mir\_eval_. Tato chyba se týká zejména metriky RCA, která v původní definici chybně zahrnovala jako správné tóny ty, které algoritmus odhadl jako nulové (tedy neznějící) a zároveň jejich pravdivá hodnota byla po zobrazení na jednu společnou oktávu blízká nule (tedy původní tón byl blízký nějakému násobku referenční frekvence). Kvůli zobrazení na společnou oktávu se stanou "neznělé nulové odhady" a tóny blízké referenčním frekvencím nerozlišitelné a byly nesprávně považované za korektní.
+
+V praxi chyba této metriky na datasetu MedleyDB mohla dosahovat až sedmi procentních bodů, na repozitáři hostovaném na serveru Github jsme již spolu s autory chybu odstranili [1]. Opravný patch bude zahrnut do další verze balíku.
+
+[1] odkaz na Github issue: https://github.com/craffel/mir_eval/issues/311
+
+### Limitace základních metrik
+
 
 
 - limitace jsou předvedeny v onsets+frames
