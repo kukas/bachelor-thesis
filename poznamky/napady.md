@@ -1,10 +1,17 @@
 TODO
 - ✓ zkusit přidat MatthewEntwistle_FairerHopes hluboký tón do všech nahrávek, vypadá to, že to mrví korelaci - promyslet
+    - nakonec nemrvilo, CREPE prostě tu harfu neslyšel ani bez doprovodu
 - resampling anotací, aby šly použít pro trénování
 - přepínač iterations místo epochs..
+
 # Nápady
 ## Obecně
 - augmentace dat
+    - šum
+    - pitch
+    - kombit STEMy medleydb, mdb
+    - pomocí source separation ztišit hlavní melodii
+
 - použít musicnet a předtrénovat síť. Nejjednodušší by bylo vzít nejvyšší frekvenci jako melodii a třeba by to pomohlo
     - musicnet by šel možná zpřesnit na multif0 (teď je midi) pomocí vyhledávání nejbližších peaků
 - ✓ sloučit notes a probs do jednoho grafu, dát do něj i spektrogram
@@ -12,14 +19,23 @@ TODO
 - ✓ histogram přesnosti anotace podle výšky tónu
 - L2 a BatchNorm? jak to spolu funguje?
 - ukládat spektrogramy jako JPEG. Zjistit, jak moc to ovlivní kvalitu zvuku při inverzní transformaci
+
+## Metriky
+- zjistit, proč umí loss stoupat a přitom OA zůstávat
+    - třeba jestli predikuje víc kandidátů, ale nevim, jak to úplně zachytit
+- přesnost podle nástrojů
+- metrika kontinuálnosti f0 (třeba součet skoků / součet skoků v datech)
+- pro orchset lze vytvořit víc metrik - podle toho, kdo hraje melodii a jestli se nástroje hrající melodii střídají. Na základě přiloženého CSV
+
+
 ## Architektury (od nejjednodušších)
 ### Raw samples
-- crepe spíš odhaduje jen jednu frekvenci v daném okně - zkusit méně penalizovat, když bude zkoušet víc frekvencí?
+- ✓ crepe spíš odhaduje jen jednu frekvenci v daném okně - zkusit méně penalizovat, když bude zkoušet víc frekvencí?
 - přidat resnetové propojení do crepe
-- větší stride na okrajích celého kontextu - síť nepotřebuje tak přesnou informaci o kontextu daleko od prostředka
+- ✓ větší stride na okrajích celého kontextu - síť nepotřebuje tak přesnou informaci o kontextu daleko od prostředka
     - případně nějak attention?
 - přednastavení kernelu první vrstvy na sinusovky/filtry
-- WaveNet   
+- ✓ WaveNet   
     - nejdřív zkusit jako monopitch tracker
 - Banka filtrů, vstup vícekanálový raw signál
 - kouknout se na instantaneous frequency
@@ -29,12 +45,20 @@ TODO
 - konvoluce vs. fourierka https://en.wikipedia.org/wiki/Convolution_theorem
 https://librosa.github.io/librosa/generated/librosa.core.iirt.html
 
+- jak udělat z conv1d fourierku?
+
 - extrémně široký okna (onsets and frames měli 20 sekund)
+
 ### Spectrogram
 - Bittnerová
+- cqt co jde transformovat zpět: https://mtg.github.io/essentia-labs/news/2019/02/07/invertible-constant-q/
 - Source separation multitask
     - pomocí informed-sourceseparation lze udělat trénovací data například i z WJazzD
     - Wave-U-Net
+- **multiresolution stft** + dilated první vrstva o oktávy
+    - menší rozlišení se musí naškálovat
+- multihop stft - více kanálů, každý s jiným hopsize? To je asi blbost, ale způsob, jak dát levně síti kontext
+- **gaussovské rozmazání v čase, pro snížení počtu jednooknových predikcí**
 
 ### Temporal dependencies
 - LSTM

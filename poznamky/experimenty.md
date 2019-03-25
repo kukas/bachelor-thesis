@@ -109,3 +109,12 @@ experimenty:
 0227_085314-crepe-dmdb,orchset-bs32-apw1-fw93-cw466-s16000-inTrue-lr0.0002-cm8-cg0.0-llw0.0-mc2-bps5-as0.25
 0227_094505-crepe-dmdb,orchset-bs32-apw1-fw93-cw466-s16000-inTrue-lr0.0002-cm8-cg0.0-llw0.0-mc3-bps5-as0.25
 0227_103748-crepe-dmdb,orchset-bs32-apw1-fw93-cw466-s16000-inTrue-lr0.0002-cm8-cg0.0-llw0.0-mc4-bps5-as0.25
+
+
+## Bittner
+
+- příklad overlapping window - jak to dělá mezery v pravděpodobnostech
+
+http://jirkabalhar.cz:6089/data/plugin/images/individualImage?ts=1552930689.3933728&run=0318_161357-bittner_batchnorm-dmdb-bs16-s22050-hs10-fw256-cw0-inTrue-apw50-mn24-bps5-as0.25-lr0.0005-cg0.0-llw0.0-mw1.0-scqt&tag=valid_small_mdb%2Fnotes&sample=0&index=9
+
+http://jirkabalhar.cz:6089/data/plugin/images/individualImage?ts=1553075432.3351898&run=0320_062237-cqt_resid_dropout-dmdb-bs16-s22050-hs10-fw256-cw2560-inTrue-apw20-mn24-bps5-as0.25-lr0.001-cg0.0-llw0.0-mw1.0-scqt&tag=valid_small_mdb%2Fnotes&sample=0&index=5
