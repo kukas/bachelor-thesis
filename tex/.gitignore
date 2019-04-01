@@ -1,0 +1,9 @@
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+*.lof
+*.lot
+*.toc
+*.xmpi
