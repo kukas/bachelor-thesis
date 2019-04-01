@@ -7,3 +7,5 @@
 *.lot
 *.toc
 *.xmpi
+*/output/*.bib
+*/output/*.bst
