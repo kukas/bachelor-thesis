@@ -25,7 +25,7 @@ moje prostředí:
 - model
     - soubor pomocných funkcí pro sestavování experimentů
         - normalizace vstupu
-        - reprezentace referenční anotace
+        - reprezentace cílové anotace
             - one-hot vektor
             - gaussovské rozmazání one-hot vektoru
         - loss - buď automaticky nebo pomocí přepínačů přičte
@@ -48,7 +48,7 @@ moje prostředí:
 - vizualizace
     - vizualizace kvalitativních i kvantitativních výsledků
     - pro použití do juypter notebooků i pro vložení do tensorboardu
-    - pianoroll s vizualizací referenční anotace a odhadů
+    - pianoroll s vizualizací cílové a výstupní anotace
         - barevně odlišené chyby, správné odhady, chyby o oktávu, voicing chyby
         - spolu s tím i zobrazení výstupních pravděpodobností
     - confusion matrix
@@ -56,59 +56,126 @@ moje prostředí:
 
 ## Provedené experimenty
 
-Práce obsahuje souhrnné výsledky experimentů zejména nad datasetem MedleyDB, aby modely byly dobře porovnatelné se state-of-the-art výsledky a výhoda prezentovaných metod netkvěla pouze v použití více dat. U vybraných experimentů došlo k přetrénování na větší trénovací množině, aby bylo možné posoudit vliv množství dat na výsledný výkon.
+Práce obsahuje souhrnné výsledky experimentů zejména nad datasetem MedleyDB, aby modely byly dobře porovnatelné se state-of-the-art výsledky a výhoda prezentovaných metod netkvěla pouze v použití více dat. U vybraných experimentů došlo k přetrénování na větší trénovací množině, aby bylo možné posoudit vliv množství dat na výsledný výkon. 
+
+V první části se zabývám zejména odhadováním *výšky tónů*. U úspěšných architektur pak implementuji i *detekci melodie*.
+
+--------
+
+- Porovnávám se Salamonem, Bittnerovou a Basaranem
 
 ### CREPE
 
-První sada experimentů se zakládá na architektuře popsané v článku \cite{Kim2018} použité pro *monopitch tracking*. Přestože se nejedná o úlohu extrakce melodie, cílem monopitch trackingu je určit konturu základní frekvence melodického nástroje v monofonní nahrávce, která se skládá ze součtu čistého signálu a šumu v pozadí. Pokud rozšíříme pojem šumu v pozadí tak, aby zahrnoval i melodický doprovod, pak dostáváme formální definici signálu zpracovávaného algoritmy pro přepis melodie \cite{Salamon2014}.
+První sada experimentů se zakládá na architektuře popsané v článku od \cite{Kim2018} použité pro *monopitch tracking*. Přestože se nejedná o úlohu extrakce melodie, cílem monopitch trackingu je určit konturu základní frekvence melodického nástroje v monofonní nahrávce, která se skládá ze součtu čistého signálu a šumu v pozadí. Pokud rozšíříme pojem šumu v pozadí tak, aby zahrnoval i melodický doprovod, pak dostáváme formální definici signálu zpracovávaného algoritmy pro přepis melodie \cite{Salamon2014}.
 
 Jinými slovy - *monopitch tracking* je speciálním případem extrakce melodie a tudíž přinejmenším stojí za zkoušku pokusit se tuto architekturu pro extrakci využít. Mimo to monofonní stopy často obsahují přeslech ostatních nástrojů, pokud nahrávka vznikala při společném hraní, tudíž by model trénovaný na výsledných mixech mohl být robustní vůči tomuto druhu rušení. 
 
-Architektura CREPE se sestává ze šesti konvolučních a pooling vrstev, pro regularizaci používá batch normalization a dropout po každé konvoluční vrstvě, jako aktivační funkce se používá ReLU. Po konvolucích následuje plně propojená vrstva se sigmoid aktivací. Vstupem modelu je okno o velikosti 1024 samplů, audio je převzorkovano na 16 kHz. Před první konvolucí je vstup normalizován tak, aby každé jednotlivé okno se vzorky mělo střední hodnotu 0 a směrodatnou odchylku 1.
+Architektura CREPE se sestává ze šesti konvolučních a pooling vrstev, pro regularizaci používá batch normalization a dropout po každé konvoluční vrstvě, jako aktivační funkce používá ReLU. Po konvolucích následuje výstupní plně propojená vrstva se sigmoid aktivací. Vstupem modelu je okno o velikosti 1024 samplů, audio je převzorkováno na 16 kHz. Před první konvolucí je vstup normalizován tak, aby každé jednotlivé okno se vzorky mělo střední hodnotu 0 a směrodatnou odchylku 1.
 
-Výsledný vektor délky 640 aproximuje pravděpodobnostní rozdělení výšky základní frekvence uprostřed vstupního okna, přičemž tento vektor pokrývá rozsah od noty $C_{-1}$ po $G_{9}$, mezi dvěma sousedními predikovanými tóny je vzdálenost 20 centů. Rozsah tedy bezpečně pokrývá obvyklé hudební nástroje a na jednu notu připadá 5 složek (tónů) výsledného vektoru.
+Výsledný vektor o 640 složkách aproximuje pravděpodobnostní rozdělení výšky základní frekvence uprostřed vstupního okna, přičemž tento vektor pokrývá rozsah od noty $C_{-1}$ po $G_{9}$, mezi dvěma sousedními predikovanými tóny je vzdálenost 20 centů. Výšky tónů v centech označíme $\cent_1, \cent_2, \dots, \cent_{640}$. Rozsah tedy bezpečně pokrývá obvyklé hudební nástroje a na jednu notu připadá 5 složek (tónů) výsledného vektoru.
 
-Referenční pravděpodobnostní vektor $\mathbf{y}$ 
+    $$\cent(f) = 1200 \log_2{\frac{f}{f_{\mathrm{ref}}}}$$
 
-Optimalizovaná loss funkce modelu $\mathcal{L}(\mathbf{y}, \mathbf{\hat{y}})$ se počítá jako binární vzájemná korelace mezi vektorem referenčních pravděpodobností $y$ a výstupním vektorem $\hat{y}$.
+Pro trénování modelu potřebujeme také cílové diskrétní pravděpodobnostní rozdělení základní frekvence tónu. Jako cílovou pravděpodobnostní funkci použijeme normální rozdělení se střední hodnotou v bodě cílové základní frekvence $\cent(f_{\mathrm{ref}})$ a se směrodatnou odchylkou 25 centů. Toto rozdělení dikretizujeme, aby měl cílový vektor stejné dimenze jako odhadovaný.
 
-    $$\mathcal{L}(\mathbf{y}, \mathbf{\hat{y}}) = \sum_{i = 0}^{640}{(-y_i\log\hat{y}_i - (1-y_i)\log(1-\hat{y_i}))}$$
+    $$y_i = \frac{1}{\sqrt{2 \pi \sigma^2}}\exp{(-\frac{(\cent_i - \cent_{\mathrm{ref}})^2}{2 \sigma^2})}$$
 
+Optimalizovaná loss funkce modelu $\mathcal{L}(\mathbf{y}, \mathbf{\hat{y}})$ se počítá jako binární vzájemná korelace mezi vektorem cílových pravděpodobností $y$ a výstupním vektorem $\hat{y}$.
+
+    $$\mathcal{L}(\mathbf{y}, \mathbf{\hat{y}}) = \sum_{i = 1}^{640}{(-y_i\log\hat{y}_i - (1-y_i)\log(1-\hat{y_i}))}$$
+
+TODO: Přidat obrázek modelu (draw.io)
+
+-------
 
 rozepsat:
-- Důvodem pro toto vyšší frekvenční rozlišení je, že nástroje a zejména lidský hlas se často při hraní odchylují od přesných frekvencí not a vyšší rozlišení tyto odchylky může lépe zachytit. 
 - obhajoba raw signálu
 
+diskuze:
+- převzorkování na 16kHz
+- normalizace vstupu
+- formulace jako klasifikační úloha, nikoli regresní
+- je lepší odhadovat opravdové pravděpodobnostní rozdělení a nebo jejich škálované? (přijde mi, že kvůli sigmoid aktivaci bude jednodušší 1.0 = Truth, protože ty vstupní logity do sigmoid aktivace můžou být crazyshit velký)
 
 #### Replikace CREPE
 
-Pro ověření správnosti vlastní implementace architektury *monopitch trackeru CREPE* jsem spustil svůj model na syntetických, monofonních datech používaných v článku (*mdb-stem-synth*). Na rozdíl od článku jsem model netrénoval na všech datech pomocí postupu *5 fold cross validation*, jiné zásadní rozdíly mezi implementacemi jsem však na základě článku a veřejně dostupného kódu neidentifikoval.
+Pro ověření správnosti implementace architektury *monopitch trackeru CREPE* spustíme model na syntetických, monofonních datech používaných v článku \cite{Salamon2017}. Na rozdíl od článku \cite{Kim2018} jsem model netrénoval na všech datech pomocí postupu *5 fold cross validation*, jiné zásadní rozdíly mezi implementacemi jsem však na základě článku a veřejně dostupného kódu neidentifikoval.
 
 Po jedné epoše trénování model dosáhl vyšší přesnosti, než je uváděná v literatuře, tento rozdíl přičítám zejména zmiňované odlišné evaluační strategii.
 
-Metrika | Průměrná přesnost
---- | ---
-Raw Pitch Accuracy             |0.986444
-Raw Chroma Accuracy            |0.988044
-Raw Pitch Accuracy 25 cent     |0.974920
-Raw Chroma Accuracy 25 cent    |0.973362
-Raw Pitch Accuracy 10 cent     |0.936620
-Raw Chroma Accuracy 10 cent    |0.935243
+Metrika | Práh | Průměrná hodnota | Hodnota \cite{Kim2018}
+--- | --- | --- | ---
+Raw Chroma Accuracy | 50 cent  | 0.988 | 0.970
+Raw Pitch Accuracy  | 50 cent  | 0.986 | 0.967
+Raw Pitch Accuracy  | 25 cent  | 0.975 | 0.953
+Raw Pitch Accuracy  | 10 cent  | 0.937 | 0.909
 
+Při replikaci experimentu jsem narazil na důležitost správného promíchání dat. Framework Tensorflow použitý pro trénování promíchává data vždy pomocí bufferu pevné velikosti pro dvojice vstupů a cílových výstupů. V praxi je však potřeba buď nastavit buffer na velikost větší než je celková velikost datasetu, a nebo implementovat vlastní míchání přes všechna dostupná data. Při nedostatečně promíchaných datech totiž trénovací dávky (batch) nejsou reprezentativní pro celý dataset, ale pouze pro jeho podmnožinu, což se negativně projevuje kolísající validační přesností modelu.
 
-# CREPE replication
-- dodal jsem tam L2 regularizaci - popsat proč a jak to pomohlo
-    - nakonec to vypadá, že to zas tak nepomáhá, problémy vyřešil správný shuffle
+#### CREPE pro Melody Extraction
 
-- data mdb-stem-synth, neudělal jsem 5 fold cross validation, použil jsem pevně daný split podle splitu z ISMIR2017, jelikož jsem měl stem data připravená pro melody experimenty
-- původně se mi nedařilo replikovat výsledky
-    - špatně zamíchaná data
-    - granularita vstupu a výstupu dělá hodně - model se pak plete o půltóny
-        - RPA <98% vs >99%
-- jakmile jsem opravil nedostatky, je naopak těžké se nedostat na 99%
-    - předpokládám, že 5 fold cross validation to stáhne dolů na jejich čísla
-    - šlo by udělat větší rozdíly pomocí přísnější evaluace (hranice správné anotace +-50 centů vs +-10 centů)
-        - o tom ale bakalářka není, takže uzavírám s tím, že pokud se nějaký model neumí dostat nad 98%, tak je s ním něco špatně
+Jako první experiment nad melodickými daty spustíme nezměněnou architekturu CREPE, v následujících experimentech se tuto baseline pokusíme překonat. Abychom urychlili trénování následujících experimentů, přesnost určíme pro sítě s různou kapacitou, pokud se výsledky při různých kapacitách příliš neliší, můžeme experimenty provádět s architekturou s nižší kapacitou. Kapacity upravíme pomocí multiplikátoru počtu filtrů u všech konvolučních vrstev, počty filtrů jsou uvedeny v tabulce.
+
+Vrstva    | 1.  | 2. | 3. | 4. | 5.  | 6. | Celkový počet parametrů
+--------- | ----|----|----|----|-----|----| ----------
+CREPE 4x  | 128 | 16 | 16 | 16 | 32  | 64 | 558240
+CREPE 8x  | 256 | 32 | 32 | 32 | 64  | 128| 1771200
+CREPE 16x | 512 | 64 | 64 | 64 | 128 | 256| 6163200
+
+Model     | RPA   | RCA
+--------  | ---   | ---
+CREPE 4x  | 0.634 | 0.753
+CREPE 8x  | 0.661 | 0.766
+CREPE 16x | 0.666 | 0.771
+Salamon   | 0.547 | 0.608
+Bittner   | 0.735 | 0.791
+Basaran   | 0.737 | 0.803
+
+Z výsledků na validačních datech po 200k iteracích (přibližně 6 epoch) je zřejmé, že překonání state-of-the-art metod založených na pravidlovém zpracování zvuku \citep{salamon2012musical} není obtížné. Zároveň také vidíme, že se výsledek modelů CREPE 8x a CREPE 16x liší řádově o desetiny procentních bodů a přitom model s větší kapacitou se trénuje o 35% delší dobu. Proto pro další experimenty zvolíme architektury s multiplikátorem 8x a případně přetrénujeme s vyšší kapacitou pouze nadějné konfigurace.
+
+#### Vliv rozlišení diskretizace výšky noty
+
+Otestujeme nastavení granularity výstupního vektoru. V článku \cite{Kim2018} se totiž důvod volby pěti frekvencí na notu nediskutuje. Intuitivně by však mělo vyšší rozlišení spíše pomáhat, důvodem je, že nástroje a zejména lidský hlas se často při hraní odchylují od přesných frekvencí hraných not a vyšší rozlišení tyto odchylky může lépe zachytit. 
+
+    \begin{tabular}{llrr}
+    \toprule
+    Kapacita & Diskretizace &  RPA &  RCA \\
+    \midrule
+     4x &        hrubá      & 0.606 & 0.708 \\
+     4x &        jemná      & 0.634 & 0.753 \\
+     8x &        hrubá      & 0.614 & 0.724 \\
+     8x &        jemná      & 0.661 & 0.766 \\
+    16x &        hrubá      & 0.612 & 0.711 \\
+    16x &        jemná      & 0.666 & 0.771 \\
+    \bottomrule
+    \end{tabular}
+
+TODO: Přidat graf
+
+Jak je vidět z tabulky a grafů, jemná granularita výstupu jednoznačně zlepšuje přesnost sítě. Abychom potvrdili hypotézu, že vyšší rozlišení pomáhá zmenšit počet chyb o půltón, můžeme vytvořit histogram vzdáleností cílového a odhadovaného tónu, v tomto histogramu by pak měl být vidět pokles v příslušných třídách.
+
+TODO: Přidat histogramy
+
+Podle histogramu se počet chyb o půltón mezi zkoumanými modely liší téměř o polovinu, zlepšení tohoto druhu chyb je tedy podstatné.
+
+#### Vliv směrodatné odchylky cílové pravděpodobnostní distribuce výšky noty
+
+Podle \cite{Bittner2017} pomáhá cílová distribuce s vyšším rozptylem snížit penalizaci sítě za téměř korektní odhady výšek tónů. Mimo to u dostupných dat často nejsou anotace naprosto perfektní, jisté rozostření hranice anotace tudíž pomáhá i v případě nepřesné anotace, síť pak není tolik penalizována za svou správnou odpověď. 
+
+V článku se však nediskutuje nastavení směrodatné odchylky na 25 centů. 
+
+    \begin{tabular}{rrr}
+    \toprule
+    Směrod. &  RPA  &  RCA  \\
+    \midrule
+      0.000 & 0.657 & 0.759 \\
+      0.125 & 0.672 & 0.775 \\
+      0.250 & 0.689 & 0.784 \\
+      0.500 & 0.669 & 0.773 \\
+      1.000 & 0.654 & 0.757 \\
+    \bottomrule
+    \end{tabular}
+
 
 
 # autocorrelation

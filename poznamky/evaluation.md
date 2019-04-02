@@ -51,11 +51,11 @@ Obvyklý formát výstupu algoritmů je CSV soubor se dvěma sloupci. První slo
 
 Většina metrik je definována na základě porovnávání jednotlivých anotačních oken - tedy typicky srovnáním odhadovaných a pravdivých výšek melodie po konstantních časových skocích. Datasety používané pro vyhodnocování v soutěži MIREX používají časový skok délky 10 ms. V definicích budu vycházet ze značení v práci \cite{Salamon2014}. 
 
-    Označme vektor odhadovaných základních frekvencí $\mathbf{f}$ a referenční vektor $\mathbf{f^*}$, složka $f_\tau$ je buď rovna hodnotě $f_0$ melodie nebo $0$, pokud v daném čase melodie nezní. Obdobně zaveďme vektor indikátorů $\mathbf{v}$, jehož prvek na pozici $\tau$ je roven $v_\tau=1$, pokud je v daném časovém okamžiku detekována melodie a $v_\tau = 0$ v opačném případě. Podobným způsobem zavedeme i vektor referenčních indikátorů melodického hlasu $\mathbf{v^*}$ a také vektor indikátorů absence melodie $\bar{v}_\tau = 1 - v_\tau$. 
+    Označme vektor odhadovaných základních frekvencí $\mathbf{f}$ a cílový vektor $\mathbf{f^*}$, složka $f_\tau$ je buď rovna hodnotě $f_0$ melodie nebo $0$, pokud v daném čase melodie nezní. Obdobně zaveďme vektor indikátorů $\mathbf{v}$, jehož prvek na pozici $\tau$ je roven $v_\tau=1$, pokud je v daném časovém okamžiku detekována melodie a $v_\tau = 0$ v opačném případě. Podobným způsobem zavedeme i vektor cílových indikátorů melodického hlasu $\mathbf{v^*}$ a také vektor indikátorů absence melodie $\bar{v}_\tau = 1 - v_\tau$. 
 
 #### "Úplnost detekce" = Voicing Recall rate
 
-Poměr počtu časových oken, které byly správně označené jakožto obsahující melodii, a počtu časových oken doopravdy obsahujících melodii podle reference.
+Poměr počtu časových oken, které byly správně označené jakožto obsahující melodii, a počtu časových oken doopravdy obsahujících melodii podle anotace.
 
     $$\mathrm{VR}(\mathbf{v}, \mathbf{v^*}) = \frac{\sum_\tau{v_\tau v^*_\tau}}{\sum_\tau{v^*_\tau}}$$
 
@@ -104,11 +104,11 @@ Raw Pitch Accuracy: The proportion of melody frames in the ground truth for whic
 
 #### "Přesnost odhadu tónu nezávisle na oktávě" = Raw Chroma Accuracy
 
-Počítá se podobně jako _Přesnost odhadu tónu_, odhadované i referenční tóny jsou však mapovány na společnou oktávu. Metrika tedy ignoruje chyby odhadu způsobené špatným určením oktávy tónu.
+Počítá se podobně jako _Přesnost odhadu tónu_, výstupní a cílové tóny jsou však mapovány na společnou oktávu. Metrika tedy ignoruje chyby odhadu způsobené špatným určením oktávy tónu.
 
     $$\mathrm{RCA}(\mathbf{f}, \mathbf{f^*}) = \frac{\sum_\tau{v^*_\tau v_\tau \mathcal{T}[\langle \mathcal{M}(f_\tau) - \mathcal{M}(f^*_\tau)} \rangle_{12}] }{\sum_\tau{v^*_\tau}}$$
 
-Nezávislost na oktávě zajistíme pomocí zobrazení rozdílu referenčního a odhadovaného tónu na společnou oktávu.
+Nezávislost na oktávě zajistíme pomocí zobrazení rozdílu cílového a výstupního tónu na společnou oktávu.
 
     $$\langle a \rangle_{12} = a - 12 \lfloor \frac{a}{12} + 0.5 \rfloor  $$
 
