@@ -96,6 +96,7 @@ diskuze:
 - normalizace vstupu
 - formulace jako klasifikační úloha, nikoli regresní
 - je lepší odhadovat opravdové pravděpodobnostní rozdělení a nebo jejich škálované? (přijde mi, že kvůli sigmoid aktivaci bude jednodušší 1.0 = Truth, protože ty vstupní logity do sigmoid aktivace můžou být crazyshit velký)
+- crepe model - např. nedává vůbec smysl velikost kernelu 64 v posledních vrstvách, zbytečně se tam přidávají nuly jako padding
 
 #### Replikace CREPE
 
@@ -112,7 +113,7 @@ Raw Pitch Accuracy  | 10 cent  | 0.937 | 0.909
 
 Při replikaci experimentu jsem narazil na důležitost správného promíchání dat. Framework Tensorflow použitý pro trénování promíchává data vždy pomocí bufferu pevné velikosti pro dvojice vstupů a cílových výstupů. V praxi je však potřeba buď nastavit buffer na velikost větší než je celková velikost datasetu, a nebo implementovat vlastní míchání přes všechna dostupná data. Při nedostatečně promíchaných datech totiž trénovací dávky (batch) nejsou reprezentativní pro celý dataset, ale pouze pro jeho podmnožinu, což se negativně projevuje kolísající validační přesností modelu.
 
-#### CREPE pro Melody Extraction
+#### CREPE pro extrakci melodie
 
 Jako první experiment nad melodickými daty spustíme nezměněnou architekturu CREPE, v následujících experimentech se tuto baseline pokusíme překonat. Abychom urychlili trénování následujících experimentů, přesnost určíme pro sítě s různou kapacitou, pokud se výsledky při různých kapacitách příliš neliší, můžeme experimenty provádět s architekturou s nižší kapacitou. Kapacity upravíme pomocí multiplikátoru počtu filtrů u všech konvolučních vrstev, počty filtrů jsou uvedeny v tabulce.
 
@@ -160,26 +161,90 @@ Podle histogramu se počet chyb o půltón mezi zkoumanými modely liší témě
 
 #### Vliv směrodatné odchylky cílové pravděpodobnostní distribuce výšky noty
 
-Podle \cite{Bittner2017} pomáhá cílová distribuce s vyšším rozptylem snížit penalizaci sítě za téměř korektní odhady výšek tónů. Mimo to u dostupných dat často nejsou anotace naprosto perfektní, jisté rozostření hranice anotace tudíž pomáhá i v případě nepřesné anotace, síť pak není tolik penalizována za svou správnou odpověď. 
+Podle \cite{Bittner2017} pomáhá cílová distribuce s vyšším rozptylem snížit penalizaci sítě za téměř korektní odhady výšek tónů. Mimo to u dostupných dat často nejsou anotace naprosto perfektní, jisté rozostření hranice anotace tudíž pomáhá i v případě nepřesné cílové anotace, síť pak není tolik penalizována za svou případnou správnou odpověď. 
 
-V článku se však nediskutuje nastavení směrodatné odchylky na 25 centů. 
+V článku se však nediskutuje nastavení směrodatné odchylky na 20 centů, \cite{Kim2018} používá odchylku 25 centů a není na první pohled zřejmé, jaká je optimální hodnota. Příliš vysoký rozptyl způsobí, že síť bude tolerovat více chyb o půltón, příliš nízký rozptyl naopak penalizuje i téměř správné odhady. Intuitivně se nejlepší nastavení pravděpodobně bude pohybovat kolem používaných 25 centů, jelikož to je hranice chybné klasifikace, na druhou stranu optimální hodnota jistě bude závislá na nastavení rozlišení výstupního vektoru, jelikož nižší rozlišení bude jistě vyžadovat vyšší hodnotu rozptylu (v extrémním případě rozptylu blížícího se k nule a cílové frekvence mimo kvantizační hladiny by vzniklý cílový vektor nemusel obsahovat žádné ostré maximum).
 
-    \begin{tabular}{rrr}
+    \begin{tabular}{lrr}
     \toprule
-    Směrod. &  RPA  &  RCA  \\
+    Rozptyl &  Raw Pitch Accuracy &  Raw Chroma Accuracy \\
     \midrule
-      0.000 & 0.657 & 0.759 \\
-      0.125 & 0.672 & 0.775 \\
-      0.250 & 0.689 & 0.784 \\
-      0.500 & 0.669 & 0.773 \\
-      1.000 & 0.654 & 0.757 \\
+    0.000   &               0.657 &                0.759 \\
+    0.088   &               0.672 &                0.775 \\
+    0.177   &               0.689 &                0.784 \\
+    0.354   &               0.669 &                0.773 \\
+    0.707   &               0.654 &                0.757 \\
+    \bottomrule
+    \end{tabular}
+
+
+
+------
+- cílová distribuce doopravdy není distribuce
+- ty zvláštní testované směrod. odchylky jsou kvůli mé chybné implementaci rozostřování
+- zde můžu přidat obrázek, jak vypadají anotace
+    mám to rozpracované na: http://jirkabalhar.cz:6088/notebooks/bakalarka/algoritmy/ismir2017-deepsalience/deepsalience/out/io_comparison.ipynb#
+
+#### Vliv násobného rozlišení první konvoluční vrstvy
+
+Podle \cite{Kim2018} se přesnost CREPE snižuje s výškou tónu. Autoři si tuto skutečnost vysvětlují neschopností modelu generalizovat na barvy a výšky tónů neobsažených v trénovací množině, generalizaci by ale mohla pomoci také úprava modelu. Protože k rozpoznání vyšších frekvencí stačí méně vzorků než pro rozpoznání nižších, mohli bychom se pokusit upravit první konvoluční vrstvu sítě, která tento úkol zastává, a rozdělit ji na množiny různě širokých konvolucí, jejichž kanály následně sloučíme zpět do jednotné vrstvy. To by mělo mít za následek, že rozpoznávání vysokých tónů budou zastávat užší konvoluce a jejich kernel bude obecnější než široké kernely s vysokou mírou redundance.
+
+První vrstvu s kernelem s 256 filtry (tj. počet filtrů první vrstvy s multiplikátorem 8x, viz první experiment) jsem rozdělil na vícero různě širokých kernelů s menším počtem filtrů, tak aby kapacita sítě zůstala přibližně stejná a sítě byly porovnatelné. 
+
+
+Počet/šířka kernelů | 512 | 256 | 128 | 64 | 32 | 16 | 8  | 4  | Celkový počet parametrů 
+--------------------|-----|-----|-----|----|----|----|----|----|-------------------------
+1                   | 256 |     |     |    |    |    |    |    | 2098880
+2                   | 128 | 128 |     |    |    |    |    |    | 2066112
+3                   | 80  | 80  | 80  |    |    |    |    |    | 2006688
+4                   | 64  | 64  | 64  | 64 |    |    |    |    | 2029248
+5                   | 48  | 48  | 48  | 48 | 48 |    |    |    | 1982624
+6                   | 40  | 40  | 40  | 40 | 40 | 40 |    |    | 1975328
+7                   | 32  | 32  | 32  | 32 | 32 | 32 | 32 |    | 1934720 vs 1996184
+8                   | 32  | 32  | 32  | 32 | 32 | 32 | 32 | 32 | 
+
+! tady asi přetrénovat, byla tam chyba !
+    TODO: OPRAVIT POČET FILTRŮ A VYHODNOTIT NOVĚ PŘETRÉNOVANÉ SÍTĚ
+
+Experiment jsem provedl dvakrát na sítích s rozdílně velikými vstupními okny, předkládané výsledky jsou průměrem výsledků na validačních datech těchto dvou pokusů.
+
+
+
+    \begin{tabular}{lrr}
+    \toprule
+    Počet kernelů & Raw Pitch Accuracy &  Raw Chroma Accuracy \\
+    \midrule
+    1                         &               0.670 &                0.770 \\
+    2                         &               0.669 &                0.773 \\
+    3                         &               0.672 &                0.776 \\
+    4                         &               0.668 &                0.772 \\
+    5                         &               0.675 &                0.777 \\
+    6                         &               0.683 &                0.781 \\
+    7                         &               0.681 &                0.776 \\
+    8                         &               0.672 &                0.769 \\
+    \bottomrule
+    \end{tabular}
+
+#### Vliv šířky vstupního okna
+
+Architektura CREPE byla navržena pro monopitch tracking, dá se předpokládat, že jelikož je v monofonních nahrávkách oproti polyfonním daleko méně (melodického) šumu, není pro určení výšky tónu potřeba větší kontext než použitých 1024 vzorků (při vzorkovací frekvenci 16kHz toto odpovídá 64 milisekundám audia). To ale nemusí platit pro složitější signály, kde by síť mohla z delšího kontextu těžit. 
+
+    \begin{tabular}{lrr}
+    \toprule
+    Šířka vstupního okna &  Raw Pitch Accuracy &  Raw Chroma Accuracy \\
+    \midrule
+    512                  &               0.634 &                0.748 \\
+    1024                 &               0.645 &                0.763 \\
+    2048                 &               0.648 &                0.760 \\
+    4096                 &               0.650 &                0.762 \\
+    8192                 &               0.675 &                0.775 \\
     \bottomrule
     \end{tabular}
 
 
 
 # autocorrelation
-- jako FFT - ale vytváří to jenom strašně chaotické predikce (zkusit to znovu a udělat obrázek)
+- jako FFT - ale vytváří to jenom strašně chaotické predikce (zkusit to znovu a udělat obrázek)stí stí 
 - zjistit, jestli to doopravdy je stejný jako FFT
 
 # Baseline perceptron
