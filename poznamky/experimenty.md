@@ -70,7 +70,7 @@ První sada experimentů se zakládá na architektuře popsané v článku od \c
 
 Jinými slovy - *monopitch tracking* je speciálním případem extrakce melodie a tudíž přinejmenším stojí za zkoušku pokusit se tuto architekturu pro extrakci využít. Mimo to monofonní stopy často obsahují přeslech ostatních nástrojů, pokud nahrávka vznikala při společném hraní, tudíž by model trénovaný na výsledných mixech mohl být robustní vůči tomuto druhu rušení. 
 
-Architektura CREPE se sestává ze šesti konvolučních a pooling vrstev, pro regularizaci používá batch normalization a dropout po každé konvoluční vrstvě, jako aktivační funkce používá ReLU. Po konvolucích následuje výstupní plně propojená vrstva se sigmoid aktivací. Vstupem modelu je okno o velikosti 1024 samplů, audio je převzorkováno na 16 kHz. Před první konvolucí je vstup normalizován tak, aby každé jednotlivé okno se vzorky mělo střední hodnotu 0 a směrodatnou odchylku 1.
+Architektura CREPE se sestává ze šesti konvolučních a pooling vrstev, pro regularizaci používá batch normalization a dropout po každé konvoluční vrstvě, jako aktivační funkce používá ReLU. Po konvolucích následuje výstupní plně propojená vrstva se sigmoid aktivací. Vstupem modelu je okno o velikosti 1024 samplů, audio je převzorkováno na 16 kHz. Před první konvolucí je vstup normalizován tak, aby každé jednotlivé okno se vzorky mělo střední hodnotu 0 a směrodatnou odchylku 1. Přesná podoba modelu je naznačena na obrázku.
 
 Výsledný vektor o 640 složkách aproximuje pravděpodobnostní rozdělení výšky základní frekvence uprostřed vstupního okna, přičemž tento vektor pokrývá rozsah od noty $C_{-1}$ po $G_{9}$, mezi dvěma sousedními predikovanými tóny je vzdálenost 20 centů. Výšky tónů v centech označíme $\cent_1, \cent_2, \dots, \cent_{640}$. Rozsah tedy bezpečně pokrývá obvyklé hudební nástroje a na jednu notu připadá 5 složek (tónů) výsledného vektoru.
 
@@ -80,9 +80,15 @@ Pro trénování modelu potřebujeme také cílové diskrétní pravděpodobnost
 
     $$y_i = \frac{1}{\sqrt{2 \pi \sigma^2}}\exp{(-\frac{(\cent_i - \cent_{\mathrm{ref}})^2}{2 \sigma^2})}$$
 
+Převod z výstupního vektoru na výšky not provedeme pomocí střední hodnoty výstupního vektoru. Jelikož by ale výšku tónu ovlivňoval i další melodický šum, který se na výstupním vektoru také objevuje, spočítáme střední hodnotu pouze z okolí maxima výstupu.
+
+    $$ \left. \hat{\cent} = \sum_{\scaleto{i, \lvert \cent_i - \cent_m \rvert < 50}{8pt}} {\hat{y}_i \cent_i} \middle/ \sum_{\scaleto{i, \lvert \cent_i - \cent_m \rvert < 50}{8pt}} \hat{y}_i \right., m = \mathrm{argmax}_i(\hat{y}_i)$$
+
 Optimalizovaná loss funkce modelu $\mathcal{L}(\mathbf{y}, \mathbf{\hat{y}})$ se počítá jako binární vzájemná korelace mezi vektorem cílových pravděpodobností $y$ a výstupním vektorem $\hat{y}$.
 
     $$\mathcal{L}(\mathbf{y}, \mathbf{\hat{y}}) = \sum_{i = 1}^{640}{(-y_i\log\hat{y}_i - (1-y_i)\log(1-\hat{y_i}))}$$
+
+Optimalizace probíhá pomocí algoritmu Adam \citep{Kingma2014} s learning rate 0.0002.
 
 TODO: Přidat obrázek modelu (draw.io)
 
@@ -159,15 +165,19 @@ TODO: Přidat histogramy
 
 Podle histogramu se počet chyb o půltón mezi zkoumanými modely liší téměř o polovinu, zlepšení tohoto druhu chyb je tedy podstatné.
 
-#### Vliv směrodatné odchylky cílové pravděpodobnostní distribuce výšky noty
+#### Vliv rozptylu cílové pravděpodobnostní distribuce výšky noty
 
 Podle \cite{Bittner2017} pomáhá cílová distribuce s vyšším rozptylem snížit penalizaci sítě za téměř korektní odhady výšek tónů. Mimo to u dostupných dat často nejsou anotace naprosto perfektní, jisté rozostření hranice anotace tudíž pomáhá i v případě nepřesné cílové anotace, síť pak není tolik penalizována za svou případnou správnou odpověď. 
 
 V článku se však nediskutuje nastavení směrodatné odchylky na 20 centů, \cite{Kim2018} používá odchylku 25 centů a není na první pohled zřejmé, jaká je optimální hodnota. Příliš vysoký rozptyl způsobí, že síť bude tolerovat více chyb o půltón, příliš nízký rozptyl naopak penalizuje i téměř správné odhady. Intuitivně se nejlepší nastavení pravděpodobně bude pohybovat kolem používaných 25 centů, jelikož to je hranice chybné klasifikace, na druhou stranu optimální hodnota jistě bude závislá na nastavení rozlišení výstupního vektoru, jelikož nižší rozlišení bude jistě vyžadovat vyšší hodnotu rozptylu (v extrémním případě rozptylu blížícího se k nule a cílové frekvence mimo kvantizační hladiny by vzniklý cílový vektor nemusel obsahovat žádné ostré maximum).
 
+Poznamenám také technický detail, který je důležitý při samotné implementaci. Přestože jsem cílový výstup sítě zadefinoval jako diskrétní pravděpodobnostní rozdělení, při trénování je tento vektor hodnot pronásoben koeficientem tak, aby $\max(\mathbf{y}) = 1.0$ a tedy součet prvků vektoru není roven jedné (a o pravděpodobnostní rozdělení se doopravdy nejedná). Důvodem je použití aktivační funkce *sigmoid* u výstupní vrstvy, která nezaručuje výstup korektního rozdělení. Díky tomu se na výstupu může objevit různé množství stejně pravděpodobných kandidátů na melodii.
+
+Testovaná síť má vstupní okno široké 4096 vzorků, používá multiplikátor kapacity 16x a vstup zpracovává 6 různě širokými konvolučními vrstvami (viz experiment *Vliv násobného rozlišení první konvoluční vrstvy*).
+
     \begin{tabular}{lrr}
     \toprule
-    Rozptyl &  Raw Pitch Accuracy &  Raw Chroma Accuracy \\
+    Směrod. &  Raw Pitch Accuracy &  Raw Chroma Accuracy \\
     \midrule
     0.000   &               0.657 &                0.759 \\
     0.088   &               0.672 &                0.775 \\
@@ -177,7 +187,7 @@ V článku se však nediskutuje nastavení směrodatné odchylky na 20 centů, \
     \bottomrule
     \end{tabular}
 
-
+Z experimentů vyplývá, že optimální směrodatná odchylka se pohybuje kolem hodnoty $0.177$, tedy níže než v porovnávaných pracích. 
 
 ------
 - cílová distribuce doopravdy není distribuce
@@ -185,9 +195,35 @@ V článku se však nediskutuje nastavení směrodatné odchylky na 20 centů, \
 - zde můžu přidat obrázek, jak vypadají anotace
     mám to rozpracované na: http://jirkabalhar.cz:6088/notebooks/bakalarka/algoritmy/ismir2017-deepsalience/deepsalience/out/io_comparison.ipynb#
 
+
+#### Vliv šířky vstupního okna
+
+Architektura CREPE byla navržena pro monopitch tracking, dá se předpokládat, že jelikož je v monofonních nahrávkách oproti polyfonním daleko méně (melodického) šumu, není pro určení výšky tónu potřeba větší kontext než použitých 1024 vzorků (při vzorkovací frekvenci 16kHz toto odpovídá 64 milisekundám audia). To ale nemusí platit pro složitější signály, kde by síť mohla z delšího kontextu těžit. Otestujeme tedy vliv většího vstupního okna na výslednou přesnost.
+
+    \begin{tabular}{lrr}
+    \toprule
+    Šířka vstupního okna &  Raw Pitch Accuracy &  Raw Chroma Accuracy \\
+    \midrule
+    512 (32 ms)          &               0.634 &                0.748 \\
+    1024 (64 ms)         &               0.645 &                0.763 \\
+    2048 (128 ms)        &               0.648 &                0.760 \\
+    4096 (256 ms)        &               0.650 &                0.762 \\
+    8192 (512 ms)        &               0.675 &                0.775 \\
+    \bottomrule
+    \end{tabular}
+
+
+
+------
+
+TODO: možná by to chtělo taky přetrénovat
+
+- širší okno se také hodí pro onsety a offsety
+
+
 #### Vliv násobného rozlišení první konvoluční vrstvy
 
-Podle \cite{Kim2018} se přesnost CREPE snižuje s výškou tónu. Autoři si tuto skutečnost vysvětlují neschopností modelu generalizovat na barvy a výšky tónů neobsažených v trénovací množině, generalizaci by ale mohla pomoci také úprava modelu. Protože k rozpoznání vyšších frekvencí stačí méně vzorků než pro rozpoznání nižších, mohli bychom se pokusit upravit první konvoluční vrstvu sítě, která tento úkol zastává, a rozdělit ji na množiny různě širokých konvolucí, jejichž kanály následně sloučíme zpět do jednotné vrstvy. To by mělo mít za následek, že rozpoznávání vysokých tónů budou zastávat užší konvoluce a jejich kernel bude obecnější než široké kernely s vysokou mírou redundance.
+Podle \cite{Kim2018} se přesnost CREPE snižuje s výškou tónu. Autoři si tuto skutečnost vysvětlují neschopností modelu generalizovat na barvy a výšky tónů neobsažených v trénovací množině, generalizaci by ale mohla pomoci také úprava modelu. Protože k rozpoznání vyšších frekvencí stačí méně vzorků než pro rozpoznání nižších, mohli bychom se pokusit upravit první konvoluční vrstvu sítě, která tento úkol zastává, a rozdělit ji na množiny různě širokých konvolucí, jejichž kanály následně sloučíme zpět do jednotné vrstvy. To by mělo mít za následek, že rozpoznávání vysokých tónů budou zastávat užší konvoluce a jejich kernel bude jednodušší než široké kernely s vysokou mírou redundance.
 
 První vrstvu s kernelem s 256 filtry (tj. počet filtrů první vrstvy s multiplikátorem 8x, viz první experiment) jsem rozdělil na vícero různě širokých kernelů s menším počtem filtrů, tak aby kapacita sítě zůstala přibližně stejná a sítě byly porovnatelné. 
 
@@ -196,51 +232,44 @@ Počet/šířka kernelů | 512 | 256 | 128 | 64 | 32 | 16 | 8  | 4  | Celkový p
 --------------------|-----|-----|-----|----|----|----|----|----|-------------------------
 1                   | 256 |     |     |    |    |    |    |    | 2098880
 2                   | 128 | 128 |     |    |    |    |    |    | 2066112
-3                   | 80  | 80  | 80  |    |    |    |    |    | 2006688
+3                   | 85  | 85  | 85  |    |    |    |    |    | 2041918
 4                   | 64  | 64  | 64  | 64 |    |    |    |    | 2029248
-5                   | 48  | 48  | 48  | 48 | 48 |    |    |    | 1982624
-6                   | 40  | 40  | 40  | 40 | 40 | 40 |    |    | 1975328
-7                   | 32  | 32  | 32  | 32 | 32 | 32 | 32 |    | 1934720 vs 1996184
-8                   | 32  | 32  | 32  | 32 | 32 | 32 | 32 | 32 | 
+5                   | 51  | 51  | 51  | 51 | 51 |    |    |    | 2016350
+6                   | 42  | 42  | 42  | 42 | 42 | 42 |    |    | 2001944
+7                   | 36  | 36  | 36  | 36 | 36 | 36 | 36 |    | 1996184
+8                   | 32  | 32  | 32  | 32 | 32 | 32 | 32 | 32 | 2000448
 
-! tady asi přetrénovat, byla tam chyba !
-    TODO: OPRAVIT POČET FILTRŮ A VYHODNOTIT NOVĚ PŘETRÉNOVANÉ SÍTĚ
-
-Experiment jsem provedl dvakrát na sítích s rozdílně velikými vstupními okny, předkládané výsledky jsou průměrem výsledků na validačních datech těchto dvou pokusů.
-
-
+Experiment jsem provedl na síti se vstupním oknem 978 vzorků, multiplikátorem kapacity 8, 
 
     \begin{tabular}{lrr}
     \toprule
-    Počet kernelů & Raw Pitch Accuracy &  Raw Chroma Accuracy \\
+    {} &  Raw Pitch Accuracy &  Raw Chroma Accuracy \\
+    Počet konvolučních vrstev &                     &                      \\
     \midrule
-    1                         &               0.670 &                0.770 \\
-    2                         &               0.669 &                0.773 \\
-    3                         &               0.672 &                0.776 \\
-    4                         &               0.668 &                0.772 \\
-    5                         &               0.675 &                0.777 \\
-    6                         &               0.683 &                0.781 \\
-    7                         &               0.681 &                0.776 \\
-    8                         &               0.672 &                0.769 \\
+    1                         &               0.629 &                0.734 \\
+    2                         &               0.628 &                0.732 \\
+    3                         &               0.632 &                0.734 \\
+    4                         &               0.636 &                0.739 \\
+    5                         &               0.643 &                0.740 \\
+    6                         &               0.638 &                0.737 \\
+    7                         &               0.636 &                0.736 \\
+    8                         &               0.640 &                0.737 \\
     \bottomrule
     \end{tabular}
 
-#### Vliv šířky vstupního okna
+Zlepšení výsledků se pohybuje v řádu desetin procentních bodů, tedy není příliš vysoké. Zlepšení je nejvíce patrné v případě pěti různě širokých konvolučních vrstev, kde dosahuje $1.3$ procentního bodu. Analýzou výsledků přesnosti podle výšky noty se mi nepodařilo prokázat hypotézu, že by konvoluce s více rozlišeními pomáhala u odhadu not vyšších frekvencí. Její přínos je drobný a projevuje se na většině frekvenčních pásem.
 
-Architektura CREPE byla navržena pro monopitch tracking, dá se předpokládat, že jelikož je v monofonních nahrávkách oproti polyfonním daleko méně (melodického) šumu, není pro určení výšky tónu potřeba větší kontext než použitých 1024 vzorků (při vzorkovací frekvenci 16kHz toto odpovídá 64 milisekundám audia). To ale nemusí platit pro složitější signály, kde by síť mohla z delšího kontextu těžit. 
+### Wavenet
 
-    \begin{tabular}{lrr}
-    \toprule
-    Šířka vstupního okna &  Raw Pitch Accuracy &  Raw Chroma Accuracy \\
-    \midrule
-    512                  &               0.634 &                0.748 \\
-    1024                 &               0.645 &                0.763 \\
-    2048                 &               0.648 &                0.760 \\
-    4096                 &               0.650 &                0.762 \\
-    8192                 &               0.675 &                0.775 \\
-    \bottomrule
-    \end{tabular}
+Generativní model WaveNet popsaný týmem \cite{Oord2016} je architektura navržená pro generování zvukového signálu, autoři však síť testovali i pro převod mluvené řeči na text (dataset TIMIT) a dosáhli výsledků srovnatelných se state-of-the-art. Síť se však pro *Music Information Retrieval* od svého zveřejnění příliš neuchytila. Její použití se v oblasti hudby se omezuje na generativní úlohy (\cite{Hawthorne2018a}, \cite{Yang2017}, \cite{Engel2017} a další), případně *source-separation* \citep{Stoller2018}. Jediný publikovaný pokus s použitím architektury WaveNet pro automatický přepis podnikli \cite{Martak2018} nad datasetem MusicNet. Jejich model však netestovali na standardních evaluačních datasetech ze soutěže MIREX, tudíž není zřejmé, jakých výsledků v porovnání s existujícími metodami autoři dosáhli.
 
+Architektura spočívá v důmyslném vrstvení dilatovaných konvolucí. Díky exponenciálně rostoucím dilatacím se také exponenciálně zvětšuje receptivní pole jednotlivých konvolučních vrstev. Díky této vlastnosti pak například stačí pro pokrytí 1024 vzorků vstupu pouze 9 vrstev s šířkou kernelu 2 a dilatacemi 1,2,4,8 ... 512. Pokud bychom stejného receptivního pole chtěli dosáhnout pomocí obvyklých konvolucí počet potřebných vrstev by byl lineární vzhledem k šířce pole. Vrstvení konvolucí je porovnáno na schématu. 
+
+TODO: přidat schéma konvolucí
+
+#### Baseline na základě \cite{Martak2018}
+
+Pro srovnání spustíme architekturu popsanou ve zmíněném článku pro úlohu extrakce melodie. Jelikož byla architektura zamýšlena pro dataset MusicNet, který obsahuje celý přepis skladeb do MIDI not, výstupem jsou diskrétní noty. Jak jsme zjistili v předchozím experimentu na architektuře CREPE, hrubá diskretizace výrazně zhoršuje přesnost výsledků, upravíme proto architekturu tak, aby měla výstupní distribuce jemnější rozlišení.
 
 
 # autocorrelation
