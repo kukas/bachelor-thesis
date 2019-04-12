@@ -37,10 +37,13 @@ TODO
 - přednastavení kernelu první vrstvy na sinusovky/filtry
 - ✓ WaveNet   
     - nejdřív zkusit jako monopitch tracker
+    - As a last experiment we looked at speech recognition with WaveNets on the TIMIT (Garofolo et al., 1993) dataset. For this task we added a mean-pooling layer after the dilated convolutions that aggregated the activations to coarser frames spanning 10 milliseconds (160× downsampling). The pooling layer was followed by a few non-causal convolutions. We trained WaveNet with two loss terms, one to predict the next sample and one to classify the frame, the model generalized better than with a single loss and achieved 18.8 PER on the test set, which is to our knowledge the best score obtained from a model trained directly on raw audio on TIMIT.
 - Banka filtrů, vstup vícekanálový raw signál
 - kouknout se na instantaneous frequency
 - kouknout se na pYIN, auto-correlation
     - transformace - auto-correlation a pak, když najdu peaky, tak ještě kolem nich zpřesnit, protože posun o jeden sample může být příliš velký
+
+- nová Magenta: GANSynth https://openreview.net/pdf?id=H1xQVn09FX
 
 - konvoluce vs. fourierka https://en.wikipedia.org/wiki/Convolution_theorem
 https://librosa.github.io/librosa/generated/librosa.core.iirt.html

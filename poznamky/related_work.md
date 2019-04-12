@@ -1,4 +1,73 @@
 # Related Work
+
+### \cite{Dressler2016}
+
+- úloha existuje od 1999, Goto+Hayamizu
+    - predominant f0 estimation
+
+- obvyklá struktura melody extraction
+    - polyphonic music ->
+    - spectral analysis ->
+        - The aim of the spectral analysis is to transform the audio signal from the time domain to the frequency domain, which facilitates the identification of distinct sound sources in the audio input: Melody tones are required to have a pitch which allows the ordering of sounds on a frequency-related scale. A common attribute of pitched sounds (in melodies) is that they consist of sinusoidal partials. Hence, the most relevant melody information can be found in the deterministic components of the audio signal, which often can be identified as spectral peaks in the frequency domain.
+
+    - pitch determination ->
+    - tone tracking ->
+    - melody identification
+
+    - doopravdy pouze melody identification je unikátní pro úlohu extrakce, jinak se tyto podproblémy řeší i v jiných úlohách.
+
+
+
+
+### \cite{Poliner2007}
+
+- základní problém přepisu hudby - zatímco jednotlivá zahraná nota je reprezentována stabilním periodickým zvukovým signálem s nějakou základní frekvencí a alikvótními, v polyfonní hudbě se tyto harmonické frekvence překrývají, jelikož noty jsou od sebe často v celočíselných násobcích (oktáva 2x, oktáva+kvinta = 3x). Toto prolínání harmonických frekvencí je zásadní pro hudební harmonii.
+
+- Providing a strict definition of the melody is, however, no simple task: it is a musicological concept based on the judgment of human listeners, and will not, in general, be uniquely defined for all recordings. Roughly speaking, the melody is the single (mono- phonic) pitch sequence that a listener might reproduce if asked to whistle or hum a piece of polyphonic music, and that a lis- tenerwould recognize as being the “essence” of that music when heard in comparison.
+    - v některých případech se posluchači bez obtíží shodnou, zejména v případě populární hudby, která má často hlavní hlas, který melodii nese
+    - i v orchestrálních nahrávkách nebo v i polyfonních skladbách pro klavír, se ale často posluchači shodnou
+
+- příklad spektrogramu s vokální stopou a celým mixem, ilustrace toho, že nemusí být nejhlasitější
+- extrakce melodie je příbuzná s úlohou sledování výšky tónu. V kontextu identifikace melodie v hudbě s více hlasy je úloha sledování výšky tónu komplikovanější, jelikož ze všech možných znějících tónů patří do melodie nejvýše jeden. 
+    - všechny metody extrakce melodie tedy nutně řeší dva problémy - 1) identifikaci množiny tónů v daném čase a 2) přiřazení některého (pokud nějakého) tónu k melodii.
+
+- kroky
+    - initial signal processing
+        - stft
+            - invariantní k fázovým posunům, což se hodí, protože percepce výšky tónu je závislá právě na frekvenci, nikoli na fázi
+            -Since the frequency resolution of the STFT improves with temporal window length, these systems tend to use long windows, from 46 ms for Dressler, to 128 ms for Po- liner.
+            - hiearchické stft (multiresolution)
+        - autocorrelation
+            - 
+    - spectral peak processing
+        - instantaneous frequency
+    - multipitch - jak systém rozpozná kandidáty na fundamentální frekvence
+        - v případě STFT jde o to, jak rozdělit harmonické k jednotlivým fundamentálám
+            - nejjednodušší způsob - projít všechny kandidáty na f0 a vyhodnotit harmonické frekvence
+                - octave errors - 2*f0 má také dost harmonických
+            - procházení f0 odspoda a případně úprava spektra, aby tam harmonické od nalezené f0 nebyly
+            - přiřazení vah ke všem kandidátům f0 tak, aby fundamentály soutěžily o harmonické - 
+
+    - onset events
+        - hledání not či jiných delších logických celků
+        - získávání více informací (například o dynamice) nebo naopak abstrahování (například vibrata)
+        - HMM, které 
+    - post-processing
+        - získání melodie
+        - množina pravidel pro výběr z nalezených not
+            - důraz na kontinuitu výšky a síly not v melodii
+            - vymazání velkých skoků, krátkých v délce
+            - preference pro nějaký frekvenční rozsah
+            - výběr nejvyšších nebo nejnižších frekvencí při souzvuku
+        - tracking agents
+            - soupeřící hypotézy, výtězí ta, která nejlépe splňuje stanovené podmínky
+        - HMM
+    - voicing
+        - někteří neřeší
+        - a simple global energy threshold over an appropriate frequency range was reported to work as well as a more complex scheme based on a trained classifie
+        - případně je řešen výběrem not z předchozího kroku (také se dají ještě odfiltrovat slabé noty)
+
+
 - Poslední review je z roku 2014 - \cite{Salamon2014}
 
 - sekce "state-of-the-art" - s těma metodama, které jsem změřil
@@ -32,7 +101,8 @@
                                 - to samé psala Karin Drassler
                         - \cite{Durrieu2011}: Mid-level representations
                             - něco jako spektrální transformace, ale za cenu neexistující inverzní funkce líp zachytí jiné charakteristiky než sílu frekvencí
-                            
+                        - autocorrelation
+
                     - spectral peak processing
                         - většina algoritmů ze spektrogramu extrahuje pouze peaky, splňující různé podmínky, tím se odfiltruje část nemelodických šumů
                     - Salience function
@@ -49,15 +119,14 @@
                 - decomposition, matrix factorization techniques
             - Data-based metody
                 - Jeden z prvních: 2005 Poliner and Ellis A classification approach to melody transcription
+                    - klasifikace frame po framu pomocí SVM
+                    - učeno na tisících ukázkách - spektrogram -> melodie
+                    - musí se naučit to, že tón je množina harmonických frekvencí
+                        - a taky to, jak odlišit hlavní melodii od doprovodu
+                    - žádný postprocessing
                     - dosáhl tehdejšího state-of-the-art
                     - SVM klasifikace na základě velmi ořezaných spektrogramů - 256 featur -> 60 midi not !
         - mnoho algoritmů se soustředí hlavně na transkripci zpěvu, jednak z komerčních důvodů (jsou nejčastější a nejpopulárnější) a jednak kvůli tomu, že zpěv má oproti hlasu nástrojů svoje unikátní charakteristiky, které metody dokážou využít pro lepší výsledky
-    - obvyklá struktura melody extraction pipeline, Dressler, \cite{Salamon2014}:
-        - polyphonic music ->
-        - spectral analysis ->
-        - pitch determination ->
-        - tone tracking ->
-        - melody identification
 
     - orchestrální hudba: \cite{Bosch2016}
         - Bosch sestavil Orchset a použil ho pro porovnání tehdejších state-of-the-art algoritmů na orchestrálních datech
