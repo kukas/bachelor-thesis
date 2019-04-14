@@ -1,5 +1,28 @@
 # Related Work
 
+------
+
+kapitoly:
+
+- popis rule-based algoritmů
+    - spektrální analýza
+- jak scénu mění data-based metody  
+    - monopitch tracking, multif0, melody
+- state of the art
+    - Bittner
+    - Basaran
+
+- ??? ano nebo ne ???
+    - machine learning
+    - spectral representations (stft, cqt, mfcc, ...)
+
+\cite{Durrieu2010}
+Metoda založená na modelování (výkonového) spektra signálu jako součtu složek hlavního nástroje a doprovodu. Hlavní hlas je reprezentován modelem \textit{source/filter}, doprovod je modelován pomocí váženého součtu spektrálních šablon. Parametry modelu pro hlavní hlas jsou odhadnuty pomocí \textit{Expectation-Maximization} algoritmu, doprovod je dekomponován na šablony pomocí metody příbuzné nezáporné maticové faktorizaci. 
+
+Metoda založená na source-filter modelování hlavního nástroje a modelování doprovodu pomocí nezáporné maticové faktorizaci
+
+
+
 ### \cite{Dressler2016}
 
 - úloha existuje od 1999, Goto+Hayamizu
@@ -9,8 +32,41 @@
     - polyphonic music ->
     - spectral analysis ->
         - The aim of the spectral analysis is to transform the audio signal from the time domain to the frequency domain, which facilitates the identification of distinct sound sources in the audio input: Melody tones are required to have a pitch which allows the ordering of sounds on a frequency-related scale. A common attribute of pitched sounds (in melodies) is that they consist of sinusoidal partials. Hence, the most relevant melody information can be found in the deterministic components of the audio signal, which often can be identified as spectral peaks in the frequency domain.
+        - tři kategorie - filterbank, FFT, FFT s proměnným rozlišením (CQT, multiresolution-fft)
+            - filterbank - obvykle bližší lidskému sluchu
+            - multiresolution fft - také se podobají lidskému sluchu - the spectral resolution is better at lower frequencies, whereas the temporal resolution improves at higher frequencies.?????
+            - porovnáním metod Dresslerová dochází k tomu, že na nynější úrovni na vstupním spektrogramu nezáleží
 
-    - pitch determination ->
+        - magnitude weighting step which reestimates the importance of the spectral components.
+            - the weighting may be perceptually motivated and mimic the sensitivity of humans to signals of different frequencies according to equal-loudness contours (Heinz, 2006; Paiva, 2006; Salamon and G´omez, 2012), or, the weighting aims to level out magni- tude differences between spectral peaks independent of their frequency. The latter procedure is often referred to as spectral whitening.
+
+        TREND: STFT, a prý na tom moc nezáleží
+
+    - pitch estimation ->
+        - temporal cues (autocorrelation) vs. spectral cues (harmonic sieve)
+            - temporal cues
+                - band-wise processing of the signal (filterbank)
+                - subbands - compressed, half-wave rectification, low-pass filtering
+                - predominant signal period is detected in each frequency channel (autocorrelation, differece function or stft)
+            - spectral approach
+                - Deterministic methods (rule based):
+                    - Goto (2004)
+                        - f0 salience + tracking agents
+                    - Hermes (1988)
+                        - subharmonic summation algorithm (?)
+                    - Rao and Rao (2010) use a combination of a harmonic matching algorithm and the two-way-mismatch-error method, as originally described in (Maher and Beauchamp, 1994).
+                    - Chien et al. (2012) evaluate the likelihood of each pitch candidate by comparing the observed constant-Q spectrum with a set of (synthesized monophonic) vocal spectrum exam- ples with the same hypothesized pitch and a scaled loudness.
+                - Probabilistic methods:
+                    - Poliner and Ellis (2006) implemented a sup- port vector machine to classify the melody directly from the spectral components
+                    - Durrieu et al. (2010) computed the best non-negative linear combination of spec- tral combs of all possible notes, evaluating also the smoothness of timbre between analysis frames.
+            TREND: subharmonic summation (SHS),
+                
+        - Even though the melody is usually the predominant pitch in the audio mixture, pitch extraction methods which are designed to work with monophonic audio often fail to produce satisfactory results with music, as the algorithm has to be very robust against interference from simultaneous sounds. Neither a simple autocorrelation of the audio waveform nor a harmonic sieve used in the spectral domain would give satisfactory results if applied to music.
+        - multiple fundamental frequency estimation
+            - iterative detection + deletion
+            - joint pitch candidate evaluation
+
+
     - tone tracking ->
     - melody identification
 
