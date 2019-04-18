@@ -67,6 +67,11 @@ https://librosa.github.io/librosa/generated/librosa.core.iirt.html
 - LSTM
 - seq2seq + attention
 
+### Dataset creation
+- anotace MusicNet - pomocí informed source separation získat hlasitosti nástrojů a sekcí. Zkombinovat tuto informaci s teoriemi jak získat z MIDI melodii. 
+    - pokud se získává melodie z MIDI, pak chybí lidská interpretace
+    - pokud se získává melodie z audia, chybí přesná anotace
+        - s obojím by možná šlo melodii extrahovat lépe
 
 
 - inspirovat se multitask learningem od Bittnerové, ale zkusit přidat source separation jako další task.

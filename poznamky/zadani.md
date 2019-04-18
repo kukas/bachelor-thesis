@@ -23,4 +23,4 @@ Extrakce melodie je jednou z dlouhodobě řešených úloh v oboru MIR. Každoro
 - Extrakce melodie spočívá v odhadu kontury základní frekvence (F0) nejvýraznějšího melodického hlasu hudební skladby. 
 - Se zvolna rostoucím množstvím dostupných dat se přístupy k řešení úlohy posouvají od deterministického zpracování signálu ke statistickým metodám strojového učení.
 - V práci ukazujeme slibnost tohoto (technologického) posunu demonstrací současné úrovně systémů založených na hlubokém učení a zlepšením jejich výsledků provedením vlastních experimentů.
-- Jejich úspěšnost vyhodnocujeme pomocí zavedené metodologie MIREX a uvádíme do kontextu stěžejních prací v oboru Music Information Retrieval.
+- Jejich úspěšnost vyhodnocujeme pomocí zavedené metodologie soutěže MIREX a uvádíme do kontextu stěžejních prací v oboru Music Information Retrieval.

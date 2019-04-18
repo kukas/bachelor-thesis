@@ -16,6 +16,85 @@ kapitoly:
     - machine learning
     - spectral representations (stft, cqt, mfcc, ...)
 
+## Related work historický úvodní odstavec
+
+Pokusy o vytvoření metody pro automatickou transkripci hudby se objevují již od sedmdesátých let \citep{Poliner2007}, dodnes však zůstává tento problém otevřený, zejména z důvodu strmě rostoucí obtížnosti úlohy s každým dalším přidaným hlasem ve zkoumaném signálu. V jedné z prvních prací, která se zabývá automatickým popisem muzikálních aspektů skladeb, se \cite{Goto1999} záměrně omezují na identifikaci jedné, nejhlasitější, spojité křivky fundamentní frekvence (F0) hlasu v omezeném frekvenčním rozsahu. Vzniklé transkripce pak sice nejsou kompletní, na druhou stranu je jejich získání výpočetně nenáročné a přitom poskytují sémanticky bohatý popis nahrávek, který je poměrně často shodný s melodií. Ustanovením úlohy pojmenované "Predominant-F0 Estimation" (PreFEst), budují \cite{Goto1999} základy pro vznik navazujících prací a soutěží zabývající se automatickým přepisem melodie.
+
+## Definice melodie
+
+<!-- 
+- melodii nelze přesně definovat, vždy ve výsledku záleží na posluchačích.
+    - staletí výzkumu v muzikologii nevedlo k jasné definici melodie.
+    - Melodie je definována jako „jednohlasá sekvence tónů, kterou posluchač nejspíše bude reprodukovat, pokud jej požádáme o zapískání či zabroukání příslušné skladby.“
+        The melody is the single (mono- phonic) pitch sequence that a listener might reproduce if asked to whistle or hum a piece of polyphonic music, and that a listener would recognize as being the “essence” of that music when heard in comparison. \cite{Poliner2007}
+        - přesto, že nejde o objektivní definici, v praxi se posluchači často na jedné konkrétní sekvenci tónů shodnou, a to jak u populární hudby, kde melodii často nese lidský zpěv, tak u orchestrální hudby \citep{Bosch2016}.
+
+        - spor: skladba může obsahovat více melodických linek
+            * překrývající se harmonické frekvence
+            * zpěvačka+doprovod
+            * Fuga
+
+- v praxi se výzkum omezuje na pragmatické a zjednodušené definice
+    * problémy singlesource prefest:
+        * omezující ->
+        * jeden nástroj může být zároveň doprovod a zároveň jindy nést melodii
+            * Jazz
+    * problémy prefest:
+        - co znamená predominant?
+            - melodii nemusí nést nejhlasitější/nejvyšší nástroj  
+            - Composers and performers use several cues to make melodies perceptually salient, including loudness, timbre, frequency variation or note onset rate.
+                - Melody extraction methods commonly use cues such as pitch continuity and pitch salience, and some of them group pitches into higher level objects (such as tones or contours)
+        - missing fundamental
+           + Amacher a její hudba rezonující v uchu
+        - často také omezení na harmonický signál
+    
+    * a aby se i tak vyhnulo co nejvíce subjektivitě a problémům s definicemi, pracuje se více s materiálem, který není sporný
+- nové datasety používají již širší definice 
+    MedleyDB, Orchset
+    - Orchset ale nemá spojitou informaci o f0, ale jen výšky not
+
+
+* definice melodie
+    * To frame the technical task of melody extraction, we should start by examining the musicological concept of “melody”, which ultimately relies on the  judgement of human listeners, and will therefore tend to vary across application contexts (e.g. symbolic melodic similarity or symbolic melodic similarity or music transcription). Centuries of musicological study have resulted in no clear consensus regarding the definition of “melody”, but faced with the need for a common interpretation, the MIR community has opted for simplified, pragmatic definitions that result in a task amenable to signal processing. One popular definition \cite{Poliner2007} holds that “the melody is the single (monophonic) pitch sequence that a listener might reproduce if asked to whistle or hum a piece of polyphonic music, and that a listener would recognize as being the essence of that music when heard in comparison”. This definition is still open to a considerable degree of subjectivity, since different listeners might hum different parts after listening to the same song (e.g., lead vocals versus guitar solo
+        * v MIREXu a v praxi:
+            research has focused on what we term “single source predominant fundamental frequency estimation”. That is, the melody is constrained to belong to a single sound source throughout the piece being analyzed, where this sound source is considered to be the most predominant instrument or voice in the mixture. \cite{Salamon2014}
+            * takže jeden nástroj za celou skladbu! => Omezující (MedleyDB má více definicí).
+
+        * v praxi se výzkum často omezuje na "extrakci melodie hlasu hlavního zpěváka nebo nástroje"
+        * a aby se i tak vyhnulo co nejvíce subjektivitě, pracuje se více s materiálem, který není sporný
+        * \cite{Salamon2014}
+
+    * polyfonie obecně - existuje spousta kombinací nástrojůG
+\cite{Bosch2016a}
+
+Melody is regarded as one of the most relevant aspects of music, and melody extraction is an important task in Mu- sic Information Retrieval (MIR). Salamon et al. [21] define melody extraction as the estimation of the sequence of fun- damental frequency (f0) values representing the pitch of the lead voice or instrument, and this definition is the one employed by the Music Information Retrieval Evaluation eXchange (MIREX) [7]. While this definition provides an objective and clear task for researches and engineers, it is also very specific to certain types of music data. Recently proposed datasets consider broader definitions of melody, which are not restricted to a single instrument [2, 4, 6]. Composers and performers use several cues to make
+melodies perceptually salient, including loudness, timbre frequency variation or note onset rate. Melody extraction methods commonly use cues such as pitch continuity and pitch salience, and some of them group pitches into higher level objects (such as tones or contours), using principles from Auditory Scene Analysis [8, 13, 16, 18, 20]. Some approaches have also considered timbre, either within a source separation framework [10, 17], with a machine learning approach [11], or in a salience based approach [14, 16]. One
+
+\cite{Poliner2007}
+
+
+- Providing a strict definition of the melody is, however, no simple task: it is a musicological concept based on the judgment of human listeners, and will not, in general, be uniquely defined for all recordings. Roughly speaking, the melody is the single (mono- phonic) pitch sequence that a listener might reproduce if asked to whistle or hum a piece of polyphonic music, and that a lis- tenerwould recognize as being the “essence” of that music when heard in comparison.
+    - v některých případech se posluchači bez obtíží shodnou, zejména v případě populární hudby, která má často hlavní hlas, který melodii nese
+    - i v orchestrálních nahrávkách nebo v i polyfonních skladbách pro klavír, se ale často posluchači shodnou
+
+
+\cite{Salamon2014}
+
+- definice melodie záleží ve výsledku na posluchačích
+- 
+-->
+
+## Shrnutí do roku kol. 2012?
+- kompilace souhrnných prací Salamon, Dressler, Bosch
+
+The task of melody extraction from polyphonic music recordings has been generally approached with salience- based or separation-based methods [1]. Salience-based ap- proaches compute a frame-based pitch salience function, while separation-based approaches attempt to isolate the melody source from the mixture more or less explicitly. \cite{Bosch2016b}
+
+The most commonly used pitch salience function is harmonic summation -> A. Klapuri, “Multiple fundamental frequency estima- tion by summing harmonic amplitudes,” in Proc. IS- MIR, 2006, pp. 216–221.
+
+
+## Popisy algoritmů
+
+
 \cite{Durrieu2010}
 Metoda založená na modelování (výkonového) spektra signálu jako součtu složek hlavního nástroje a doprovodu. Hlavní hlas je reprezentován modelem \textit{source/filter}, doprovod je modelován pomocí váženého součtu spektrálních šablon. Parametry modelu pro hlavní hlas jsou odhadnuty pomocí \textit{Expectation-Maximization} algoritmu, doprovod je dekomponován na šablony pomocí metody příbuzné nezáporné maticové faktorizaci. 
 
@@ -24,9 +103,6 @@ Metoda založená na source-filter modelování hlavního nástroje a modelován
 
 
 ### \cite{Dressler2016}
-
-- úloha existuje od 1999, Goto+Hayamizu
-    - predominant f0 estimation
 
 - obvyklá struktura melody extraction
     - polyphonic music ->
@@ -72,16 +148,7 @@ Metoda založená na source-filter modelování hlavního nástroje a modelován
 
     - doopravdy pouze melody identification je unikátní pro úlohu extrakce, jinak se tyto podproblémy řeší i v jiných úlohách.
 
-
-
-
 ### \cite{Poliner2007}
-
-- základní problém přepisu hudby - zatímco jednotlivá zahraná nota je reprezentována stabilním periodickým zvukovým signálem s nějakou základní frekvencí a alikvótními, v polyfonní hudbě se tyto harmonické frekvence překrývají, jelikož noty jsou od sebe často v celočíselných násobcích (oktáva 2x, oktáva+kvinta = 3x). Toto prolínání harmonických frekvencí je zásadní pro hudební harmonii.
-
-- Providing a strict definition of the melody is, however, no simple task: it is a musicological concept based on the judgment of human listeners, and will not, in general, be uniquely defined for all recordings. Roughly speaking, the melody is the single (mono- phonic) pitch sequence that a listener might reproduce if asked to whistle or hum a piece of polyphonic music, and that a lis- tenerwould recognize as being the “essence” of that music when heard in comparison.
-    - v některých případech se posluchači bez obtíží shodnou, zejména v případě populární hudby, která má často hlavní hlas, který melodii nese
-    - i v orchestrálních nahrávkách nebo v i polyfonních skladbách pro klavír, se ale často posluchači shodnou
 
 - příklad spektrogramu s vokální stopou a celým mixem, ilustrace toho, že nemusí být nejhlasitější
 - extrakce melodie je příbuzná s úlohou sledování výšky tónu. V kontextu identifikace melodie v hudbě s více hlasy je úloha sledování výšky tónu komplikovanější, jelikož ze všech možných znějících tónů patří do melodie nejvýše jeden. 

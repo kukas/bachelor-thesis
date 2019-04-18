@@ -48,23 +48,13 @@ U intuitivního zavedení pojmu melodie ale komplexnost problému nekončí.
                 + Melodyne, AutoTune = pitch correction or modification.
                 * adobe audiotion
     * proč je extrakce melodie těžká?
-        * definice melodie
-            * To frame the technical task of melody extraction, we should start by examining the musicological concept of “melody”, which ultimately relies on the  judgement of human listeners, and will therefore tend to vary across application contexts (e.g. symbolic melodic similarity or symbolic melodic similarity or music transcription). Centuries of musicological study have resulted in no clear consensus regarding the definition of “melody”, but faced with the need for a common interpretation, the MIR community has opted for simplified, pragmatic definitions that result in a task amenable to signal processing. One popular definition \cite{Poliner2007} holds that “the melody is the single (monophonic) pitch sequence that a listener might reproduce if asked to whistle or hum a piece of polyphonic music, and that a listener would recognize as being the essence of that music when heard in comparison”. This definition is still open to a considerable degree of subjectivity, since different listeners might hum different parts after listening to the same song (e.g., lead vocals versus guitar solo
-                * v MIREXu a v praxi:
-                    research has focused on what we term “single source predominant fundamental frequency estimation”. That is, the melody is constrained to belong to a single sound source throughout the piece being analyzed, where this sound source is considered to be the most predominant instrument or voice in the mixture. \cite{Salamon2014}
-                    * takže jeden nástroj za celou skladbu! => Omezující (MedleyDB má více definicí).
+        * kvůli definici
+        - co je vlastně tón
+            - že je to objekt skládající se ze součtu harmonických
+            - tudíž překrývání
+        - základní problém přepisu hudby - zatímco jednotlivá zahraná nota je reprezentována stabilním periodickým zvukovým signálem s nějakou základní frekvencí a alikvótními, v polyfonní hudbě se tyto harmonické frekvence překrývají, jelikož noty jsou od sebe často v celočíselných násobcích (oktáva 2x, oktáva+kvinta = 3x). Toto prolínání harmonických frekvencí je zásadní pro hudební harmonii.
+        - přirovnání - hovor v plném podniku, ze všech stran slova ve stejném jazyce, člověk se musí soustředit na jednu linku hovoru
 
-                * v praxi se výzkum často omezuje na "extrakci melodie hlasu hlavního zpěváka nebo nástroje"
-                * a aby se i tak vyhnulo co nejvíce subjektivitě, pracuje se více s materiálem, který není sporný
-                * \cite{Salamon2014}
-            * melodii nemusí nést nejhlasitější/nejvyšší nástroj
-            * skladba může obsahovat více melodických linek
-                * překrývající se harmonické frekvence
-                * zpěvačka+doprovod
-                * Fuga
-            * jeden nástroj může být zároveň doprovod a zároveň jindy nést melodii
-                * Jazz
-            * polyfonie obecně - existuje spousta kombinací nástrojů
         * další nepříjemnosti
             * rezonance nástroje po zahrání tónu
             * dozvuk místnosti
@@ -102,4 +92,5 @@ U intuitivního zavedení pojmu melodie ale komplexnost problému nekončí.
         * polyfonní používám ve smyslu, že dva simultánní tóny mohou znít ze stejného nástroje, tedy i nahrávka o jednom nástroji může být polyfonní
     * f0 estimation = co je f0
         + digital signal processing: je to nejnižší frekvence periodického signálu
+        + zdůraznit rozdíl mezi pitch a f0, missing fundamental, v práci ale používám obojího pro stejnou věc
     * audio stopa - nahrávka jednoho nástroje
