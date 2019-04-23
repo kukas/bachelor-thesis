@@ -278,3 +278,10 @@ ADC04 database:
 \section{Použité datasety}
 
 Pro \itext{mf0+audio->f0} baseline přichází v úvahu pouze dataset MedleyDB, protože má podle popisu obsahovat jednak anotaci melodie (f0) a jednak anotace všech dalších melodických linek ve skladbách. 
+
+Dostupnost MIREX datasetů
+    - ADC04 je dostupný celý testovací (https://github.com/craffel/mir_eval-ismir/issues/4)
+    - k MIREX05 je jen training set
+    - INDIAN08 není dostupný vůbec
+    - MIREX09 je dostupný training
+    - ORCHSET je dostupný celý testovací

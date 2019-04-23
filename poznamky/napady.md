@@ -4,6 +4,9 @@ TODO
 - resampling anotací, aby šly použít pro trénování
 - přepínač iterations místo epochs..
 
+Music Technology conference list
+http://conferences.smcnetwork.org/2018
+
 # Nápady
 ## Obecně
 - augmentace dat
@@ -42,6 +45,7 @@ TODO
 - kouknout se na instantaneous frequency
 - kouknout se na pYIN, auto-correlation
     - transformace - auto-correlation a pak, když najdu peaky, tak ještě kolem nich zpřesnit, protože posun o jeden sample může být příliš velký
+    - jak vypadá autokorelace dvou blízkých signálů? Třeba 440Hz a 435Hz? Protože na STFT to skoro nebude vidět (Jen se trochu zvětší ten blob kolem nejbližších binů), ale na té autokorelační by to třeba mohlo být vidět? Nevim
 
 - nová Magenta: GANSynth https://openreview.net/pdf?id=H1xQVn09FX
 
@@ -66,6 +70,8 @@ https://librosa.github.io/librosa/generated/librosa.core.iirt.html
 ### Temporal dependencies
 - LSTM
 - seq2seq + attention
+
+- zaokrouhlit f0 salience na MIDI, tedy na abstraktnější reprezentaci, nad tim udělat HMM/LSTM/něco a pak zpětně dohledat přesný frekvence (Ryynanen)
 
 ### Dataset creation
 - anotace MusicNet - pomocí informed source separation získat hlasitosti nástrojů a sekcí. Zkombinovat tuto informaci s teoriemi jak získat z MIDI melodii. 

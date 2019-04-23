@@ -49,7 +49,7 @@ Většina metrik je definována na základě porovnávání jednotlivých anota�
 
     Označme vektor odhadovaných základních frekvencí $\mathbf{f}$ a cílový vektor $\mathbf{f^*}$, složka $f_\tau$ je buď rovna hodnotě $f_0$ melodie nebo $0$, pokud v daném čase melodie nezní. Obdobně zaveďme vektor indikátorů $\mathbf{v}$, jehož prvek na pozici $\tau$ je roven $v_\tau=1$, pokud je v daném časovém okamžiku detekována melodie a $v_\tau = 0$ v opačném případě. Podobným způsobem zavedeme i vektor cílových indikátorů melodického hlasu $\mathbf{v^*}$ a také vektor indikátorů absence melodie $\bar{v}_\tau = 1 - v_\tau$. 
 
-\subsubsection{"Úplnost detekce" = Voicing Recall rate}
+\subsubsection{Voicing Recall rate (Úplnost detekce)}
 
 Poměr počtu časových oken, které byly správně označené jakožto obsahující melodii, a počtu časových oken doopravdy obsahujících melodii podle anotace.
 
@@ -59,7 +59,7 @@ Poměr počtu časových oken, které byly správně označené jakožto obsahuj
 
 % The proportion of frames labeled as melody frames in the ground truth that are estimated as melody frames by the algorithm.
 
-\subsubsection{"Nesprávné detekce" = Voicing False Alarm rate}
+\subsubsection{Voicing False Alarm rate (Nesprávné detekce)}
 
 Poměr počtu časových oken, které byly nesprávně označené jako melodické, k počtu doopravdy nemelodických oken.
 
@@ -69,7 +69,7 @@ Poměr počtu časových oken, které byly nesprávně označené jako melodick�
 
 % The proportion of frames labeled as non-melody in the ground truth that are mis- takenly estimated as melody frames by the algorithm.
 
-\subsubsection{"Přesnost odhadu tónu" = Raw Pitch Accuracy}
+\subsubsection{Raw Pitch Accuracy (Přesnost odhadu výšky)}
 
 Poměr správně odhadnutých tónů k celkovému počtu melodických oken. Výška správně určeného tónu se může lišit až o jeden půltón.
 
@@ -98,7 +98,7 @@ a $\mathcal{M}$ je funkce zobrazující frekvenci $f$ na reálné číslo počtu
 % Raw Pitch Accuracy: The proportion of melody frames in the ground truth for which fτ is considered correct
 % (i.e. within half a semitone of the ground truth f∗τ ).
 
-\subsubsection{"Přesnost odhadu tónu nezávisle na oktávě" = Raw Chroma Accuracy}
+\subsubsection{Raw Chroma Accuracy (Přesnost odhadu výšky nezávisle na oktávě)}
 
 Počítá se podobně jako \textit{Přesnost odhadu tónu}, výstupní a cílové tóny jsou však mapovány na společnou oktávu. Metrika tedy ignoruje chyby odhadu způsobené špatným určením oktávy tónu.
 
@@ -113,7 +113,7 @@ Nezávislost na oktávě zajistíme pomocí zobrazení rozdílu cílového a vý
 % As raw pitch accuracy, except that both the estimated and ground truth f0 sequences are mapped onto a single octave.
 
 
-\subsubsection{"Celková přesnost" = Overall Accuracy}
+\subsubsection{Overall Accuracy (Celková přesnost)}
 
 Celková přesnost měří výkon algoritmu jak v odhadu melodie tak v detekci melodie. Počítá se jako podíl správně odhadnutých oken a celkového počtu oken.
 
@@ -125,7 +125,7 @@ Celková přesnost měří výkon algoritmu jak v odhadu melodie tak v detekci m
 
 \subsubsection{Poznámka k definicím metrik}
 
-Definice RPA, RCA a OA zde uvedené se mírně liší od výchozích v práci \cite{Salamon2014}, jejich přímá implementace podle vzorce totiž vede kvůli nedostatečně dobře zadefinovanému vektoru frekvencí $\mathbf{f}$ k chybě, která byla přítomna i v nejpoužívanější, veřejné implementaci MIR metrik \textit{mir\_eval}. Tato chyba se týká zejména metriky RCA, která v původní definici chybně zahrnovala jako správné tóny ty, které algoritmus odhadl jako nulové (tedy neznějící) a zároveň jejich pravdivá hodnota byla po zobrazení na jednu společnou oktávu blízká nule (tedy původní tón byl blízký nějakému násobku referenční frekvence). Kvůli zobrazení na společnou oktávu se stanou "neznělé nulové odhady" a tóny blízké referenčním frekvencím nerozlišitelné a byly nesprávně považované za korektní.
+Definice RPA, RCA a OA zde uvedené se mírně liší od výchozích v práci \cite{Salamon2014}, jejich přímá implementace podle vzorce totiž vede kvůli nedostatečně dobře zadefinovanému vektoru frekvencí $\mathbf{f}$ k chybě, která byla přítomna i v nejpoužívanější, veřejné implementaci MIR metrik \textit{mir\_eval}. Tato chyba se týká zejména metriky RCA, která v původní definici chybně zahrnovala jako správné tóny ty, které algoritmus odhadl jako nulové (tedy neznějící) a zároveň jejich pravdivá hodnota byla po zobrazení na jednu společnou oktávu blízká nule (tedy původní tón byl blízký nějakému násobku referenční frekvence). Kvůli zobrazení na společnou oktávu se stanou \uv{neznělé nulové odhady} a tóny blízké referenčním frekvencím nerozlišitelné a byly nesprávně považované za korektní.
 
 V praxi chyba této metriky na datasetu MedleyDB mohla dosahovat až sedmi procentních bodů, na repozitáři hostovaném na serveru Github jsme již spolu s autory chybu odstranili \footnote{odkaz na Github issue: \url{https://github.com/craffel/mir_eval/issues/311}}. Opravný patch bude zahrnut do další verze balíku.
 
