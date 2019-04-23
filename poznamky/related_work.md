@@ -1,11 +1,16 @@
 # Related Work
 
+
 ------
 
 kapitoly:
 
 - popis rule-based algoritmů
-    - spektrální analýza
+    - získání kandidátních f0 (pitch estimation)
+        - spektrální analýza vs. autokorelace vs. 
+    - tone tracking
+    - voicing
+
 - jak scénu mění data-based metody  
     - monopitch tracking, multif0, melody
 - state of the art
@@ -85,6 +90,13 @@ melodies perceptually salient, including loudness, timbre frequency variation or
 -->
 
 ## Shrnutí do roku kol. 2012?
+
+
+
+Podrobný rozbor souvisejících metod by přesahoval rámec této práce, jen do soutěže MIREX se od roku 2005 přihlásilo 45 týmů s 62 různými metodami. 
+
+V množství rozmanitých přístupů k extrakci melodie lze najít společné rysy
+
 - kompilace souhrnných prací Salamon, Dressler, Bosch
 
 The task of melody extraction from polyphonic music recordings has been generally approached with salience- based or separation-based methods [1]. Salience-based ap- proaches compute a frame-based pitch salience function, while separation-based approaches attempt to isolate the melody source from the mixture more or less explicitly. \cite{Bosch2016b}
@@ -94,13 +106,60 @@ The most commonly used pitch salience function is harmonic summation -> A. Klapu
 
 ## Popisy algoritmů
 
+\cite{Goto1999}
+- multirate filterbank
+- IF calculation
+- peak selection using IF (Candidate Frequency Components)
+- bandpass weighting
+- modelování těchto frekvencí jako váženého součtu harmonických struktur
+    - odhad parametrů modelu pomocí Expectation-Maximization algoritmu
+- tracking agents
+
+
+\cite{Ryynanen2008}
+- přepis melodie, bass a akordů
+-  The salience, or strength, of each F0 candidate is calculated as a weighted sum of the amplitudes of its harmonic partials in a spectrally whitened signal fram
+- STFT s hamming window a zeropadded -> bandpass filterbank with triangular response -> spectral whitening (jakási normalizace spektra pronásobením síly signálu na každém filtru umocněnou silou filtru (s exponentem patřícím do <0,1>))
+- salience je pomocí harmonic summation, pro sumu se bere maximum z frekvenčního pásma každé harmonické (takže drobně neharmonické frekvence to bere v potaz), váhy harmonické struktury jsou typu 1/x
+- používá differential salience, jako \delta s_t = s_t -s_{t-1}
+- HMM pro modelování znění not (diskrétní MIDI!) (attack, sustain release stavy)
+- HMM pro modelování muzikologických jevů (stupnice a přechodů mezi notami)
+- pak zpřesňování na f0 na základě výstupních not
 
 \cite{Durrieu2010}
 Metoda založená na modelování (výkonového) spektra signálu jako součtu složek hlavního nástroje a doprovodu. Hlavní hlas je reprezentován modelem \textit{source/filter}, doprovod je modelován pomocí váženého součtu spektrálních šablon. Parametry modelu pro hlavní hlas jsou odhadnuty pomocí \textit{Expectation-Maximization} algoritmu, doprovod je dekomponován na šablony pomocí metody příbuzné nezáporné maticové faktorizaci. 
 
 Metoda založená na source-filter modelování hlavního nástroje a modelování doprovodu pomocí nezáporné maticové faktorizaci
 
+\cite{Poliner}
+- downsample to 8kHz
+- STFT, only bins 0-2kHz selected (256 features), normalization
+- 256 feature vector -> 60 output MIDI notes
+    - problém na vibratu
+- v mirex 2005 srovnatelný s nejlepšími metodami
+. 
 
+The first to appear in Table I is the data driven approach by Poliner and Ellis [30]. Rather than handcraft knowledge about musical acoustics into the system (e.g. in the form of a salience function based on harmonic summation), they propose to use machine learning in order to train a classifier to estimate the melody note directly from the power spectrum. As a preprocessing step they downsample the audio to 8kHz, and use the STFT to obtain a spectral representation. Bins corresponding to frequencies above 2 kHz are discarded and the magnitude of the remaining bins is normalized over a short time period to reduce the influence of different instrument timbres. The resulting 256 feature vector is used to train a support vector machine classifier using training data where each frame is labeled with one of 60 possible output classes corresponding to 60 MIDI notes spanning five octaves. Voicing detection is done by means of a global threshold based on the magnitude squared energy found between 200 and 1800 Hz.
+
+
+\cite{Paiva2006}
+-Paiva uses the Lyon–Slaney auditory model up to the summary autocorrelation
+    - založený na bandpass filtrech a autokorelační funkci
+    - Both these approaches use autocorrelation, which also achieves phase invariance
+    - also has the attractive property of summing all harmonics relating to a common period into a peak at that period. The
+    - The Lyon–Slaney system actually calculates autocorrelation on an approximation of the auditory nerve excitation, which separates the original signal into multiple frequency bands, then sums their normalized results
+- Paiva’s multipitch detection involves simply choosing the largest peaks from this summary autocorrelation. 
+- tonetracking vytváří jednotlivé noty, ale drží si k nim původní f0
+    - first create pitch tracks by connecting pitch candidates with similar frequency values in consecu- tive frames
+        - pitch track can contain more than one note -> glissando, vibrato
+- a pak melody identification
+    - ghost notes removal (pokud jsou dvě pitchtracks vzdálené o oktávu a mají stejnou f0, tak smaž tu méně salientní)
+    - vybere melodické na základě
+        - salience
+        - frekvence (v prvních krocích zahazuje <50 MIDI)
+        - melodic smoothness
+
+\cite{Dressler2012}
 
 ### \cite{Dressler2016}
 
@@ -159,7 +218,7 @@ Metoda založená na source-filter modelování hlavního nástroje a modelován
         - stft
             - invariantní k fázovým posunům, což se hodí, protože percepce výšky tónu je závislá právě na frekvenci, nikoli na fázi
             -Since the frequency resolution of the STFT improves with temporal window length, these systems tend to use long windows, from 46 ms for Dressler, to 128 ms for Po- liner.
-            - hiearchické stft (multiresolution)
+            - hierarchické stft (multiresolution)
         - autocorrelation
             - 
     - spectral peak processing
@@ -195,7 +254,7 @@ Metoda založená na source-filter modelování hlavního nástroje a modelován
 
 - sekce "state-of-the-art" - s těma metodama, které jsem změřil
 ## State-of-the-art
-### Salamon 2012
+### Salamon 2014
 
 
 - Deep learning pro audio
