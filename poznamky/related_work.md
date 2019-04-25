@@ -161,6 +161,67 @@ The first to appear in Table I is the data driven approach by Poliner and Ellis 
 
 \cite{Dressler2012}
 
+
+-------
+
+### Data-based
+
+\cite{Kum2016} ISMIR 2016
+
+- ukazují, že výkon sítí je nepřímo úměrný jemnosti kvantizace, přitom já dokazuju pravý opak
+- multi column deep neural networks
+    - používají více neuronových sítí s různě kvantizovanými výstupy, aby je na konci pronásobili a dostali funkci salience
+        - 3 hidden layers , RELU
+- pitch shifting augmentation
+- HMM temporal smoothing - Viterbi decoding
+- trénováno pouze na voiced datech
+    - VAD velmi jednoduchý - normalized spectral energy sum + threshold
+- resample 8kHz -> STFT 1024, 10ms hopsize -> first 256 samples (jako poliner)
+- kontext pomáhá do 70-90ms, pak už ne
+
+\cite{Rigaud2016} ISMIR 2016
+
+- rozdělení na dvě DNN, f0 estimation a VAD
+- 16khz mono
+- signal decomposition double-stage Harmonic/Percussive Source Separation
+    - na základě S. Leglaive, R. Hennequin, and R. Badeau. Singing voice detection with deep recurrent neural networks.
+    - výsledkem jsou 4 různé výstupy dekompozice
+        - dekompozice z STFT s oknem 300ms, první signál p_1 obsahuje melodii a bubny, druhý signál h_1 zbylé stabilní nástroje (klavír, kytara, kontrabas)
+            - signál p_1 s melodií a bubny se dále dělí pomocí STFT s oknem 30ms na h2 s melodií a p2 s perkusemi
+
+- data augmentation
+- Voicing network: Bidirectional LSTM, 3 layers, 50 units
+- F0 network: 2-layer fully connected network, ReLU
+    - výstup kvantifikován na čtvrtinu půltónu
+- postprocessing: Viterbi tracking 
+
+\cite{Bittner2017}
+
+- denoising problem
+    - HCQT -> salience
+- input
+    - HCQT - několik vrstev CQT spektrogramů s počatečení frekvencí posunutou o harmonický skok. Tím, že CQT má logaritmickou osu frekvence, tak jsou skoky konstantní
+        - argument: harmonické pro jiné h*f_0 než h=2,4,8... se nedají změřit přesně
+            - můj protiargument: tím, že používáme konvoluci, tak se síť prostě pro daný kanál naučí trochu posunuté váhy
+    - HCQT 0.5, 1, ... 5
+    - hopsize 11ms, 6 oktáv s 5 biny na půltón, f_min = 32.7 (~C1)
+- output
+    - ground truth quantized to nearest bin and gaussian blurred
+        - decays to zero within a quartertone
+        - in order to soften the penalty for near-correct predictions
+        - také ground truth může mít chyby do 20 centů
+- no temporal smoothing
+    - ale 150 ms kontext...
+- voicing by threshold
+
+
+
+\cite{Balke2017}
+
+
+
+kouknout na 
+
 ### \cite{Dressler2016}
 
 - obvyklá struktura melody extraction

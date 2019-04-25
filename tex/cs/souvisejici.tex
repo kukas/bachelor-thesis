@@ -3,9 +3,9 @@
 \section{Definice melodie}
 
 
-Jelikož z muzikologického hlediska žádná jasná a obecně přijímaná definice melodie neexistuje a ve výsledku melodie zůstává pro každého posluchače ryze subjektivním pojmem, pro extrakci melodie si výzkumné týmy volí spíše pragmaticky takové definice, se kterými se nejlépe pracuje. Příkladem může být jedna z prvních prací zabývající se extrakcí melodie. Výstupem v práci \cite{Goto1999} je kontura fundamentální frekvence sestávající se z nejsilnějších tónů hrajících v omezeném frekvenčním rozsahu. Tato definice je poměrně úzká, tóny melodie se totiž jistě mohou vyskytovat i mimo autory specifikovaný rozsah a nemusí být vždy v poměru s doprovodem nejsilnější složkou signálu. Z technického hlediska však dovolila autorům implementaci algoritmu běžícího v reálném čase, který poskytoval sémanticky bohatý popis vstupních nahrávek. Navazující články pracují s volnějšími definicemi, které lépe reflektují podstatu melodie. Mimo to se používaná definice proměňuje díky novým datasetům, jejichž autoři tvoří protipól k ryze technickým a objektivním cílům algoritmických metod. Zatímco pro tvorbu algoritmů je praktické zvolit co nejkonkrétnější cíl, při tvorbě datasetu se naopak projevuje lidská subjektivita autorů anotací. 
+Jelikož z muzikologického hlediska žádná jasná a obecně přijímaná definice melodie neexistuje a ve výsledku melodie zůstává pro každého posluchače ryze subjektivním pojmem, pro extrakci melodie si výzkumné týmy volí spíše pragmaticky takové definice, se kterými se nejlépe pracuje. Příkladem může být jedna z prvních prací zabývající se extrakcí melodie. Výstupem v práci \cite{Goto1999} je kontura fundamentální frekvence sestávající se z nejsilnějších tónů hrajících v omezeném frekvenčním rozsahu. Tato definice je poměrně úzká, tóny melodie se totiž jistě mohou vyskytovat i mimo autory specifikovaný rozsah a nemusí být vždy v poměru s doprovodem nejsilnější složkou signálu. Z technického hlediska však umožnila autorům implementaci algoritmu běžícího v reálném čase, který poskytoval sémanticky bohatý popis vstupních nahrávek. Navazující články pracují s volnějšími definicemi, které lépe reflektují podstatu melodie. Mimo to se používaná definice proměňuje díky novým datasetům, jejichž autoři tvoří protipól k ryze technickým a objektivním cílům algoritmických metod. Zatímco pro tvorbu algoritmů je praktické zvolit co nejkonkrétnější cíl, při tvorbě datasetu se naopak projevuje lidská subjektivita autorů anotací. 
 
-Kompromisem mezi subjektivní a praktickou definicí se na dlouhou dobu stala \uv{extrakce základní frekvence hlavního melodického hlasu}. Ačkoli melodii v reálném hudebním materiálu obvykle nese více hlasů, které se v hraní střídají (například píseň se zpěvem a kytarovým sólem), v letech 2005 - 2015 se v soutěži MIREX provádí evaluace pouze nad krátkými výňatky, kde tato definice není omezující. Tento pohled však otevírá také jiné přístupy, například extrakci melodie pomocí modelování hudebního záznamu jako součtu signálu jednoho hlasu a doprovodu \citep{Durrieu2010}, \citep{Bosch2016b} nebo přímo omezení se na separaci lidského zpěvu a doprovodu \citep{Ikemiya2016}. Nově se objevují práce, které \uv{hlavní} melodický hlas neinterpretují nutně jako \uv{nejsilnější}. Skladatelé a hráči používají množství různých postupů, které melodii zvýrazňují - krom dynamiky ji ovlivňuje například také barva hlasu, vibrato nebo délka not. \cite{Salamon2012a} využívá těchto rysů pro výběr mezi kandidáty na melodickou konturu.
+Kompromisem mezi subjektivní a praktickou definicí se na dlouhou dobu stala \uv{extrakce základní frekvence hlavního melodického hlasu}. Ačkoli melodii v reálném hudebním materiálu obvykle nese více hlasů, které se v hraní střídají (například píseň se zpěvem a kytarovým sólem), v letech 2005 -- 2015 se v soutěži MIREX provádí evaluace pouze nad krátkými výňatky, kde tato definice není omezující. Tento pohled však otevírá také jiné přístupy, například extrakci melodie pomocí modelování hudebního záznamu jako součtu signálu jednoho hlasu a doprovodu \citep{Durrieu2010}, \citep{Bosch2016b} nebo přímo omezení se na separaci lidského zpěvu a doprovodu \citep{Ikemiya2016}. Nově se objevují práce, které \uv{hlavní} melodický hlas neinterpretují nutně jako \uv{nejsilnější}. Skladatelé a hráči používají množství různých postupů, které melodii zvýrazňují --- krom dynamiky ji ovlivňuje například také barva hlasu, vibrato nebo délka not. \cite{Salamon2012a} využívá těchto rysů pro výběr mezi kandidáty na melodickou konturu.
 
 Posunem v rámci MIR komunity bylo zveřejnění nových datasetů MedleyDB \citep{Bittner2014} a ORCHSET \citep{Bosch2016}, oba přináší nová data, ve kterých již melodii nenese pouze jeden hlas po celou dobu skladby. V porovnání s do té doby dostupnými daty jde o mnohem rozmanitější kolekce. V případě MedleyDB jde o první volně dostupný dataset, ve kterém se objevují celé skladby, nikoli pouze výňatky a autoři předkládají rovnou tři verze anotací:
 
@@ -15,30 +15,56 @@ Posunem v rámci MIR komunity bylo zveřejnění nových datasetů MedleyDB \cit
     \item Základní frekvence všech melodických hlasů, potenciálně pocházejících z více zdrojů.
 \end{enumerate}
 
-První formulace je v souladu s doposud používanou definicí. Zbylé dvě se snaží posouvat možné cíle budoucích metod a předložit komunitě nové výzvy, podle \cite{Salamon2014} totiž výzkum začal v letech 2009-2012 stagnovat. Zatímco anotace s jednou melodickou linkou (1. a 2. definice) se v navazujících pracích často používají, zatím žádný článek se nepokusil představit metodu, jejímž cílem by bylo extrahovat více melodických linek (3. definice).
+První formulace je v souladu s doposud používanou definicí. Zbylé dvě se snaží posouvat možné cíle budoucích metod a předložit komunitě nové výzvy, podle \cite{Salamon2014} totiž výzkum začal v letech 2009--2012 stagnovat. Zatímco anotace s jednou melodickou linkou (1. a 2. definice) se v navazujících pracích často používají, zatím žádný článek se nepokusil představit metodu, jejímž cílem by bylo extrahovat více melodických linek (3. definice).
 
 \cite{Bosch2016} při práci na datasetu ORCHSET vychází z článku \cite{Poliner2007}, který definuje melodii jako \uv{jednohlasou sekvenci tónů, kterou bude posluchač nejspíše reprodukovat, pokud jej požádáme o zapískání či zabroukání příslušné skladby}. Přestože nejde o objektivní definici, v praxi se posluchači často na jedné konkrétní sekvenci tónů shodnou, a to jak u populární hudby, kde melodii často nese lidský zpěv, tak u orchestrálních skladeb. Ačkoli se definice neujala pro metody extrakce, \cite{Bosch2016} ji využili pro anotaci výňatků z orchestrálních skladeb, u kterých by předchozí zmíněné definice selhávaly, jelikož pojem melodie je u orchestrální hudby mnohdy komplikovanější než u jiných žánrů. Anotace tak spočívala v přezpívání orchestrálních výňatků skupinou posluchačů a následném srovnání a zpracování těchto nahrávek.
 
 \section{Průzkum existujících metod}
 
-Jen do soutěže MIREX se od roku 2005 přihlásilo 45 týmů s 62 různými metodami pro extrakci melodie, s různou mírou přesnosti přepisu. V přístupech k tomuto problému tedy existuje veliká rozmanitost, jejíž kompletní popis přesahuje rámec této práce. Zaměříme se proto na společné rysy a celkové trendy v oboru. 
+Jen do soutěže MIREX se od roku 2005 přihlásilo 45 týmů s 62 různými metodami pro extrakci melodie, s různou mírou přesnosti přepisu. Mezi přístupy k tomuto problému tedy existuje veliká rozmanitost, jejíž kompletní popis přesahuje rámec této práce. Zaměříme se proto na společné rysy a celkové trendy v oboru. 
 
-Shrnující práce od \cite{Poliner2007} a \cite{Salamon2014} se pro charakterizaci systémů pro transkripci odkazují na příbuznou úlohu odhadu fundamentální frekvence monfonní nahrávky. Typicky algoritmy pro monofonní tracking na základě vstupního signálu $x(t)$ počítají \textit{funkci salience} $S_x(f_\tau, \tau)$ pro každý krátký časový okamžik (okno) $\tau$ a frekvenci $f_\tau$, jejímž výstupem je relativní ohodnocení (příp. pravděpodobnost) jednotlivých frekvencí, které značí, zda-li je daná frekvence fundamentální frekvencí vstupního signálu. Výstupem algoritmu pro odhad $f_0$ pak je posloupnost frekvencí s maximální saliencí, tedy posloupnost frekvencí, které jsou nejlépe ohodnocenými kandidáty na fundamentální frekvenci. V praxi se k salienci ještě přičítají temporální závislosti, aby se zajistila kontinuita extrahovaných frekvenčních kontur a zvýšila robustnost proti šumu obsaženému v nahrávce. 
-Polyfonní signál $x(t) = x_m(t) + x_d(t)$ se skládá ze směsi signálu melodie $x_m(t)$ a hudebního doprovodu $x_d(t)$, cílem extrakce melodie je z pohledu přepisu fundamentální frekvence zvýšení robustnosti přepisu vůči tomuto \uv{melodickému šumu} $x_d(t)$. Výstupem našeho systému tedy bude následující posloupnost reprezentovaná vektorem $\hat{\mathbf{f}}$, jehož složky odpovídají odhadům frekvence v každém časovém okně:
+Shrnující práce od \cite{Poliner2007} a \cite{Salamon2014} se pro charakterizaci systémů pro transkripci odkazují na příbuznou úlohu odhadu fundamentální frekvence monfonní nahrávky. Algoritmy pro monofonní tracking na základě vstupního signálu $x(t)$ počítají \textit{funkci salience} $S_x(f_\tau, \tau)$ pro každý krátký časový okamžik (okno) $\tau$ a frekvenci $f_\tau$. Výsledkem této funkce je relativní ohodnocení (příp. pravděpodobnost) jednotlivých frekvencí obsažených ve vstupním signálu, které značí, zda-li je daná frekvence fundamentální frekvencí znějícího hlasu. 
+
+Výstupem monofonního trackingu je posloupnost frekvencí s maximální saliencí, tedy posloupnost frekvencí, které jsou nejlépe ohodnocenými kandidáty na fundamentální frekvenci. V praxi se k salienci ještě přičítají temporální závislosti, aby se zajistila kontinuita extrahovaných frekvenčních kontur a zvýšila robustnost proti šumu obsaženému v nahrávce. 
+
+Přejdeme-li k úloze extrakce melodie, obecně se vstupní polyfonní signál $x(t) = x_m(t) + x_d(t)$ skládá ze směsi melodického hlasu $x_m(t)$ a hudebního doprovodu $x_d(t)$, cílem metod pro extrakci je z pohledu přepisu fundamentální frekvence zvýšení robustnosti algoritmu vůči tomuto \uv{melodickému šumu} $x_d(t)$. Výstupem našeho systému tedy bude posloupnost odhadů frekvence v každém časovém okně vstupního signálu, reprezentovaná vektorem $\hat{\mathbf{f}}$:
 
     $$\hat{\mathbf{f}} = \argmax_{\mathbf{f}}{[\sum_{\tau}{S'_x(f_\tau, \tau)} + C(\mathbf{f})]}$$
 
 kde $f_\tau$ je frekvence na pozici $\tau$ ve vektoru $\mathbf{f}$. $S'_x(f_\tau, \tau)$ je upravená funkce salience, která při výpočtu zohledňuje vliv doprovodu a složka $C(\mathbf{f})$ představuje temporální vlastnosti melodie. 
 
-Spolu s odhadem frekvencí by také měl systém na výstupu určit úseky, kdy v nahrávce melodie zní a kdy nikoli. K výstupu tedy patří také vektor $\hat{\mathbf{v}}$, se stejným počtem složek jako $\hat{\mathbf{f}}$, který značí znělost melodie v každém časovém okně $\tau$.
+Spolu s odhadem frekvencí by také měl systém na výstupu určit úseky, ve kterých v nahrávce melodie zní a kdy nikoli. K výstupu tedy patří také vektor $\hat{\mathbf{v}}$, se stejným počtem složek jako $\hat{\mathbf{f}}$, který značí znělost melodie v každém časovém okně $\tau$.
 
 Většina existujících metod sdílí podobnou základní strukturu při řešení extrakce, která se zakládá na popsané formalizaci. Prvním krokem je transformace zvuku do frekvenční domény a následný odhad znějících výšek tónů v polyfonním signálu (výpočet \textit{funkce salience}), druhým krokem je pak zpracování těchto odhadů a výběr melodie (tedy zpřesnění výsledné $\hat{\mathbf{f}}$ pomocí $C(\mathbf{f})$). Přístupy k řešení těchto dvou kroků již s konkrétními příklady nastíníme v dalších sekcích.
 
 \subsection{Odhad výšek tónů}
 
 \subsubsection{Spektrální analýza}
-- předzpracování
-    - 
+
+Zvuk hraného tónu na melodickém nástroji je z fyzikálního pohledu periodická změna tlaku vzduchu. Perioda tohoto signálu se nazývá fundamentální frekvence (označujeme F0) a zpravidla je tento signál složen ze součtu řady sinusoid, jejichž frekvence jsou celočíselným násobkem fundamentální frekvence. V čase měnící se amplitudy těchto \textit{harmonických frekvencí} udávají hlasitost a barvu hlasu, výška první harmonické frekvence (tj. výška fundamentální frekvence) pak ve většině případů odpovídá posluchačem vnímané výšce tónu. 
+
+\textcolor{red}{TODO obrázek: signál -> spektrum -> salience}
+
+Prvním krokem metod pracujících s hudebním signálem je proto provedení spektrální analýzy, jde o převod zvuku do frekvenční reprezentace, která odhaluje tyto harmonické struktury tónů a umožňuje s nimi dále pracovat. Jednotlivé tóny se v této reprezentaci jeví jako množiny lokálních maxim v odpovídajících frekvenčních pásmech spektrogramu. Obecným cílem \textit{salienční funkce} je pak zvýraznění fundamentálních frekvencí tónů, odstranění zbylých alikvót a potlačení neharmonického obsahu.
+
+% \subsubsection{Krátkodobá Fourierova transformace}
+
+Přístupů ke spektrální analýze je více, přímočará a podle \cite{Dressler2016} nejčastěji používaná metoda je krátkodobá Fourierova transformace (STFT). Jejím principem je rozdělení vstupního signálu na množinu překrývajících se oken konstantní délky a výpočet Fourierovy transformace těchto krátkých zvukových úseků. Komplexní výsledek transformace umocníme a získáme tzv. výkonové spektrum signálu, které obsahuje informaci o poměrech energie frekvencí, ze kterých se signál v okně skládá. 
+
+\textcolor{red}{TODO? umocněná rovnice STFT }
+
+Na libovolnou metodu převodu diskretizovaného signálu na frekvenční doménu se inherentně vztahuje Gaborův limit (související s principem neurčitosti). Volbou délky vstupního okna transformace zpřesňujeme buď frekvenční nebo časové rozlišení výsledné spektrální reprezentace. Zvolíme-li krátké vstupní okno, zvyšujeme časové rozlišení (krátké okno lépe zachycuje rychlé změny průběhu signálu), avšak ztrácíme přesnost na frekvenční ose, opačný vztah platí pro volbu delšího okna.
+
+Tato limitace je markatní zejména pokud STFT používáme pro hudební data. Z povahy hudebních intervalů a harmonických struktur tónů platí, že téměř všechny periodické signály se v hudební skladbě vyskytují ve vzájmených relativních poměrech (v případě intervalů v poměrech $2^{\frac{n}{12}}$ a v případě harmonických frekvencí v celočíselných), u vyšších tónů jsou proto rozdíly mezi relevantními frekvencemi absolutně větší než u nižších tónů. Frekvenční rozlišení STFT je konstantní na celém výstupním frekvenčním rozsahu. V praxi proto volba jakékoli velikosti okna zajistí dobrý poměr frekvenčního a časového rozlišení jen pro část rozsahu. Ve výsledku je pak buď pro vyšší frekvence okno příliš velké (zbytečně detailní rozlišení frekvence na úkor časového) a nebo naopak pro nižší frekvence je okno nedostačující (rozlišení frekvence nemusí být ani na úrovni půltónů).
+
+Z tohoto důvodu existují vedle STFT i další metody, jejichž cílem je nabídnout lepší kompromis frekvenčně-časového rozlišení v kontextu melodických dat. \cite{Goto1999} používají MRFFT (Multi-Resolution Fast Fourier Transform), principem je opakovaný downsampling signálu (převzorkování na nižší vzorkovací frekvenci) a aplikace Fourierovy transformace na každý vzniklý signál; s každou iterací spektrum obsahuje čím dál podrobnější informace o nižších frekvencích, protože vyšší frekvence se při downsamplingu ztratí. \cite{Brown1990} popsala metodu Constant-Q Transform (CQT), která spočívá v použití proměnné délky okna Fourierovy transformace pro výstupní frekvenční pásma, která rovnoměrně pokrývají logaritmickou osu frekvence. \cite{Paiva2004} napodobují mechanismy lidského sluchu pomocí banky pásmových filtrů s logaritmicky rozmístěnými mezními frekvencemi a sumy autokorelací na jednotlivých frekvenčních pásmech signálu.
+
+\subsubsection{Postprocessing spektrogramu}
+
+Častým následujícím krokem je převod frekvenční osy na logaritmickou škálu pomocí banky filtrů (, ). Každý hudební interval odpovídá určitému podílu frekvencí tónů, v logaritmické škále jsou tudíž 
+
+- předzpracování signálu
+    - bandpass? Resampling?
 - spektrální analýza
     - proč - k čemu je
         - převod zvukového signálu z časové domény do frekvenční domény
@@ -53,16 +79,37 @@ Většina existujících metod sdílí podobnou základní strukturu při řeše
         - There is evidence that the choice of the spectral analysis front-end has not such a marked influence on the overall accuracy of the melody extraction.
             - \cite{Dressler2016}, \cite{Salamon2014}
     - postprocessing spektra
+        - filterbank \cite{Ryynanen2008}
         - peak picking  
-            - IF peak correction
+            - lokální maxima \cite{Arora2013}
+            - IF peak correction (Salamon)
             - IF-based peak selection? (\cite{Goto1999})
             - prokládání kubických funkcí
         - equal loudness
-        - whitening
+        - suppresing low amplitude or noise content
+            - spectral whitening
         - bandpass filtr \cite{Goto1999}
+        - harmonic/percussive source separation (HPSS)
 
 - zpracování spektra
-
+    - co je salience function, proč
+        Pitch salience representations are time-frequency represen- tations that aim to measure the saliency (i.e. perceived amplitude/energy) of frequencies over time. They typically rely on the assumption that sounds humans perceive as having a pitch have some kind of harmonic structure. The ideal salience function is zero everywhere where there is no perceptible pitch, and a positive value that reflects the pitches’ perceived loudness at the fundamental frequency. - bittner17
+    - temporal approaches
+        - tohle furt moc nechápu
+            - filterbank -> subband signals
+            -> compression, half-wave rectification, low-pass
+            -> predominant signal period in each frequency band
+    - harmonic summation
+    - ((normalized) subharmonic summation) - vůbec nevim, jak se to liší od HS
+    - joint pitch determination / modeling
+        - source/filter modeling
+    - Fan chirp transform for music representation Cancela
+    - data-based
+        - SVM classifier (Poliner)
+        - Non-negative 
+    - deep models
+        - nejsou nejlépe srovnatelné s ostatními salience funkcemi, protože často mají pro výpočet salience větší kontext než jedno FFT okno
+        - multicolumn deep neural networks \cite{Kum2016}
 
 
  jde zejména o zohlednění frekvenčních charakteristik melodických signálů a metody se liší například ve volbě druhu spektrální transformace signálu
