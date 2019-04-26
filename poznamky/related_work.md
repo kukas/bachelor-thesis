@@ -1,6 +1,34 @@
 # Related Work
 
 
+- předzpracování signálu
+    - bandpass? Resampling?
+- spektrální analýza
+    - proč - k čemu je
+        - převod zvukového signálu z časové domény do frekvenční domény
+        - jelikož tóny jsou zpravidla složeny z harmonických složek, které mají jasnou frekvenci, na spektru se projeví jako řada maxim
+    - metody spektrální analýzy
+        - STFT
+            - tu asi rozepsat trochu
+        - STFT odvozené - CQT, MRTFT
+            - MRFFT \cite{Goto1999}
+            - CQT: (Tachibana et al., 2010) and (Chien et al., 2012)
+        - correlogram
+        - There is evidence that the choice of the spectral analysis front-end has not such a marked influence on the overall accuracy of the melody extraction.
+            - \cite{Dressler2016}, \cite{Salamon2014}
+    - postprocessing spektra
+        - filterbank \cite{Ryynanen2008}
+        - peak picking  
+            - lokální maxima \cite{Arora2013}
+            - IF peak correction (Salamon)
+            - IF-based peak selection? (\cite{Goto1999})
+            - prokládání kubických funkcí
+        - equal loudness
+        - suppresing low amplitude or noise content
+            - spectral whitening
+        - bandpass filtr \cite{Goto1999}
+        - harmonic/percussive source separation (HPSS)
+
 ------
 
 kapitoly:
