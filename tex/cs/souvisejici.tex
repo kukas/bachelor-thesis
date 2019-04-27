@@ -23,7 +23,7 @@ První formulace je v souladu s doposud používanou definicí. Zbylé dvě se s
 
 Jen do soutěže MIREX se od roku 2005 přihlásilo 45 týmů s 62 různými metodami pro extrakci melodie, s různou mírou přesnosti přepisu. Mezi přístupy k tomuto problému tedy existuje veliká rozmanitost, jejíž kompletní popis přesahuje rámec této práce. Zaměříme se proto na společné rysy a celkové trendy v oboru. 
 
-Shrnující práce od \cite{Poliner2007} a \cite{Salamon2014} se pro charakterizaci systémů pro transkripci odkazují na příbuznou úlohu odhadu fundamentální frekvence monfonní nahrávky. Algoritmy pro monofonní tracking na základě vstupního signálu $x(t)$ počítají \textit{funkci salience} $S_x(f_\tau, \tau)$ pro každý krátký časový okamžik (okno) $\tau$ a frekvenci $f_\tau$. Výsledkem této funkce je relativní ohodnocení (příp. pravděpodobnost) jednotlivých frekvencí obsažených ve vstupním signálu, které značí, zda-li je daná frekvence fundamentální frekvencí znějícího hlasu. 
+Shrnující práce od \cite{Poliner2007} a \cite{Salamon2014} se pro charakterizaci systémů pro transkripci odkazují na příbuznou úlohu odhadu fundamentální frekvence monfonní nahrávky. Algoritmy pro monofonní tracking na základě vstupního signálu $x(t)$ počítají \emph{funkci salience} $S_x(f_\tau, \tau)$ pro každý krátký časový okamžik (okno) $\tau$ a frekvenci $f_\tau$. Výsledkem této funkce je relativní ohodnocení (příp. pravděpodobnost) jednotlivých frekvencí obsažených ve vstupním signálu, které značí, zda-li je daná frekvence fundamentální frekvencí znějícího hlasu. 
 
 Výstupem monofonního trackingu je posloupnost frekvencí s maximální saliencí, tedy posloupnost frekvencí, které jsou nejlépe ohodnocenými kandidáty na fundamentální frekvenci. V praxi se k salienci ještě přičítají temporální závislosti, aby se zajistila kontinuita extrahovaných frekvenčních kontur a zvýšila robustnost proti šumu obsaženému v nahrávce. 
 
@@ -35,13 +35,13 @@ kde $f_\tau$ je frekvence na pozici $\tau$ ve vektoru $\mathbf{f}$. $S'_x(f_\tau
 
 Spolu s odhadem frekvencí by také měl systém na výstupu určit úseky, ve kterých v nahrávce melodie zní a kdy nikoli. K výstupu tedy patří také vektor $\hat{\mathbf{v}}$, se stejným počtem složek jako $\hat{\mathbf{f}}$, který značí znělost melodie v každém časovém okně $\tau$.
 
-Většina existujících metod sdílí podobnou základní strukturu při řešení extrakce, která se zakládá na popsané formalizaci. Prvním krokem je transformace zvuku do frekvenční domény a následný odhad znějících výšek tónů v polyfonním signálu (výpočet \textit{funkce salience}), druhým krokem je pak zpracování těchto odhadů a výběr melodie (tedy zpřesnění výsledné $\hat{\mathbf{f}}$ pomocí $C(\mathbf{f})$). Přístupy k řešení těchto dvou kroků již s konkrétními příklady nastíníme v dalších sekcích.
+Většina existujících metod sdílí podobnou základní strukturu při řešení extrakce, která se zakládá na popsané formalizaci. Prvním krokem je transformace zvuku do frekvenční domény a následný odhad znějících výšek tónů v polyfonním signálu (výpočet \emph{funkce salience}), druhým krokem je pak zpracování těchto odhadů a výběr melodie (tedy zpřesnění výsledné $\hat{\mathbf{f}}$ pomocí $C(\mathbf{f})$). Přístupy k řešení těchto dvou kroků již s konkrétními příklady nastíníme v dalších sekcích.
 
 \subsection{Odhad výšek tónů}
 
 \subsubsection{Spektrální analýza}
 
-Zvuk hraného tónu na melodickém nástroji je z fyzikálního pohledu periodická změna tlaku vzduchu. Perioda tohoto signálu se nazývá fundamentální frekvence (označujeme F0) a zpravidla je tento signál složen ze součtu řady sinusoid, jejichž frekvence jsou celočíselným násobkem fundamentální frekvence. V čase měnící se amplitudy těchto \textit{harmonických frekvencí} udávají hlasitost a barvu hlasu, výška první harmonické frekvence (tj. výška fundamentální frekvence) pak ve většině případů odpovídá posluchačem vnímané výšce tónu. 
+Zvuk hraného tónu na melodickém nástroji je z fyzikálního pohledu periodická změna tlaku vzduchu. Perioda tohoto signálu se nazývá fundamentální frekvence (označujeme F0) a zpravidla je tento signál složen ze součtu řady sinusoid, jejichž frekvence jsou celočíselným násobkem fundamentální frekvence. V čase měnící se amplitudy těchto \emph{harmonických frekvencí} udávají hlasitost a barvu hlasu, výška první harmonické frekvence (tj. výška fundamentální frekvence) pak ve většině případů odpovídá posluchačem vnímané výšce tónu. 
 
 \textcolor{red}{TODO obrázek: signál -> spektrum -> salience}
 
@@ -49,9 +49,9 @@ Prvním krokem metod pracujících s hudebním signálem je proto provedení spe
 
 % \subsubsection{Krátkodobá Fourierova transformace}
 
-Přístupů ke spektrální analýze je více, přímočará a podle \cite{Dressler2016} nejčastěji používaná metoda je krátkodobá Fourierova transformace (STFT). Jejím principem je rozdělení vstupního signálu na množinu překrývajících se oken konstantní délky a výpočet Fourierovy transformace těchto krátkých zvukových úseků. Komplexní výsledek transformace umocníme a získáme tzv. výkonové spektrum signálu, které obsahuje informaci o poměrech energie frekvencí, ze kterých se signál v okně skládá. 
+Přístupů ke spektrální analýze je více, přímočará a podle \cite{Dressler2016} nejčastěji používaná metoda je \emph{krátkodobá Fourierova transformace} (STFT). Jejím principem je rozdělení vstupního signálu na množinu překrývajících se oken konstantní délky a výpočet Fourierovy transformace těchto krátkých zvukových úseků. Komplexní výsledek transformace umocníme a získáme tzv. výkonové spektrum signálu, které obsahuje informaci o poměrech energie frekvencí, ze kterých se signál v okně skládá. 
 
-\textcolor{red}{TODO? umocněná rovnice STFT }
+$$X(f, \tau) = \int_{-W/2}^{W/2}{w(t)y(\tau + t)e^{-j2\pi f t} \mathrm{d}t}$$
 
 Na libovolnou metodu převodu diskretizovaného signálu na frekvenční doménu se inherentně vztahuje Gaborův limit (související s principem neurčitosti). Volbou délky vstupního okna transformace zpřesňujeme buď frekvenční nebo časové rozlišení výsledné spektrální reprezentace. Zvolíme-li krátké vstupní okno, zvyšujeme časové rozlišení (krátké okno lépe zachycuje rychlé změny průběhu signálu), avšak ztrácíme přesnost na frekvenční ose, opačný vztah platí pro volbu delšího okna.
 
@@ -63,26 +63,31 @@ I přes uvedené důvody se \cite{Salamon2014} a \cite{Dressler2016} domnívají
 
 \subsubsection{Postprocessing spektrogramu}
 
-Po převodu signálu na frekvenční reprezentaci následuje u většiny metod některý druh úpravy celého spektrogramu, předcházející samotnému výpočtu \textit{funkce salience}. Výsledkem tohoto kroku může být potlačení šumu a nemelodických částí signálu, zpřesnění informace o výšce znějících frekvencí nebo normalizace či jiná úprava amplitud.
+Po převodu signálu na frekvenční reprezentaci následuje u většiny metod některý druh úpravy celého spektrogramu, předcházející samotnému výpočtu \emph{funkce salience}. Výsledkem tohoto kroku může být potlačení šumu a nemelodických částí signálu, zpřesnění informace o výšce znějících frekvencí nebo normalizace či jiná úprava amplitud.
 
 Nejčastější úpravou je nalezení lokálních maxim; supresí nemaximálních oblastí se zbavíme velkého množství nemelodických složek signálu, přitom informaci o těch melodických neztratíme. Výhodou práce s množinou maxim je, že jejich frekvenci lze na základě spektra dále zpřesnit pomocí parabolické interpolace (\cite{Rao2010}) a nebo využitím úhlové frekvence (\cite{Salamon2012a}, \cite{Dressler2009}). 
 
-Jinou úpravou jsou různé druhy normalizace, ať jednoduché aplikace logaritmu na jednotlivé hodnoty spektrogramu (\cite{Cancela2008}, \cite{Bittner2017}) nebo složitější strategie normalizace, které závisí na hodnotách celého výsledku Fourierovy transformace jednoho okna (\cite{Ryynanen2008}), či které používají pohyblivé průměry nebo jinou metodu, beroucí v potaz širší zvukový kontext. Cílem normalizace je zvýraznění slabších harmonických frekvencí a potlačení celopásmových zvuků (například perkusí). Principielně podobným krokem je aplikace pásmového filtru (\cite{Goto1999}) pro zvýraznění frekvencí obsahující melodii. Případně využití psychoakustických filtrů modelující lidské vnímání hlasitosti (\cite{Salamon2012a}). Ze signálu lze také oddělit melodické nástroje a perkusivní doprovod pomocí metod separace signálů (\textit{source separation}). Používanými metodami jsou například Harmonic/Percussive Sound Separation (HPSS) (\cite{Tachibana2010}) Robust principal component analysis (RPCA) (\cite{Ikemiya2016}).
+Jinou úpravou jsou různé druhy normalizace, ať jednoduché aplikace logaritmu na jednotlivé hodnoty spektrogramu (\cite{Cancela2008}, \cite{Bittner2017}) nebo složitější strategie normalizace, které závisí na hodnotách celého výsledku Fourierovy transformace jednoho okna (\cite{Ryynanen2008}), či které používají pohyblivé průměry nebo jinou metodu, beroucí v potaz širší zvukový kontext. Cílem normalizace je zvýraznění slabších harmonických frekvencí a potlačení celopásmových zvuků (například perkusí). Principielně podobným krokem je aplikace pásmového filtru (\cite{Goto1999}) pro zvýraznění frekvencí obsahující melodii. Případně využití psychoakustických filtrů modelující lidské vnímání hlasitosti (\cite{Salamon2012a}, \cite{Ikemiya2016}). Ze signálu lze také oddělit melodické nástroje a perkusivní doprovod pomocí metod separace signálů (\emph{source separation}). Používanými metodami jsou například Harmonic/Percussive Sound Separation (HPSS) (\cite{Tachibana2010}) Robust principal component analysis (RPCA) (\cite{Ikemiya2016}).
 
 \subsubsection{Funkce salience}
 
-% Jednotlivé tóny se v této reprezentaci jeví jako množiny lokálních maxim v odpovídajících frekvenčních pásmech spektrogramu. Obecným cílem \textit{salienční funkce} je pak zvýraznění fundamentálních frekvencí tónů, odstranění zbylých alikvót a potlačení neharmonického obsahu.
+Salience tónu vyjadřuje míru důležitosti či nápadnosti ke svému hudebnímu okolí. Nejvíce ji ovlivňuje hlasitost v poměru ke zbylým znějícím hlasům, vliv má ale také řada dalších charakteristik hraní. \cite{Dressler2016} mezi příklady uvádí například frekvenční modulaci, jako je vibrato nebo glissando, zejména oproti frekvenčně stálému hudebnímu doprovodu (piano, kytara). Velký vliv má samozřejmě také i barva hlasu. Lidský zpěv nebo obecně zvuky se silnějšími vyššími alikvótními frekvencemi snadněji upoutají pozornost. V případě vícehlasu mají obecně posluchači menší potíže rozeznat výšky tónů na okrajích souzvuku. Pokud má posluchač přiřadit pociťovanou výšku tónu akordu, obvykle volí nejvyšší či nejnižší ze znějících frekvencí.
 
-% Častým následujícím krokem je převod frekvenční osy na logaritmickou škálu pomocí banky filtrů (, ). Každý hudební interval odpovídá určitému podílu frekvencí tónů, v logaritmické škále jsou tudíž 
+Výstupem funkce salience pak má být ohodnocení každé výšky tónu v každém časovém okamžiku nahrávky, které co nejlépe odpovídá v relativních poměrech výše popsané zvukové salienci. Jelikož neexistují žádné studie, které by se zabývaly měřením a kvantifikací salience v hudbě, nelze posoudit, jak dobře výsledky obvyklých způsobů výpočtu funkce salience korelují s mírou, ze které vychází. \cite{Bittner2018a} se však domnívá, že odhad bude velmi hrubý, většina postupů totiž do výpočtu zahrnuje pouze hlasitost hlasu, a tedy vynechává řadu jiných důležitých faktorů, které salienci ovlivňují.
 
-% - zpracování spektra
-%     - co je salience function, proč
-%         Pitch salience representations are time-frequency represen- tations that aim to measure the saliency (i.e. perceived amplitude/energy) of frequencies over time. They typically rely on the assumption that sounds humans perceive as having a pitch have some kind of harmonic structure. The ideal salience function is zero everywhere where there is no perceptible pitch, and a positive value that reflects the pitches’ perceived loudness at the fundamental frequency. - bittner17
-%     - temporal approaches
-%         - tohle furt moc nechápu
-%             - filterbank -> subband signals
-%             -> compression, half-wave rectification, low-pass
-%             -> predominant signal period in each frequency band
+Přístupy k výpočtu by se daly zařadit do tří kategorií - sčítání harmonických frekvencí, odhad parametrů modelujících vstup a statistické metody. 
+
+Metody založené na sčítání harmonických frekvencí jsou principiálně nejjednodušší skupinou. Vychází z práce \cite{Hermes1988} a jejich podstatou je využití harmonické struktury zvuku tónů a zpravidla vyšší hlasitosti nejdůležitějšího hlasu. V základní implementaci ohodnocení salience frekvence získáme váženou sumou amplitud všech jejích harmonických frekvencí. Pro spektrogram $X(f, \tau)$ signálu $x$, funkci vah $g(f_\tau, h)$ a $N_h$ počet zahrnutých harmonických frekvencí v sumě:
+
+    $$S'_x(f_\tau, \tau) = \sum_{h=1}^{N_h}{g(f_\tau, h)\abs{X(h \cdot f, \tau)}}$$
+
+Mezi možné rozšíření této základní metody patří například 
+    - 
+
+\section{Srovnání existujících metod}
+
+Pro celkové kvantitativní srovnání metod jsme zpracovali 
+
 %     - harmonic summation
 %     - ((normalized) subharmonic summation) - vůbec nevim, jak se to liší od HS
 %     - joint pitch determination / modeling

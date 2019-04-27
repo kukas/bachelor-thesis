@@ -29,6 +29,20 @@
         - bandpass filtr \cite{Goto1999}
         - harmonic/percussive source separation (HPSS)
 
+In loose terms, the salience of a pitch is a measure of its perceptibility. Salience is closely related to loudness – in general, the louder a pitch is, the more salient it is. For example, there is typically a wide range of salience of across instrumental parts, where the melody is typically the most salient, and inner voices are less salient
+Jednotlivé tóny se v této reprezentaci jeví jako množiny lokálních maxim v odpovídajících frekvenčních pásmech spektrogramu. Obecným cílem \textit{salienční funkce} je pak zvýraznění fundamentálních frekvencí tónů, odstranění zbylých alikvót a potlačení neharmonického obsahu.
+
+Častým následujícím krokem je převod frekvenční osy na logaritmickou škálu pomocí banky filtrů (, ). Každý hudební interval odpovídá určitému podílu frekvencí tónů, v logaritmické škále jsou tudíž 
+
+- zpracování spektra
+    - co je salience function, proč
+        Pitch salience representations are time-frequency representations that aim to measure the saliency (i.e. perceived amplitude/energy) of frequencies over time. They typically rely on the assumption that sounds humans perceive as having a pitch have some kind of harmonic structure. The ideal salience function is zero everywhere where there is no perceptible pitch, and a positive value that reflects the pitches’ perceived loudness at the fundamental frequency. - bittner17
+    - temporal approaches
+        - tohle furt moc nechápu
+            - filterbank -> subband signals
+            -> compression, half-wave rectification, low-pass
+            -> predominant signal period in each frequency band
+
 ------
 
 kapitoly:
@@ -246,9 +260,6 @@ The first to appear in Table I is the data driven approach by Poliner and Ellis 
 
 \cite{Balke2017}
 
-
-
-kouknout na 
 
 ### \cite{Dressler2016}
 
