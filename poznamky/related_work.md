@@ -63,10 +63,6 @@ kapitoly:
     - machine learning
     - spectral representations (stft, cqt, mfcc, ...)
 
-## Related work historický úvodní odstavec
-
-Pokusy o vytvoření metody pro automatickou transkripci hudby se objevují již od sedmdesátých let \citep{Poliner2007}, dodnes však zůstává tento problém otevřený, zejména z důvodu strmě rostoucí obtížnosti úlohy s každým dalším přidaným hlasem ve zkoumaném signálu. V jedné z prvních prací, která se zabývá automatickým popisem muzikálních aspektů skladeb, se \cite{Goto1999} záměrně omezují na identifikaci jedné, nejhlasitější, spojité křivky fundamentní frekvence (F0) hlasu v omezeném frekvenčním rozsahu. Vzniklé transkripce pak sice nejsou kompletní, na druhou stranu je jejich získání výpočetně nenáročné a přitom poskytují sémanticky bohatý popis nahrávek, který je poměrně často shodný s melodií. Ustanovením úlohy pojmenované "Predominant-F0 Estimation" (PreFEst), budují \cite{Goto1999} základy pro vznik navazujících prací a soutěží zabývající se automatickým přepisem melodie.
-
 ## Definice melodie
 
 <!-- 
