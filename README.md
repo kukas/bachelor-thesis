@@ -12,6 +12,12 @@
 | Výsledky    | 0%   | 0%      | 0%      |
 | Závěr       | 0%   | 0%      | 0%      |
 
+Typografické dodělávky, lahůdky a drobnosti:
+- opravit skloňování citací
+- přidat nezalomitelné mezery
+
+- zbavit se černých obdélníčků
+
 ## Písemná část
 
 - úvod
@@ -20,6 +26,8 @@
             - vnímání tónů je logaritmické, oktáva je dvojnásobná frekvence nezávisle na absolutním rozdílu frekvencí
     - laický popis struktury algoritmů pro extrakci
     - krátký popis mého přístupu
+
+    - monofonní v této práci je jednohlas, nikoli jeden kanál!
 
 - related work
     - co se umí (a jak dobře)
@@ -33,6 +41,7 @@
             - Bosch nešel spustit kvůli Essentie, nepodařilo se mi to opravit (když zbude hrozně moc času a budu mít lážo plážo, tak to opravim (lol))
 
     - krátký popis CREPE a Wavenetu, protože je používám v experimentech
+    - taky popis neuronových sítí, convnetů, asi prostě bohužel všeho, co používám v experimentech
 
     - vypracovat poznámky
         - Basaran
