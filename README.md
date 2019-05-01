@@ -6,16 +6,15 @@
 | ----------- | ---- | ------- | ------- |
 | Úvod        | 5%   | 0%      | 0%      |
 | Datasety    | 80%  | 0%      | 0%      |
-| Související | 35%  | 0%      | 0%      |
+| Související | 40%  | 0%      | 0%      |
 | Evaluace    | 75%  | 0%      | 0%      |
-| Experimenty | 20%  | 20%     | 0%      |
+| Experimenty | 25%  | 20%     | 0%      |
 | Výsledky    | 0%   | 0%      | 0%      |
 | Závěr       | 0%   | 0%      | 0%      |
 
 Typografické dodělávky, lahůdky a drobnosti:
 - opravit skloňování citací
 - přidat nezalomitelné mezery
-
 - zbavit se černých obdélníčků
 
 ## Písemná část
