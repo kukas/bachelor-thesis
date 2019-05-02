@@ -1,14 +1,20 @@
 # Bakalářská práce
 
+## TODO do příští sch
+- výsledky
+- github
+    - readme tak, abych mohl navzázet za 5 let
+    - příkladové skripty
+
 ## Progress
 
 | Kapitola    | Text | Tabulky | Obrázky |
 | ----------- | ---- | ------- | ------- |
 | Úvod        | 5%   | 0%      | 0%      |
 | Datasety    | 80%  | 0%      | 0%      |
-| Související | 40%  | 0%      | 0%      |
+| Související | 55%  | 0%      | 0%      |
 | Evaluace    | 75%  | 0%      | 0%      |
-| Experimenty | 25%  | 20%     | 0%      |
+| Experimenty | 40%  | 50%     | 50%      |
 | Výsledky    | 0%   | 0%      | 0%      |
 | Závěr       | 0%   | 0%      | 0%      |
 
@@ -17,7 +23,18 @@ Typografické dodělávky, lahůdky a drobnosti:
 - přidat nezalomitelné mezery
 - zbavit se černých obdélníčků
 
+- obrázky barevně!
+
+- buď, nebo = čárka!
+- projít kurzívy
+
+- Konzistentní terminologie
+    - rozdělení - dat
+    - distribuce - pravděpodobnostní
+    - monofonní=jednohlas, jednokanálový zvuk píšu jen česky
+
 ## Písemná část
+
 
 - úvod
     - hudba
@@ -27,8 +44,14 @@ Typografické dodělávky, lahůdky a drobnosti:
     - krátký popis mého přístupu
 
     - monofonní v této práci je jednohlas, nikoli jeden kanál!
+    - rozdělení 
+
+    - obhajoba strojového učení
 
 - related work
+obecně: nebát se zmínit limitace metod, to jsou doopravdy východiska pro další práce
+kdyby nebyly limitace, tak by nebylo co dělat
+
     - co se umí (a jak dobře)
         - srovnání metod v rámci MIREXu
         - srovnání metod mimo MIREX (nad MedleyDB)
@@ -49,10 +72,17 @@ Typografické dodělávky, lahůdky a drobnosti:
         - Wavenet
 
 - datasety
+    "datasety mají mnohem delší poločas rozpadu, jejich pochopení je zásadní k interpretaci výsledků, jejich vznik formuje směr, kterým se výzkum ubírá"
+
     - dopsat pasáž o MDB-synth
     - dopsat úvod
     - dopsat wjazzd
     - napsat krátký popis MIREX dat
+    - tabulka!
+        - hodit ji na konec úvodu a před ní ještě vysvětlit jednotlivé sloupce
+    - tabulka s přehledem počtu a délky train, validačních a test dat
+
+    - pod každou kapitolu napsat, jakým způsobem je dataset používaný v práci
 
 - experimenty
     - popsat můj framework
