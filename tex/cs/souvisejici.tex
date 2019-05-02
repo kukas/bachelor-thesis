@@ -51,11 +51,13 @@ Přístupů ke spektrální analýze je více, přímočará a podle \cite{Dress
 
     $$X(f, \tau) = \int_{-W/2}^{W/2}{w(t)y(\tau + t)e^{-j2\pi f t} \mathrm{d}t}$$
 
+\textcolor{red}{TODO vysvětlit vzoreček, minimálně písmena}
+
+\subsubsection{Multirezoluční transformace}
+
 Na libovolnou metodu převodu diskretizovaného signálu na frekvenční doménu se vztahuje Gaborův limit, který popisuje závislost přesnosti lokalizace signálu ve frekvenční a časové doméně \citep{Gabor1945}. Volbou délky vstupního okna transformace zpřesňujeme buď frekvenční nebo časové rozlišení výsledné spektrální reprezentace. Zvolíme-li krátké vstupní okno, zvyšujeme časové rozlišení (krátké okno lépe zachycuje rychlé změny průběhu signálu), avšak ztrácíme přesnost na frekvenční ose, opačný vztah platí pro volbu delšího okna.
 
 Tato limitace je markatní zejména pokud STFT používáme pro hudební data. Z povahy hudebních intervalů a harmonických struktur tónů platí, že téměř všechny periodické signály se v hudební skladbě vyskytují ve vzájmených poměrech (v případě intervalů v poměrech $2^{\frac{n}{12}}$ a v případě harmonických frekvencí v celočíselných), u vyšších tónů jsou proto vzdálenosti mezi frekvencemi signálů větší než u nižších tónů. Frekvenční rozlišení STFT je však konstantní na celém výstupním frekvenčním rozsahu a volba velikosti okna transformace zajistí dobrý poměr frekvenčního a časového rozlišení jen pro část rozsahu. Ve výsledku je pak buď pro vyšší frekvence okno příliš velké (zbytečně detailní frekvenční rozlišení na úkor časového rozlišení) a nebo naopak pro nižší frekvence je okno nedostačující (rozlišení frekvence nemusí být pro basy ani na úrovni půltónů).
-
-\subsubsection{Multirezoluční transformace}
 
 Z tohoto důvodu existují vedle STFT i další metody, jejichž cílem je nabídnout lepší kompromis frekvenčně-časového rozlišení v kontextu melodických dat. \cite{Goto1999} používají MRFFT (Multi-Resolution Fast Fourier Transform), principem je opakovaný downsampling signálu (převzorkování na nižší vzorkovací frekvenci) a aplikace Fourierovy transformace na každý vzniklý signál; s každou iterací spektrum obsahuje čím dál podrobnější informace o nižších frekvencích, protože vyšší frekvence se při downsamplingu ztratí. \cite{Brown1990} popsala metodu Constant-Q Transform (CQT), která spočívá v použití proměnné délky okna Fourierovy transformace pro výstupní frekvenční pásma, která rovnoměrně pokrývají logaritmickou osu frekvence. \cite{Paiva2004} napodobují mechanismy lidského sluchu pomocí banky pásmových filtrů (Cochleagram) s logaritmicky rozmístěnými mezními frekvencemi a sumy autokorelací na jednotlivých frekvenčních pásmech signálu (Summary correlogram).
 
@@ -67,9 +69,9 @@ I přes uvedené důvody se \cite{Salamon2014} a \cite{Dressler2016} domnívají
 
 Po převodu signálu na frekvenční reprezentaci následuje u většiny metod některý druh úpravy celého spektrogramu, předcházející samotnému výpočtu \emph{funkce salience}. Výsledkem tohoto kroku může být potlačení šumu a nemelodických částí signálu, zpřesnění informace o výšce znějících frekvencí nebo normalizace či jiná úprava amplitud spektrogramu.
 
-Nejčastější úpravou je nalezení lokálních maxim (vrcholů). Supresí nemaximálních oblastí se zbavíme velkého množství nemelodických složek signálu, přitom informaci o těch melodických neztratíme. Výhodou práce s množinou vrcholů je, že jejich frekvenci lze na základě spektra dále zpřesnit pomocí parabolické interpolace (\cite{Rao2010}) a nebo využitím úhlové frekvence (\cite{Salamon2012a}, \cite{Dressler2009}). 
+Nejčastější úpravou je nalezení lokálních maxim (vrcholů). Potlačením nemaximálních oblastí se zbavíme velkého množství nemelodických složek signálu, přitom informaci o těch melodických neztratíme. Výhodou práce s množinou vrcholů je, že jejich frekvenci lze na základě spektra dále zpřesnit pomocí parabolické interpolace (\cite{Rao2010}) a nebo využitím úhlové frekvence (\cite{Salamon2012a}, \cite{Dressler2009}). 
 
-Jinou úpravou jsou různé druhy normalizace, ať jednoduché aplikace logaritmu na jednotlivé hodnoty spektrogramu (\cite{Cancela2008}, \cite{Bittner2017}) nebo složitější strategie normalizace, které se aplikují na celá výstupní okna krátkodobé Fourierovy transformace (spectral whitening, \cite{Ryynanen2008}), či které používají pohyblivé průměry nebo jinou metodu, beroucí v potaz širší zvukový kontext. Cílem normalizace je zvýraznění slabších harmonických frekvencí a potlačení celopásmových zvuků (například perkusí). Principielně podobným krokem je aplikace pásmového filtru (\cite{Goto1999}) pro zvýraznění frekvencí obsahující melodii. Případně využití psychoakustických filtrů modelující lidské vnímání hlasitosti (\cite{Salamon2012a}, \cite{Ikemiya2016}). Ze signálu lze také oddělit melodické nástroje a perkusivní doprovod pomocí metod separace signálů (\emph{source separation}). Používanými metodami jsou například Harmonic/Percussive Sound Separation (HPSS) (\cite{Tachibana2010}) nebo Robust principal component analysis (RPCA) (\cite{Ikemiya2016}).
+Jiným druhem úpravy jsou různé způsoby normalizace, ať jednoduché aplikace logaritmu na jednotlivé hodnoty spektrogramu (\cite{Cancela2008}, \cite{Bittner2017}) nebo složitější strategie normalizace, které se aplikují na celá výstupní okna krátkodobé Fourierovy transformace (spectral whitening, \cite{Ryynanen2008}), či které používají pohyblivé průměry nebo jinou metodu, beroucí v potaz širší zvukový kontext. Cílem normalizace je zvýraznění slabších harmonických frekvencí a potlačení celopásmových zvuků (například perkusí). Principielně podobným krokem je aplikace pásmového filtru (\cite{Goto1999}) pro zvýraznění frekvencí obsahující melodii. Případně využití psychoakustických filtrů modelující lidské vnímání hlasitosti (\cite{Salamon2012a}, \cite{Ikemiya2016}). Ze signálu lze také oddělit melodické nástroje a perkusivní doprovod pomocí metod separace signálů (\emph{source separation}). Používanými metodami jsou například Harmonic/Percussive Sound Separation (HPSS) (\cite{Tachibana2010}) nebo Robust principal component analysis (RPCA) (\cite{Ikemiya2016}).
 
 \subsection{Funkce salience}
 
@@ -111,8 +113,10 @@ Cílem pak je nalezení takových parametrů $\theta^{(t)}$, aby model $p(x; \th
 \textcolor{red}{TODO}
 % musim doprojít všechny existujícíc metdy
 % poliner
-%         - nejsou nejlépe srovnatelné s ostatními salience funkcemi, protože často mají pro výpočet salience větší kontext než jedno FFT okno
-%         - multicolumn deep neural networks \cite{Kum2016}
+% - nejsou nejlépe srovnatelné s ostatními salience funkcemi, protože často mají pro výpočet salience větší kontext než jedno FFT okno
+% - multicolumn deep neural networks \cite{Kum2016}
+
+Metody strojového učení 
 
 
 \subsection{Hledání melodie}

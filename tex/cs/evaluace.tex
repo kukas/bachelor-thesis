@@ -6,15 +6,17 @@ Soutěž MIREX (Music Information Retrieval Evaluation eXchange) probíhá již 
 
 Na rozdíl od jiných úloh, kde debata o zvolení nejvhodnějších objektivních metrik pro porovnávání stále probíhá, metriky pro extrakci melodie se ustanovily již v prvním ročníku (na základě dřívějších zkušeností) a zůstaly neměnné dodnes \cite{Raffel2014}. Naopak data použitá pro testování se postupně kumulují a dnes soutěž probíhá již s řadou datasetů (ADC04, MIREX05, MIREX08, MIREX09, ORCHSET), které blíže popisuje kapitola o dostupných datech.
 
-\cite{Downie2010}
+% \cite{Downie2010}
 
 \section{Trénovací, validační a testovací množina}
 
-Z dostupných dat, které pro úlohu máme k dispozici, musíme vyhradit množiny pro trénování, validaci a testování, aby byly metody porovnatelné jak mezi sebou, tak se stávajícími state-of-the-art metodami. Pro trénování se jeví jako nejvhodnější dataset MedleyDB, jednak pro svou délku a jednak pro žánrovou rozmanitost, proto je použit pro většinu popsaných experimentů. Rozdělení na tři části vychází z práce \cite{Bittner2017} a \cite{DBasaranSEssid2018}, aby byly metriky přímo porovnatelné s výsledky v uvedených článcích. Další výhodou použití stejného \textit{splitu} je možnost replikace výsledků, za použití popisované architektury, a tím pádem minimalizování možnosti nějaké velké implementační chyby v kódu. Pokud by se totiž výsledky nepodařilo replikovat se stejnými daty i architekturou, musela by být chyba jinde - tedy s největší určitostí v vyvinutém frameworku.
+Z dostupných dat, které pro úlohu máme k dispozici, musíme vyhradit množiny pro trénování, validaci a testování, aby byly metody porovnatelné jak mezi sebou, tak se stávajícími state-of-the-art metodami. Pro trénování se jeví jako nejvhodnější dataset MedleyDB, jednak pro svou délku a jednak pro žánrovou rozmanitost, proto je použit pro většinu popsaných experimentů. Rozdělení na tři části vychází z práce \cite{Bittner2017} a \cite{DBasaranSEssid2018}, aby byly metriky přímo porovnatelné s výsledky v uvedených článcích. 
 
-Dalším užitečným zdrojem dat je dataset \textit{MDB-melody-synth}, který je přesyntetizován z vícestopých nahrávek \textit{MedleyDB}, proto se nabízí použít stejné rozdělení dat, jaké se používá pro \textit{MedleyDB}, ze stejných důvodů uvedených v předchozím odstavci. Jelikož dataset neobsahuje veškerá data, ale pouze jejich podmnožinu, i v experimentech používaný \textit{split} obsahuje pouze podmnožinu z původního \textit{splitu} datasetu \textit{MedleyDB}. 
+% Další výhodou použití stejného \textit{splitu} je možnost replikace výsledků, za použití popisované architektury, a tím pádem minimalizování možnosti nějaké velké implementační chyby v kódu. Pokud by se totiž výsledky nepodařilo replikovat se stejnými daty i architekturou, musela by být chyba jinde - tedy s největší určitostí v vyvinutém frameworku.
 
-Posledním velkým datasetem, používaným pro trénování, je \textit{Weimar Jazz Database}. Zde žádný doporučený postup ani výběr rozdělení dataestu v relevatní literatuře neexistuje, proto jsem dataset rozdělil podle metody \cite{Bittner2017} na tři části (v celkové délce nahrávek na části v poměrech 63\%, 14\% a 23\%). Skladby jsou rozděleny do částí podle interpretů tak, aby se každý interpret vyskytoval právě v jedné části datasetu. Toto omezení na podmnožiny \cite{Bittner2017} nediskutuje, lze však doložit (práce \cite{Sturm2013}), že pro úlohu \textit{rozpoznání žánru} metody založené na strojovém učení vykazují po trénování a validaci na datech bez tohoto filtru výrazně lepší výsledky než stejné metody spuštěné na roztříděných datech, takové zlepšení výkonu je ale jistě umělým důsledkem špatné volby trénovací množiny. 
+Dalším užitečným zdrojem dat je dataset MDB-melody-synth, který je přesyntetizován z vícestopých nahrávek MedleyDB. Proto se nabízí použít stejné rozdělení dat, jaké se používá pro MedleyDB, ze stejných důvodů uvedených v předchozím odstavci. Jelikož dataset neobsahuje veškerá data, ale pouze jejich podmnožinu, i v experimentech používané rozdělení dat obsahuje pouze podmnožinu z původního rozdělení datasetu MedleyDB. 
+
+Posledním velkým datasetem, používaným pro trénování, je Weimar Jazz Database. Zde žádný doporučený postup ani výběr rozdělení dataestu v relevatní literatuře neexistuje, proto jsem dataset rozdělil podle metody \cite{Bittner2017} na tři části (v celkové délce nahrávek na části v poměrech 63\%, 14\% a 23\%). Skladby jsou rozděleny do částí podle interpretů tak, aby se každý interpret vyskytoval právě v jedné části datasetu. Toto omezení na podmnožiny \cite{Bittner2017} nediskutuje, lze však doložit (práce \cite{Sturm2013}), že pro úlohu rozpoznání žánru metody založené na strojovém učení vykazují po trénování a validaci na datech bez tohoto filtru výrazně lepší výsledky než stejné metody spuštěné na roztříděných datech, takové zlepšení výkonu je ale jistě umělým důsledkem špatné volby trénovací množiny. 
 
 Ostatní datasety (ADC04, MIREX05, ORCHSET) jsou v práci použity pouze jako testovací data, díky tomu lze korektně výsledky přímo srovnávat s žebříčky úlohy Melody Extraction v soutěži MIREX.
 
@@ -47,7 +49,9 @@ Obvyklý formát výstupu algoritmů je CSV soubor se dvěma sloupci. První slo
 
 Většina metrik je definována na základě porovnávání jednotlivých anotačních oken - tedy typicky srovnáním odhadovaných a pravdivých výšek melodie po konstantních časových skocích. Datasety používané pro vyhodnocování v soutěži MIREX používají časový skok délky 10 ms. V definicích budu vycházet ze značení v práci \cite{Salamon2014}. 
 
-    Označme vektor odhadovaných základních frekvencí $\mathbf{f}$ a cílový vektor $\mathbf{f^*}$, složka $f_\tau$ je buď rovna hodnotě $f_0$ melodie nebo $0$, pokud v daném čase melodie nezní. Obdobně zaveďme vektor indikátorů $\mathbf{v}$, jehož prvek na pozici $\tau$ je roven $v_\tau=1$, pokud je v daném časovém okamžiku detekována melodie a $v_\tau = 0$ v opačném případě. Podobným způsobem zavedeme i vektor cílových indikátorů melodického hlasu $\mathbf{v^*}$ a také vektor indikátorů absence melodie $\bar{v}_\tau = 1 - v_\tau$. 
+    Označme vektor odhadovaných základních frekvencí $\mathbf{f}$ a cílový vektor $\mathbf{f^*}$, složka $f_\tau$ je buď rovna hodnotě $f_0$ melodie, nebo $0$, pokud v daném čase melodie nezní. Obdobně zaveďme vektor indikátorů $\mathbf{v}$, jehož prvek na pozici $\tau$ je roven $v_\tau=1$, pokud je v daném časovém okamžiku detekována melodie a $v_\tau = 0$ v opačném případě. Podobným způsobem zavedeme i vektor cílových indikátorů melodického hlasu $\mathbf{v^*}$ a také vektor indikátorů absence melodie $\bar{v}_\tau = 1 - v_\tau$. 
+
+\textcolor{red}{přidat obrázky příkladů chyby}
 
 \subsubsection{Voicing Recall rate (Úplnost detekce)}
 
@@ -65,6 +69,8 @@ Poměr počtu časových oken, které byly nesprávně označené jako melodick�
 
     $$\mathrm{FA}(\mathbf{v}, \mathbf{v^*}) = \frac{\sum_\tau{v_\tau \bar{v}^*_\tau}}{\sum_\tau{\bar{v}^*_\tau}}$$
 
+
+\textcolor{red}{upozornit, že nižší je lepší!}
 % -------
 
 % The proportion of frames labeled as non-melody in the ground truth that are mis- takenly estimated as melody frames by the algorithm.
@@ -127,9 +133,12 @@ Celková přesnost měří výkon algoritmu jak v odhadu melodie tak v detekci m
 
 \subsubsection{Poznámka k definicím metrik}
 
-Definice RPA, RCA a OA zde uvedené se mírně liší od výchozích v práci \cite{Salamon2014}, jejich přímá implementace podle vzorce totiž vede kvůli nedostatečně dobře zadefinovanému vektoru frekvencí $\mathbf{f}$ k chybě, která byla přítomna i v nejpoužívanější, veřejné implementaci MIR metrik \textit{mir\_eval}. Tato chyba se týká zejména metriky RCA, která v původní definici chybně zahrnovala jako správné tóny ty, které algoritmus odhadl jako nulové (tedy neznějící) a zároveň jejich pravdivá hodnota byla po zobrazení na jednu společnou oktávu blízká nule (tedy původní tón byl blízký nějakému násobku referenční frekvence). Kvůli zobrazení na společnou oktávu se stanou \uv{neznělé nulové odhady} a tóny blízké referenčním frekvencím nerozlišitelné a byly nesprávně považované za korektní.
+Definice RPA, RCA a OA zde uvedené se mírně liší od výchozích v práci \cite{Salamon2014}, jejich přímá implementace podle vzorce totiž vede kvůli nedostatečně dobře zadefinovanému vektoru frekvencí $\mathbf{f}$ k chybě, která se týká zejména metriky RCA. Ta původní definici chybně zahrnovala jako správné tóny ty, které algoritmus odhadl jako nulové (tedy neznějící) a zároveň jejich pravdivá hodnota byla po zobrazení na jednu společnou oktávu blízká nule (tedy původní tón byl blízký nějakému násobku referenční frekvence). Kvůli zobrazení na společnou oktávu se stanou \uv{neznělé nulové odhady} a tóny blízké referenčním frekvencím nerozlišitelné a byly nesprávně považované za korektní. \footnote{
+    která byla přítomna i v nejpoužívanější, veřejné implementaci MIR metrik \textit{mir\_eval}. V praxi chyba této metriky na datasetu MedleyDB mohla dosahovat až sedmi procentních bodů, na repozitáři hostovaném na serveru Github jsme již spolu s autory chybu odstranili (odkaz na Github issue: \url{https://github.com/craffel/mir_eval/issues/311}). Opravný patch bude zahrnut do další verze balíku. Výsledky v této práci jsou počítány s opravenou verzí.}
 
-V praxi chyba této metriky na datasetu MedleyDB mohla dosahovat až sedmi procentních bodů, na repozitáři hostovaném na serveru Github jsme již spolu s autory chybu odstranili \footnote{odkaz na Github issue: \url{https://github.com/craffel/mir_eval/issues/311}}. Opravný patch bude zahrnut do další verze balíku.
+\textcolor{red}{přepsat footnote ještě trochu}
+% TODO:
+% 
 
 \subsection{Další metriky}
 
