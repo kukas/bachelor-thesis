@@ -11,10 +11,10 @@
 | Kapitola    | Text | Tabulky | Obrázky |
 | ----------- | ---- | ------- | ------- |
 | Úvod        | 5%   | 0%      | 0%      |
-| Datasety    | 80%  | 0%      | 0%      |
+| Datasety    | 80%  | 20%      | 0%      |
 | Související | 55%  | 0%      | 0%      |
 | Evaluace    | 75%  | 0%      | 0%      |
-| Experimenty | 40%  | 50%     | 50%      |
+| Experimenty | 60%  | 50%     | 50%     |
 | Výsledky    | 0%   | 0%      | 0%      |
 | Závěr       | 0%   | 0%      | 0%      |
 
@@ -83,6 +83,8 @@ kdyby nebyly limitace, tak by nebylo co dělat
     - tabulka s přehledem počtu a délky train, validačních a test dat
 
     - pod každou kapitolu napsat, jakým způsobem je dataset používaný v práci
+
+    - možná kapitola o tom, jaké různé postupy vytváření dat existují (zvlášť zahrnutí multif0 postupů)
 
 - experimenty
     - popsat můj framework

@@ -6,7 +6,7 @@ Pro odhad výšky tónů porovnáváme architektury inspirované pracemi \cite{K
 
 Pro detekci melodie pak srovnáváme jednoduchou metodu práhování a složitější samostatný modul, založený na hlubokých neuronových sítích.
 
-\section{Architektura CREPE}
+\section{Architektura CREPE}\label{sec:crepe}
 
 První sada experimentů se zakládá na architektuře popsané v článku od \cite{Kim2018} použité pro sledování jednohlasu. Jak blíže popisujeme v kapitole \nameref{cha:souvisejici}, cílem monopitch trackingu je určit konturu základní frekvence melodického nástroje v jednohlasé nahrávce. Tato nahrávka se zpravidla skládá ze směsi čistého signálu hlasu a šumu v pozadí. Pokud však rozšíříme pojem šumu v pozadí tak, aby zahrnoval i melodický doprovod, pak dostáváme polyfonní signál, tedy vstupní signál pro metody extrakce melodie.
 
@@ -41,13 +41,6 @@ Optimalizace probíhá pomocí algoritmu Adam \citep{Kingma2014} s parametrem le
 \begin{table}[h!]
 
 \centering
-%%% Tabulka používá následující balíčky:
-%%%   - booktabs (\toprule, \midrule, \bottomrule)
-%%%   - dcolumn (typ sloupce D: vycentrovaná čísla zarovnaná na
-%%%     desetinnou čárku
-%%%     Všimněte si, že ve zdrojovém kódu jsou desetinné tečky, ale
-%%%     tisknou se čárky.
-%%% Dále používáme příkazy \pulrad a \mc definované v makra.tex
     \begin{tabular}{l@{\hspace{1.5cm}}rrrrrrr}
     \toprule
     {}         &  \textbf{1.}   &  \textbf{2.}  &  \textbf{3.}  &  \textbf{4.}  &  \textbf{5.}   &  \textbf{6.}  &  \textbf{Celk. parametrů} \\
@@ -71,7 +64,7 @@ Optimalizace probíhá pomocí algoritmu Adam \citep{Kingma2014} s parametrem le
 % - formulace jako klasifikační úloha, nikoli regresní
 % - je lepší odhadovat opravdové pravděpodobnostní rozdělení a nebo jejich škálované? (přijde mi, že kvůli sigmoid aktivaci bude jednodušší 1.0 = Truth, protože ty vstupní logity do sigmoid aktivace můžou být crazyshit velký)
 % - crepe model - např. nedává vůbec smysl velikost kernelu 64 v posledních vrstvách, zbytečně se tam přidávají nuly jako padding
-
+% - ukázat vizualizaci první vrstvy
 
 \subsection{Replikace výsledků CREPE}
 
@@ -321,7 +314,7 @@ Experiment jsem provedl na síti se vstupním oknem 2048 vzorků, multiplikátor
 Zlepšení výsledků se pohybuje v řádu desetin procentních bodů, tedy není příliš vysoké. Zlepšení je nejvíce patrné v případě pěti různě širokých konvolučních vrstev, kde dosahuje $1.3$ procentního bodu. Analýzou výsledků přesnosti podle výšky noty se mi nepodařilo prokázat domněnku, že by konvoluce s více rozlišeními pomáhala u odhadu not vyšších frekvencí. Její přínos je drobný a projevuje se na většině frekvenčních pásem.
 
 
-\section{Architektura Wavenet}
+\section{Architektura WaveNet}
 
 Generativní model WaveNet popsaný týmem \cite{Oord2016} je architektura navržená pro generování zvukového signálu. Autoři však v článku zmiňují, že se architekturu pokusili využít i pro převod mluvené řeči na text (dataset TIMIT), a podařilo se jim dosáhnout výsledků srovnatelných se state-of-the-art. Architektura spočívá ve vrstvení dilatovaných konvolucí s rozšiřujícím se rozsahem. Díky exponenciálně rostoucím dilatacím se také exponenciálně zvětšuje receptivní pole jednotlivých konvolučních vrstev. Díky této vlastnosti pak například stačí pro pokrytí 1024 vzorků vstupu pouze 9 vrstev s šířkou kernelu 2 a dilatacemi 1,2,4,8 ... 512. Pokud bychom stejného receptivního pole chtěli dosáhnout pomocí obvyklých konvolucí počet potřebných vrstev by byl lineární vzhledem k šířce pole. Vrstvení konvolucí je porovnáno na obrázcích \ref{obr:wavenet_conv} a \ref{obr:wavenet_dilated}. Síť tedy velmi snadno pokryje široký kontext, což je vlastnost, která je pro zpracování zvukového signálu užitečná.
 
@@ -359,34 +352,25 @@ Pro extrakci melodie využijeme jako výchozí model upravenou architekturu od \
 
 Pro výpočet odhadů výšky tónu sečteme všechna skip propojení, tento součet zpracujeme dvěma konvolucemi, druhá z nich má na výstupu 128 kanálů zpracovaných sigmoidou, což odpovídá rozsahu odhadovaných not. Jelikož všechny popsané transformace zachovávají šířku vstupu, dostáváme po této konvoluci odhady výšek not pro každý vstupní vzorek zvuku, taková anotace je zbytečně podrobná, tudíž výsledné anotace podvzorkujeme pomocí pooling vrstvy počítající průměr hodnot.
 
+\begin{figure}[h]\centering
+    \includegraphics[scale=0.6]{../img/figures/wavenet_overfit}
+    \caption{Vývoj ztrátové funkce při učení architektury \cite{Martak2018} pro extrakci melodie. Zatímco hodnoty pro trénovací množinu mají klesající tendenci, hodnoty na validační množině rostou, síť se velmi rychle přeučuje.}\label{obr:wavenet_overfit}
+\end{figure}
 
+Po $20\,000$ iteracích s velikostí dávky 20 a parametrem learning rate $0.001$ síť dosahuje na validačních datech přesnost odhadu tónu $0.583$ (RPA) a přesnost odhadu tónu nezávisle na oktávě $0.692$ (RCA). V porovnání s výsledky architektury CREPE jsou tyto výsledky výrazně nižší, krom toho učení sítě trvá velmi dlouho (14 minut na 1000 iterací), zejména kvůli obrovské kapacitě a topologické komplexitě modelu ($2\,009\,728$ trénovatelných parametrů). Veliká kapacita modelu také způsobuje přeučení sítě (viz \ref{obr:wavenet_overfit}), pokusíme se tedy zrychlit trénování a zabránit přeučení výrazným snížením počtu filtrů dilatačních a skip propojení ze 128 na 16, a použitím pouze jednoho dilatačního bloku. Také snížíme velikost trénovací dávky na 8 pro další zrychlení učení. Nová síť obsahuje 10 vrstev s dilatacemi $(1, 2, 4, 8, \dots, 512)$, a tedy $34\,736$ parametrů a dosahuje RPA $0.598$ a RCA $0.696$ po $100\,000$ iteracích při rychlosti trénování 30 sekund na 1000 iterací. Síť tedy dosahuje stejných výsledků ve výrazně kratším čase.
 
+Z předchozích experimentů na architektuře CREPE víme, že jemnější výstupní reprezentace pomáhá snížit počet chyb o půltón, upravíme tedy síť tak, aby na jeden půltón připadalo 5 výstupních složek vektoru, zmenšíme výstupní frekvenční rozsah a hodnoty cílového vektoru změníme z ostré predikce konkrétního tónu na \uv{rozmlžený} gaussián se směrodatnou odchylkou $18\,\rm centů$ (pro podrobnější popis viz \ref{sec:crepe}). Síť po této úpravě dosahuje RPA 0.629 a RCA 0.731 po $100\,000$ iteracích. 
 
-% \begin{table}[h!]
-% \centering
-%     \begin{tabular}{rr}
-%     \toprule
-%     Martak &   RPA &   RCA \\
-%     \midrule
-%         1 & 0.583 & 0.692 \\
-%     \bottomrule
-%     \end{tabular}
-% \caption{Architektura CREPE, vliv multirezoluční vstupní konvoluční vrstvy.}\label{tab:crepe_multirozliseni}
-% \end{table}
+\begin{figure}[h]\centering
+    \includegraphics[scale=0.8]{../img/wavenet_lastlayer}
+    \caption{Úprava posledních vrstev WaveNet architektury.}\label{obr:wavenet_lastlayer}
+\end{figure}
 
+Předběžným hledáním výchozí architektury pro nadcházející sadu experimentů jsme došli k následujícím úpravám. Dilatované konvoluce ve všech vrstvách mají šířku 3 místo 2, jejich vstup tedy závisí na všech okolních vzorcích, nikoli jen na předchozích, jak je naznačeno na obrázku \ref{obr:wavenet_dilated}. Dále jsme odstranili konvoluční vrstvu, která zpracovává vstup, ten je tedy přímo zpracován dilatačním blokem. Ze skip propojení se zpracovává pouze poslední, nedochází ke sčítání všech, což je úprava, kterou pro přepis řeči používají původní autoři článku WaveNet \cite{Oord2016}. Tento výstup je následně zpracován pooling vrstvou a dvěmi konvolucemi se skoky (stride), viz obrázek \ref{obr:wavenet_lastlayer}. Tato síť dosahuje RPA 0.655 a RCA 0.759 po $100\,000$ iteracích a je základem pro následující experimenty.
 
-
-% výsledek bude
-% smooth labels, smoothing 0.18
-% omezený rozsah
-% batchsize 8
-% adam opt --iterations 100000 --learning_rate_decay_steps 10000 --learning_rate_decay 0.8 
-% last layer:
-% avgpool_p5_s5_Psame--conv_f180_k16_s4_Psame_arelu--conv_f360_k64_s8_Psame
 \subsection{Vliv počtu filtrů dilatačních vrstev a skip propojení}
 
-Jedním ze zásadních faktorů ovlivňujících kapacitu sítě, je počet filtrů dilatačních vrstev a skip propojení. Podobně jako v případě architektury CREPE nalezneme vhodnou kapacitu sítě tak, aby nedocházelo k přeučení (overfitting) ani k nedoučení (underfitting) na trénovací množině.
-Experimenty byly spuštěny na síti s dilatacemi $(1,2,4,8,16,\dots,512)$, s kernelem dilatovaných konvolucí šíčky 3, bez konvoluce pro předzpracování signálu
+Jedním ze zásadních faktorů ovlivňujících kapacitu sítě je počet filtrů dilatačních vrstev a skip propojení. Tyto kanály nesou informaci o vzorku a jeho okolí, v závislosti na vrstvě dilatace. Výstup poslední vrstvy má tedy délku počtu vstupních vzorků 2848 a 16 kanálů. Každý výstupní vzorek nese informaci o svém okolí délky 2047. Podobně jako v případě architektury CREPE nalezneme vhodnou kapacitu sítě tak, aby nedocházelo k přeučení (overfitting) ani k nedoučení (underfitting) na trénovací množině.
 
 \begin{table}[h!]
 \centering
@@ -412,17 +396,48 @@ Experimenty byly spuštěny na síti s dilatacemi $(1,2,4,8,16,\dots,512)$, s ke
 \caption{Architektura WaveNet, vliv počtu filtrů dilatačních vrstev a skip propojení.}\label{obr:wavenet_dil_skip_channels}
 \end{figure}
 
-\subsection{Systematické prohledávání počtu a šířky dilatačních vrstev}
+Na základě výsledků volíme pro další experimenty nastavení 16 filtrů pro dilatované konvoluce a skip propojení. Při nastavení 24 a více filtrů dosažená přesnost sítě stagnuje, 16 filtrů je kompromisem z hlediska rychlosti trénování.
 
-Způsob propojení dilatačních vrstev a jejich počet ovlivňuje 
+\subsection{Systematické prohledávání počtu dilatačních vrstev a bloků}
+
+Velikost zpracovávaného kontextu lze v architektuře WaveNet ovlivnit třemi různými hyperparametry. Jde o počet vrstev v bloku $n_{\mathrm{layers}}$, počet dilatačních bloků poskládaných nad sebou $n_{\mathrm{stacks}}$ a šířka kernelu dilatací $n_{\mathrm{width}}$. Přesně lze dosah vypočítat jako 
+
+    $$\mathrm{receptive\_field} = (n_{\mathrm{width}}-1)\cdot(\sum_d^{n_{\mathrm{layers}}}{2^{(d-1)}})\cdot n_{\mathrm{stacks}}+1$$
+
+Dosud jsme testovali sítě s jedním blokem o deseti vrstvách s dilatacemi $(1,2,4,8,16,\dots,512)$ s šířkou konvolucí 3, její dosah je tedy 2047 vzorků. Systematickým prohledáváním prozkoumáme vliv delšího kontextu měněného pomocí $n_{\mathrm{layers}}$ a $n_{\mathrm{stacks}}$. Při vyhodnocování experimentu je nutné vzít v úvahu, že přidání nové vrstvy, případně celého nového bloku, zároveň zvyšuje kapacitu modelu, což také ovlivňuje výslednou přesnost modelu. Šířky kontextu a kapacity jsou uvedené v tabulce \ref{tab:wavenet_dilation_width_numbers}.
+
+V architektuře modelu jsme pro tento experiment provedli změnu ve zpracování skip propojení. V této sadě se nebere poslední skip propojení, nýbrž všechna se spojí v ose kanálů a slouží jako vstup pro následující pooling vrstvu a konvoluci. Z toho důvodu má model mnohem více parametrů, na druhou stranu je zajištěno, že poslední vrstvy mohou využít informace ze všech skip spojení k odhadu výšek. Na základě srovnání tréninkové a validační ztrátové funkce však modely nevykazují známky přeučení.
+
+\begin{table}[h!]
+\centering
+    \begin{tabular}{lrrrrr}
+    \toprule
+    Max. dilatace & 64 & 128 & 256 & 512 & 1024 \\
+    Počet bloků   & {} & {}  & {}  & {}  & {}  \\
+    \midrule
+    1 (dosah) & 255  & 511  & 1023 & 2047 & 4095 \\
+    1 (kapacita) & $4\,483\,644$  & $4\,531\,836$ & $4\,580\,028$ & $4\,628\,220$ & $4\,676\,412$ \\
+    2 (dosah) & 509  & 1021 & 2045 & 4093 & 8189 \\
+    2 (kapacita) & $4\,820\,988$  & $4\,917\,372$ & $5\,013\,756$ & $5\,110\,140$ & $5\,206\,524$ \\
+    3 (dosah) & 763  & 1531 & 3067 & 6139 & $12\,283$ \\
+    3 (kapacita) & $5\,158\,332$  & $5\,302\,908$ & $5\,447\,484$ & $5\,592\,060$ & $5\,736\,636$ \\
+    4 (dosah) & 1017 & 2041 & 4089 & 8185 & --- \\
+    4 (kapacita) & $5\,495\,676$  & $5\,688\,444$ & $5\,881\,212$ & $6\,073\,980$ & --- \\
+    \bottomrule
+    \end{tabular}
+\caption{Architektura WaveNet, dosah a kapacita v závislosti na dilatačních počtu vrstev a bloků.}\label{tab:wavenet_dilation_width_numbers}
+\end{table}
 
 \begin{figure}[h]\centering
     \includegraphics[scale=0.5]{../img/figures/wavenet_stacks_gridsearch.pdf}
-\caption{Architektura WaveNet, systematické prohledávání počtu a šířky dilatačních vrstev.}\label{obr:wavenet_stacks_gridsearch}
+\caption{Architektura WaveNet, systematické prohledávání počtu dilatačních vrstev a bloků, vlevo hodnoty RPA, vpravo RCA.}\label{obr:wavenet_stacks_gridsearch}
 \end{figure}
 
+Z tabulky lze dojít k pozorování, že přidávání počtu vrstev zvyšuje výslednou přesnost víceméně vždy, to neplatí o počtu bloků, u kterých se zdá, že nejvhodnější počet je 2. Pokud se zaměříme na srovnání výsledků s podobným dosahem, zdá se že výsledky jsou poměrně podobné, zejména pro širší dosahy, pro kratší se zdá lepší využít spíše více vrstev než více bloků.
 
 \subsection{Vliv velikosti šířky kernelu dilatací}
+
+Jiným způsobem, jak zvýšit velikost zpracovávaného kontextu, je volba velikosti šířky kernelu dilatací $n_{\mathrm{width}}$. Provedeme čtyři experimenty s různou šířkou. Šířka 2 je zvolena v původním článku z toho důvodu, že konvoluce se tím stávají \uv{kauzální} --- jejich výstup závisí pouze na vzorcích před nimi (viz obrázky \ref{obr:wavenet_conv}, \ref{obr:wavenet_dilated}). To je výhodné pro generativní úlohy, u kterých chceme, aby hodnota nového generovaného vzorku v audio signálu nezávisela na budoucích, zatím neexistujících vzorkách. U klasifikačních úloh takto omezeni nejsme, tudíž můžeme s nastavením experimentovat. 
 
 \begin{table}[h!]
 \centering
@@ -440,11 +455,15 @@ Způsob propojení dilatačních vrstev a jejich počet ovlivňuje
 \end{table}
 
 \begin{figure}[h]\centering
-    \includegraphics[scale=0.6]{../img/figures/wavenet_dil_skip_channels.pdf}
+    \includegraphics[scale=0.6]{../img/figures/wavenet_dilation_width.pdf}
 \caption{Architektura WaveNet, vliv velikosti šířky kernelu dilatací.}\label{obr:wavenet_dilation_width}
 \end{figure}
 
+Z tabulky \ref{tab:wavenet_dilation_width} a grafu \ref{obr:wavenet_dilation_width} vyplývá, že tato síť při změnách šířky kernelu dilatace svou výslednou přesnost na validačních datech nemění.
+
 \subsection{Vliv výstupní transformace skip propojení}
+
+Volba transformace skip propojení se v článku týmu \cite{Oord2016} nediskutuje, \cite{Martak2018} také přejímají součet všech skip výstupů Vyzkoušíme proto dvě další možnosti práce se skip propojeními - výběr posledního skip propojení a dále konkatenace všech skip propojení do mnohakanálového výstupu. V případě výběru posledního či součtu jde o transformace, které lze popsat konvolucí nad konkatenovanými skip propojeními. Dalo by se tedy říct, že výběr a součet jsou v tomto případě speciálními případy konkatenace výstupů. Výběr poslední vrstvy také znamená, že nejsou potřeba předchozí skip propojení, což urychluje trénování.
 
 \begin{table}[h!]
 \centering
@@ -466,7 +485,13 @@ Způsob propojení dilatačních vrstev a jejich počet ovlivňuje
 \caption{Architektura WaveNet, vliv výstupní transformace skip propojení.}\label{obr:wavenet_skip_reduction}
 \end{figure}
 
+Všechny tři transformace vedou ke stejné přesnosti. Síť tedy netěží z větších možností práce s dřívejšími vrstvami a nejdůležitejší informace se objevují až na vrchu bloků dilatovaných konvolucí.
+
 \subsection{Vliv velikosti první konvoluce}
+
+\cite{Oord2016} používá pro předzpracování zvukového signálu obvyklou konvoluci, nespecifikuje však její šířku. Veřejná implementace architektury WaveNet pracuje s šířkou 32 \footnote{\url{https://github.com/ibab/tensorflow-wavenet/blob/master/wavenet_params.json}}. \cite{Martak2018} používají šířku 2, čímž fakticky jen duplikují první dilatační vrstvu. První vrstva může sloužit jako banka filtrů, podobně jako první vrstva v architektuře CREPE, pro tento účel však musí být široká minimálně 512 vzorků, aby mohla zachytit periodu i té nejnižší frekvence ve výstupním rozsahu. 
+
+\textcolor{red}{vizualizace první vrstvy? Co tam vlastně může být, když pomáhá šestnácti samplová konvoluce?}
 
 \begin{table}[h!]
 \centering
@@ -477,6 +502,8 @@ Způsob propojení dilatačních vrstev a jejich počet ovlivňuje
     \includegraphics[scale=0.6]{../img/figures/wavenet_first_layer.pdf}
 \caption{Architektura WaveNet, vliv velikosti první konvoluce.}\label{obr:wavenet_first_layer}
 \end{figure}
+
+\textcolor{red}{TODO: Dopsat vyhodnocení}
 
 \subsection{Vliv návrhu posledních vrstev}
 
