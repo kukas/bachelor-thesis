@@ -1,7 +1,7 @@
 # Datasety
 
 nepřímé metody:
-    - augumentace dat \cite{Thickstun2018}, \cite{Kum2016}
+    - augmentace dat \cite{Thickstun2018}, \cite{Kum2016}
         - pitch, noise
         - remixování mdb-mf0-synth
     - syntetická data \cite{Bittner2018}
@@ -74,8 +74,8 @@ the transcribed part of the original audio recording is separated into a backing
 ## Obecně
 - oproti jiným MIR odvětvím, speech recognition nebo image recognition je to málo dat \cite{Salamon2017}
     - možné zlepšení:
-        - augumentace
-            - pokud je ale málo dat, augumentace neudělá zázraky
+        - augmentace
+            - pokud je ale málo dat, augmentace neudělá zázraky
         - syntéza
         - multitask learning (cite Bittnerová)
 - co vlastně od datasetu chci:

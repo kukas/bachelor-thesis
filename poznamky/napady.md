@@ -89,8 +89,8 @@ https://librosa.github.io/librosa/generated/librosa.core.iirt.html
 
 - metrika: melodická kontura (jestli se trefuje o intervaly)
 
-- nová augmentace dat - lidská persepce a identifikace tónu a nástroje je nezávislá na vynechání několika harmonických frekvencích. Vlastně zvuk zní hodně podobně, až stejně. Známý efekt je "phantom fundamental" - lidské ucho slyší fundamentální frekvenci, i když neexistuje. Co kdyby tedy jedna z augumentací fungovala tak, že vymaže některé harmonické frekvence?
-    - ale nevím, to je jako kdyby v image recognition byla augumentace vkládání poloprůhledných obdélníků přes části obrázku, jo, lidi poznají obsah obrázku i tak, ale pomohlo by to sítím se líp naučit, co na obrázku je?
+- nová augmentace dat - lidská persepce a identifikace tónu a nástroje je nezávislá na vynechání několika harmonických frekvencích. Vlastně zvuk zní hodně podobně, až stejně. Známý efekt je "phantom fundamental" - lidské ucho slyší fundamentální frekvenci, i když neexistuje. Co kdyby tedy jedna z augmentací fungovala tak, že vymaže některé harmonické frekvence?
+    - ale nevím, to je jako kdyby v image recognition byla augmentace vkládání poloprůhledných obdélníků přes části obrázku, jo, lidi poznají obsah obrázku i tak, ale pomohlo by to sítím se líp naučit, co na obrázku je?
     
     google to používá na speech recognition! https://ai.googleblog.com/2019/04/specaugment-new-data-augmentation.html
 
