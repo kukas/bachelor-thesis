@@ -66,6 +66,7 @@ https://librosa.github.io/librosa/generated/librosa.core.iirt.html
     - menší rozlišení se musí naškálovat
 - multihop stft - více kanálů, každý s jiným hopsize? To je asi blbost, ale způsob, jak dát levně síti kontext
 - **gaussovské rozmazání v čase, pro snížení počtu jednooknových predikcí**
+- různý window fn jako kanály?
 
 ### Temporal dependencies
 - LSTM

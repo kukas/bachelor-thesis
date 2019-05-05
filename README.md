@@ -10,8 +10,8 @@
 
 | Kapitola    | Text | Tabulky | Obrázky |
 | ----------- | ---- | ------- | ------- |
-| Úvod        | 5%   | 0%      | 0%      |
-| Datasety    | 80%  | 20%      | 0%      |
+| Úvod        | 40%  | 0%      | 0%      |
+| Datasety    | 80%  | 20%     | 0%      |
 | Související | 55%  | 0%      | 0%      |
 | Evaluace    | 75%  | 0%      | 0%      |
 | Experimenty | 60%  | 50%     | 50%     |

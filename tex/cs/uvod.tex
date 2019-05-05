@@ -1,12 +1,85 @@
-\chapter*{Úvod}
+\chapter{Úvod}
 \addcontentsline{toc}{chapter}{Úvod}
 
 Spolu s harmonií a rytmem představuje melodie základní stavební kámen většiny existující hudby. V průběhu vývoje od folklórních zpěvů přes orchestrální skladby po soudobou elektroniku si melodie téměř vždy zachovávala své dominantní postavení nositele esence jednotlivých písní. Melodie je to hlavní, co si člověk po poslechu skladby odnáší a nejsnadněji vybaví, a její důležitost je zejména v našem kulturním kontextu natolik jednoznačná, že je občas těžké si bez ní vůbec hudbu představit. 
 
-Tato práce se zabývá metodami přepisu melodických kontur ze zvukové nahrávky. Jde o jednu z nejdůležitějších a zároveň nejtěžších úloh z oboru \textit{Music Information Retrieval}, jejíž rozsah využití v této doméně pokrývá významnou část aktivně řešených, otevřených problémů. Spolehlivý přepis melodie by usnadnil vyhledávání v hudebních datech, ať už na základě notového zápisu (\textit{Symbolic Melodic Similarity}), pomocí nekvalitní nahrávky z rádia (\textit{Audio Fingerprinting}), pomocí broukání (\textit{Query by Singing/Humming}) nebo dokonce pomocí coveru hledané písně (\textit{Audio Cover Song Identification}). Mimo vyhledávání by byl algoritmus užitečný pro další zpracování zvukového signálu, ať už pro manipulaci a úpravu melodického hlasu (například software Melodyne), nebo naopak jeho odstranění a vytvoření karaoke doprovodu (\textit{Informed Source Separation}). V neposlední řadě by extrakce melodie pomohla při kategorizaci hudebních dat, například podle žánru (\cite{Salamon2012}) nebo podle zpěváka (\textit{Singer Characterization}). A konečně široké spektrum využití by se nalezlo i v muzikologii (případně etnomuzikologii) pro statistickou i kvalitativní studii hudebních motivů a postupů (V jazzu například \cite{Pfleiderer}).
+Tato práce se zabývá metodami odhadu fundamentální frekvence melodie ze zvukové nahrávky. Jinými slovy chceme získat v každém bodě vstupní skladby informaci o tom, zda melodie zní a její případnou výšku. Jde o jednu z nejdůležitějších a zároveň nejtěžších úloh z oboru \textit{Music Information Retrieval}, jejíž rozsah využití v této doméně pokrývá významnou část aktivně řešených, otevřených problémů. Spolehlivý přepis melodie by usnadnil vyhledávání v hudebních datech, ať už na základě notového zápisu (\textit{Symbolic Melodic Similarity}), pomocí nekvalitní nahrávky z rádia (\textit{Audio Fingerprinting}), pomocí broukání (\textit{Query by Singing/Humming}) nebo dokonce pomocí coveru hledané písně (\textit{Audio Cover Song Identification}). Mimo vyhledávání by byl algoritmus užitečný pro další zpracování zvukového signálu, ať už pro manipulaci a úpravu melodického hlasu (například software Melodyne), nebo naopak jeho odstranění a vytvoření karaoke doprovodu (\textit{Informed Source Separation}). V neposlední řadě by extrakce melodie pomohla při kategorizaci hudebních dat, například podle žánru (\textit{Genre Classification}, \cite{Salamon2012}) nebo podle zpěváka (\textit{Singer Characterization}). A konečně široké spektrum využití by nalezla i v muzikologii (případně etnomuzikologii) pro kvantitativní i kvalitativní studii hudebních motivů a postupů (V jazzu například \cite{Pfleiderer}).
 
-Příkladem použití ale může být i pomoc při transkripci. Představíme-li si začínajícího hráče na saxofon, který si chce do not přepsat svoje oblíbené jazzové sólo, aby se ho mohl naučit, výstup algoritmu pro přepis melodie mu dá užitečnou informaci o tom, jaký tón zní v jakou chvíli. Z této reprezentace už pak hráči zbývá nalezené tóny projít a zapsat je do notové osnovy ve správných délkách.
+\begin{figure}[h]\centering
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/input_output}
+\caption{Příklad vstupu a výstupu metody pro extrakci melodie. \textcolor{red}{přidat zvukový přílkad do přílohy}}
+\label{obr:input_output}
+\end{figure}
 
+Extrakce melodie však nemusí sloužit pouze jako mezikrok pro řešení jiné úlohy, užitečný je i samotný výstup algoritmu, znázorněný na obrázku \ref{obr:input_output}. Motivačním příkladem použití může být pomoc při transkripci. Představíme-li si začínajícího hráče na saxofon, který si chce do not přepsat své oblíbené jazzové sólo, výstup algoritmu mu dá užitečnou informaci o tom, jaký tón zní v jakou chvíli. Z této reprezentace už pak hráči zbývá nalezené tóny projít a zapsat je do notové osnovy.
+
+Proč je ale extrakce melodie otevřený problém? Příbuzná úloha, která spočívá v přepisu nahrávky jednoho izolovaného nástroje, je v podstatě vyřešena \citep{Mauch2014a}, proč se tato úloha po přidání hudebního doprovodu stává výrazně obtížnější? Pro vysvětlení dvou zásadních obtíží, které se s přepisem nahrávky pojí, musíme nejdříve přiblížit vůbec povahu zvuku a možnosti jeho zkoumání.
+
+
+Naše zkušenost se zvukem probíhá primárně skrze sluch. Teprve na hlasitém koncertu však člověk pocítí, že zvuk je ve své fyzikální podstatě změna tlaku vzduchu, putující od zdroje k posluchači. Díky sluchu z těchto vibrací dokážeme oddělit jednotlivé zdroje a identifikovat v nich i velmi jemné rozdíly. Ačkoli jde o subjektivní vjemy, zvuky lze částečně rozřadit podle toho, jak snadno v nich rozeznáme nějakou konkrétní výšku. 
+
+\vspace*{0.5cm}
+
+Čtenář této práce si nyní může postupně vybavit: hrající violoncello, odbíjení kostelního zvonu, cinknutí příboru, štěkot psa, plynutí potoka, šelest listí stromů, trhání papíru, tlesknutí a prasknutí balónku.
+
+\vspace*{0.5cm}
+
+Se ztrácející se zřetelností výšky nejprve přijdeme o možnost zpívat společně se zdrojem zvuku v harmonii a posléze i o možnost si představit \uv{vyšší} a \uv{nižší} instance toho samého zvuku (jak zní vysoké a nízké prasknutí balónku?). To, co mají první z uvedených příkladů společné, je výraznější periodicita jejich signálu --- daný tlakový průběh se opakuje v čase. Díky sluchu tuto periodicitu interpretujeme jako výšku, přičemž různé výšky se od sebe liší frekvencí, se kterou se signál opakuje. Hudební nástroje jsou jedním ze zdrojů těchto pravidelných vibrací, jejichž frekvenci lze zpravidla měnit (pomocí klapek, pohybu prstu po struně, atd.). Hlas nástroje však není charakteristický pouze svou výškou, nýbrž i barvou. Ta je určena podobou signálu v rámci jedné periody. 
+
+\begin{figure}[h]\centering
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/audio_clarinet}
+\caption{Zvuk klarinetu, tóny s různou výškou a dynamikou, 25 milisekund signálu se vzorkovací frekvencí $44\,100\,\rm Hz$. \textcolor{red}{nějak uvést zdroj zvuku \url{https://www.philharmonia.co.uk/explore/sound_samples/clarinet?p=3}}}
+\label{obr:audio_clarinet}
+\end{figure}
+
+Na obrázku \ref{obr:audio_clarinet} můžeme srovnat tři tóny hrané klarinetem, první dva mají stejnou výšku, jsou ale zahrané s různou intenzitou (dynamikou) \textcolor{red}{je tohle správně formulované, vím že dynamika není intenzita, ale \uv{zahrané s různou dynamikou} mi zní divně?}. Jejich vizuální rozdíl částečně odpovídá i rozdílu v barvě tónu, první tón má příjemný, měkký zvuk; druhý je výraznější a hrubší. Třetí tón se od zbylých liší svou výškou, což lze pozorovat na kratší periodě signálu, která je na obrázku vyznačená úsečkami. 
+
+\begin{figure}[h]\centering
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/audio_clarinet_dft}
+\caption{Zvuk klarinetu, absolutní hodnota výstupu Fourierovy tranformace signálu délky 4096 s oknem typu Hamming.}
+\label{obr:audio_clarinet_dft}
+\end{figure}
+
+Jedním ze způsobů analýzy zvukového signálu je pomocí Fourierovy transformace (DFT). Základní myšlenkou je, že na signál lze hledět jako na vážený součet jednodušších signálů. Podobně, jako když se barvy na obrazovce míchají ze tří základních, libovolný zvuk můžeme smíchat ze sady sinusoid. Na obrázku \ref{obr:audio_clarinet_dft} vidíme mnohem uchopitelnější reprezentaci zkoumaných zvuků klarinetu. Jednou z výhod této spektrální reprezentace je na první pohled zřejmý vztah frekvencí porovnávaných signálů, který odpovídá lidské intuici o výšce zvuků --- tón E4 je na obrázku \ref{obr:audio_clarinet_dft} opravdu \uv{výš} než tón A3. To zásadní, co ale spektrum tónu ukazuje, je jeho podstata jakožto součet \emph{harmonických složek}. 
+
+Tón, kterému posluchač přisoudí výšku $f_0$, se zpravidla skládá ze součtu sinusoid, jejichž frekvence je celočíselným násobkem základní frekvence $f_0$. Například tedy tón A3 na obrázku \ref{obr:audio_clarinet_dft} se skládá z frekvencí $220\,\rm Hz$, $440\,\rm Hz$, $660\,\rm Hz$, \dots, zároveň intenzita těchto harmonických frekvencí určuje barvu hlasu. Jak si můžeme všimnout na spektru, vyšší harmonické jsou u tónu hraném fortissimo mnohem výraznější než u tónu hraném pianissimo. \textcolor{red}{a tohle se dá říct? Tón hraný fortissimo/pianissimo. Moje znalosti hudební terminologie jsou nulové}
+
+Tato harmonická struktura, která je vlastní téměř všem zvukům hudebních nástrojů i lidskému hlasu, je zásadní pro metody extrakce melodie. Je to vlastnost, která zvuky potenciálně nesoucí melodii odlišuje například od bubnového doprovodu nebo od šumu. Díky ní se také můžeme pokoušet rozložit souzvuk různě vysokých tónů na jejich původní, čisté signály. 
+
+\textcolor{red}{spektrogram hudby - basa, zpěv a bubny. Pod tím obrázek kompletního přepisu melodických kontur}
+
+\begin{figure}[h]\centering
+% \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/audio_mix_stft}
+\caption{lorem ipsum}
+\label{obr:audio_mix_stft}
+\end{figure}
+
+Nyní, po objevení podstaty zvuků, jimž lze přiřknout výšku, můžeme přejít k jejich hledání v hudební nahrávce. Obrázek \ref{obr:audio_mix_stft} vznikl pomocí opakované Fourierovy transformace, která byla aplikována na po sobě jdoucí, krátké časové úseky vstupní nahrávky, přičemž intenzity frekvenčních složek v každém časovém okamžiku zvuku jsou nyní znázorněny odstínem barvy. Tuto časově-frekvenční reprezentaci signálu nazýváme obecně \emph{spektrogram}, a její výpočet je prvním krokem většiny metod pro extrakci melodie.
+
+- vybudovat intuici o spektrogramu - ukázat bubny
+- harmonická povaha intervalů! - ukázat překryv melodie a doprovodu
+
+% Pro $h(n, t)$ funkci vah měnících se v čase, lze signál tónu definovat jako:
+
+%	$$ X_{f_0}(t) = \sum_{n=1}^\infty h(n, t) \cdot \sin(n \cdot f_0 \cdot (2\pi t)) $$
+
+
+
+% \begin{figure}[h]\centering
+% \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/audio_clarinet_dft_mix}
+% \caption{Zvuk klarinetu, postupně vznikající přimícháváním dalších sinusoid}
+% \label{obr:audio_clarinet_dft_mix}
+% \end{figure}
+
+
+% tedy rozlišuje jestli se dané vlnění vzduchu opakuje v čase. První z uvedených příkladů zvuků, tedy ty, kterým se dá připsat výška tónu, spojuje právě tato 
+
+% U prvních příkladů  lze snadno představit \uv{vyšší} a \uv{nižší} příklady toho samého zvuku
+
+% Dva zásadní problémy
+% - dva zásadní problémy, jako kdyby představovaly osy spektrogramu
+% 	- překryv
+% 	- definice
 
 \section{Definice melodie}
 

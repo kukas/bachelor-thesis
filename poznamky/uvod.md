@@ -1,7 +1,6 @@
 # Úvod
 
 
-Nemohu ovšem výčtem možností využití zastírat, že přepis melodie je pro mne hlavně 
 
 Povaha zvuku umožňuje tónu projevit svou výšku a znělost pouze v probíhajícím čase a pokusy o přesný popis tohoto plynutí s sebou nesou nutně buď velkou míru abstrakce (notový zápis) a nebo míru časově-frekvenční nepřesnosti (princip neurčitosti)
     - ukázka zvukového signálu, f0 pianoroll, midi pianoroll (s vyznačením not jako samostatných objektů, třeba i s jinými barvami podle zdroje hlasu) a notového zápisu
