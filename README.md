@@ -10,18 +10,19 @@
 
 | Kapitola    | Text | Tabulky | Obrázky |
 | ----------- | ---- | ------- | ------- |
-| Úvod        | 40%  | 0%      | 0%      |
+| Úvod        | 50%  | 0%      | 0%      |
 | Datasety    | 80%  | 20%     | 0%      |
 | Související | 55%  | 0%      | 0%      |
 | Evaluace    | 75%  | 0%      | 0%      |
 | Experimenty | 60%  | 50%     | 50%     |
-| Výsledky    | 0%   | 0%      | 0%      |
+| Výsledky    | 10%  | 0%      | 0%      |
 | Závěr       | 0%   | 0%      | 0%      |
 
 Typografické dodělávky, lahůdky a drobnosti:
 - opravit skloňování citací
 - přidat nezalomitelné mezery
 - zbavit se černých obdélníčků
+- F0 nebo F_0?
 
 - obrázky barevně!
 
@@ -32,6 +33,7 @@ Typografické dodělávky, lahůdky a drobnosti:
     - rozdělení - dat
     - distribuce - pravděpodobnostní
     - monofonní=jednohlas, jednokanálový zvuk píšu jen česky
+
 
 ## Písemná část
 

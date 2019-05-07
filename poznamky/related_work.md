@@ -255,7 +255,7 @@ The first to appear in Table I is the data driven approach by Poliner and Ellis 
 
 
 \cite{Balke2017}
-
+- jednovrstvá DNN, 7 framů stft -> 512 výstupů
 
 ### \cite{Dressler2016}
 

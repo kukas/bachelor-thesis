@@ -10,8 +10,7 @@ output/prace.pdf: prace.tex $(wildcard *.tex) library.bib prace.xmpdata
 	cp *.bst output
 	cd output; bibtex prace
 	pdflatex -output-directory output $<
-	# pdflatex -output-directory output $<
-	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!! ODKOMENTOVAT pdflatex PŘÍKAZY, až budeš tisknout !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	pdflatex -output-directory output $<
 
 output/abstrakt.pdf: abstrakt.tex abstrakt.xmpdata
 	pdflatex -output-directory output $<

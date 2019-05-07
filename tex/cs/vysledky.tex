@@ -1,1 +1,85 @@
 \chapter{Výsledky}
+
+V této kapitole prezentujeme výsledky vybraných architektur z kapitoly \hyperref[chap:experimenty]{Experimenty} na testovacích datech a provádíme kvantitativní a kvalitativní srovnání se state-of-the-art systémy pro extrakci melodie, představené v kapitole \hyperref[chap:souvisejici]{Související práce}.
+
+\section{Výběr testovaných modelů}
+
+Pro srovnání jsme vybrali nejlepší modely od každé testované architektury, pomocí provedených experimentů prezentujeme v tabulkách pro každou architekturu nejlepší nalezené nastavení hyperparametrů.
+
+\subsection{Architektura CREPE}
+
+Zvolený model dosáhl na validačních datech přesnosti přepisu výšky 0.689 a přesnosti přepisu výšky nezávisle na oktávě 0.784. Počet trénovatelných parametrů tohoto modelu je $7\,816\,640$, trénovaní probíhalo téměř 9 hodin, každý trénovací příklad byl síti předložen 10 krát (proběhlo 10 epoch trénování).
+
+\begin{table}[h!]
+\begin{tabular}{llll}
+\hline
+\toprule
+Prohledávané parametry               &          & Ostatní parametry &         \\
+Parametr                             & Hodnota  & Parametr          & Hodnota \\
+\midrule
+Multiplikační koef. kapacity         & 16       & Velikost dávky    & 32      \\
+Rozlišení diskretizace výšky noty    & 5        & Iterace trénování & 360000  \\
+Rozptyl distribuce výšky noty & 0.177    & Learning rate     & 0.001   \\
+Šířka vstupního okna                 & 4096     &                   &         \\
+Násobné rozlišení první vrstvy       & 6 vrstev &                   &         \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Architektura WaveNet}
+
+\textcolor{red}{TODO vybrat}
+
+\subsection{Architektura HCNN}
+
+\textcolor{red}{TODO dotrénovat nějaký lol}
+
+\subsection{Architektura pro detekci melodie}
+
+- modul detekce melodie bude mít k dispozici výstup HCNN
+
+\section{Kvantitativní srovnání}
+
+\textcolor{red}{Tohle je tak trochu placeholder, protože ještě čekám na nějaká čísla}
+
+\begin{table}[h!]
+\centering
+
+\begin{tabular}{lrrrrrr}
+\toprule
+              Metoda & ADC04 & \shortstack[r]{MDB-mel-s \\ test} & \shortstack[r]{MIREX05\\train.} & \shortstack[r]{MDB\\test} & ORCHSET & \shortstack[r]{WJazzD\\test} \\
+\midrule
+        Salamon & 0.767 &                 0.514 &          0.761 &         0.526 &   0.281 &       0.693 \\
+        Bittner & 0.814 &                 0.606 &          0.807 &         0.670 &   0.519 &       0.774 \\
+        Basaran & 0.793 &                 0.733 &          0.798 &         0.706 &   0.635 &       0.767 \\
+          CREPE & 0.793 &                 0.542 &          0.783 &         0.607 &   0.395 &       0.784 \\
+        WaveNet & 0.799 &                 0.532 &          0.790 &         0.595 &   0.363 &       0.761 \\
+  \shortstack[r]{Bittner\\Improved} & 0.856 &                 0.707 &          0.855 &         0.734 &   0.595 &       0.806 \\
+\bottomrule
+\end{tabular}
+
+\caption{Výsledky přesnosti přepisu (Raw Pitch Accuracy).}\label{tab:vysledky_RPA}
+\end{table}
+
+\begin{table}[h!]
+\centering
+
+\begin{tabular}{lrrrrrr}
+\toprule
+              Metoda & ADC04 & \shortstack[r]{MDB-mel-s \\ test} & \shortstack[r]{MIREX05\\train.} & \shortstack[r]{MDB\\test} & ORCHSET & \shortstack[r]{WJazzD\\test} \\
+\midrule
+        Salamon & 0.807 &                 0.639 &          0.805 &         0.659 &   0.568 &       0.757 \\
+        Bittner & 0.855 &                 0.666 &          0.824 &         0.735 &   0.694 &       0.785 \\
+        Basaran & 0.820 &                 0.766 &          0.807 &         0.757 &   0.776 &       0.776 \\
+          CREPE & 0.853 &                 0.614 &          0.817 &         0.713 &   0.606 &       0.810 \\
+        WaveNet & 0.850 &                 0.604 &          0.826 &         0.706 &   0.573 &       0.796 \\
+ \shortstack[r]{Bittner\\Improved}   & 0.894 &                 0.746 &          0.872 &         0.787 &   0.762 &       0.815 \\
+\bottomrule
+\end{tabular}
+
+\caption{Výsledky přesnosti přepisu nezávisle na oktávě (Raw Chroma Accuracy).}\label{tab:vysledky_RCA}
+\end{table}
+
+\section{Kvalitativní srovnání}
+
+\textcolor{red}{2-3 příklady, nejlíp v čem se sítě liší}
