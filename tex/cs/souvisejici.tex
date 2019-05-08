@@ -81,13 +81,11 @@ Přístupy k výpočtu by se daly zařadit do tří kategorií - sčítání har
 
 \subsubsection{Sčítání harmonických frekvencí}
 
-\textcolor{red}{TODO: obrázek salience pomocí harmonické sumy}
-
 Metody založené na sčítání harmonických frekvencí jsou principiálně nejjednodušší skupinou. Vychází z práce \cite{Hermes1988}, jejich podstatou je využití harmonické struktury zvuku tónů. Ohodnocení frekvence $f_\tau$ získáme váženou sumou amplitud všech jejích harmonických frekvencí $h \cdot f_\tau$. Pro spektrogram $X(f, \tau)$ signálu $x$, funkci vah $g(f_\tau, h)$ a $N_h$ počet zahrnutých harmonických frekvencí v sumě:
 
     $$S_x(f_\tau, \tau) = \sum_{h=1}^{N_h}{g(f_\tau, h)\abs{X(h \cdot f, \tau)}}$$
 
-Pro ilustraci uvažme jednohlasý harmonický signál s fundamentální frekvencí $f^\star$. Hodnoty spektrogramu $X(f, \tau)$ tedy budou vyšší kolem frekvencí $H_{f^\star} = \{1\cdot f^\star, 2\cdot f^\star, 3\cdot f^\star, \dots\}$ a jinde nulové. Funkce $S_x(f, \tau)$ bude tedy pro $f \not\in H_{f^\star}$ nulová a v $f^\star$ bude nabývat globálního maxima.
+Pro ilustraci uvažme jednohlasý harmonický signál s fundamentální frekvencí $f^\star$. Hodnoty spektrogramu $X(f, \tau)$ tedy budou vyšší kolem frekvencí $H_{f^\star} = \{1\cdot f^\star, 2\cdot f^\star, 3\cdot f^\star, \dots\}$ a jinde nulové. Funkce $S_x(f, \tau)$ bude tedy pro $f \not\in H_{f^\star}$ nulová a v $f^\star$ bude nabývat globálního maxima. Příklad výstupu této metody pro polyfonní nahrávku je na obrázku \ref{obr:salience}.
 
 \cite{Dressler2011} tuto metodu vylepšuje zpracováváním dvojic vrcholů vstupního spektrogramu, její výsledný salienční spektrogram obsahuje méně kandidátů na fundamentální frekvenci. \cite{Cancela2008} se pokouší zmenšovat chybné hodnoty salienční funkce pomocí vyhodnocení subharmonických frekvencí.
 

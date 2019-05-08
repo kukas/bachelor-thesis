@@ -10,7 +10,7 @@
 
 | Kapitola    | Text | Tabulky | Obrázky |
 | ----------- | ---- | ------- | ------- |
-| Úvod        | 50%  | 0%      | 0%      |
+| Úvod        | 90%  | -       | 100%    |
 | Datasety    | 80%  | 20%     | 0%      |
 | Související | 55%  | 0%      | 0%      |
 | Evaluace    | 75%  | 0%      | 0%      |
@@ -39,16 +39,10 @@ Typografické dodělávky, lahůdky a drobnosti:
 
 
 - úvod
-    - hudba
-        - co jsou intervaly
-            - vnímání tónů je logaritmické, oktáva je dvojnásobná frekvence nezávisle na absolutním rozdílu frekvencí
-    - laický popis struktury algoritmů pro extrakci
-    - krátký popis mého přístupu
-
-    - monofonní v této práci je jednohlas, nikoli jeden kanál!
-    - rozdělení 
-
-    - obhajoba strojového učení
+    - ! opravit diagram metod
+    - (další důvody, proč je ME složitá)
+    - definice pojmů
+        - monofonní v této práci je jednohlas, nikoli jeden kanál!
 
 - related work
 obecně: nebát se zmínit limitace metod, to jsou doopravdy východiska pro další práce
@@ -108,6 +102,9 @@ kdyby nebyly limitace, tak by nebylo co dělat
     - popsat malé datasety
 
 ## Experimenty
+
+- popsat Prostředí pro spouštění, replikaci a evaluaci experimentů
+    - viz `experimenty.md`
 
 - problém s voicingem
     - proč se mi nedaří replikovat voicing od Bittnerové?
