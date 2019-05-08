@@ -36,8 +36,6 @@ Typografické dodělávky, lahůdky a drobnosti:
 
 
 ## Písemná část
-
-
 - úvod
     - ! opravit diagram metod
     - (další důvody, proč je ME složitá)
@@ -45,8 +43,12 @@ Typografické dodělávky, lahůdky a drobnosti:
         - monofonní v této práci je jednohlas, nikoli jeden kanál!
 
 - related work
-obecně: nebát se zmínit limitace metod, to jsou doopravdy východiska pro další práce
-kdyby nebyly limitace, tak by nebylo co dělat
+    - obecně: nebát se zmínit limitace metod, to jsou doopravdy východiska pro další práce
+        - kdyby nebyly limitace, tak by nebylo co dělat
+    - strojové učení pro funkci salience !!!!!!
+    - (Durrieu)
+    - hledání melodie !!
+    - přítomnost melodie
 
     - co se umí (a jak dobře)
         - srovnání metod v rámci MIREXu
@@ -56,16 +58,11 @@ kdyby nebyly limitace, tak by nebylo co dělat
             - popsat co jsem spustil, a že jsem dosáhl stejných výsledků
             - Durrieu byl k smrti pomalý a ani neházel tak dobré výsledky
                 - běží absurdně dlouho a podařilo se mi zpracovat jen Orchset (23 minut za dva dny výpočtu)
-            - Bosch nešel spustit kvůli Essentie, nepodařilo se mi to opravit (když zbude hrozně moc času a budu mít lážo plážo, tak to opravim (lol))
+            - Bosch nešel spustit kvůli Essentie, nepodařilo se mi to opravit
+                - Bosch to opravil sám! Když zbyde čas, tak ho můžu vyhodnotit!
 
-    - krátký popis CREPE a Wavenetu, protože je používám v experimentech
+    - (krátký popis CREPE a Wavenetu, protože je používám v experimentech)
     - taky popis neuronových sítí, convnetů, asi prostě bohužel všeho, co používám v experimentech
-
-    - vypracovat poznámky
-        - Basaran
-        - Salamon
-        - CREPE
-        - Wavenet
 
 - datasety
     "datasety mají mnohem delší poločas rozpadu, jejich pochopení je zásadní k interpretaci výsledků, jejich vznik formuje směr, kterým se výzkum ubírá"
@@ -83,28 +80,28 @@ kdyby nebyly limitace, tak by nebylo co dělat
     - možná kapitola o tom, jaké různé postupy vytváření dat existují (zvlášť zahrnutí multif0 postupů)
 
 - experimenty
-    - popsat můj framework
+    - popsat Prostředí pro spouštění, replikaci a evaluaci experimentů
+        - viz `experimenty.md`
+
     - Salience function
-        - CREPE - skoro hotové, jen celý přepsat v podstatě :(
-        - zbytek chybí všechno:
-            - WaveNet
-            - Bittner
-            - Harmonic convnets
+        - CREPE - překopat ještě asi dvě sekce, co jsem nepřepsal, jen trochu upravit, ať se to dá číst
+        - WaveNet - je to naprd, ale asi skoro hotový - chybí popis poslední vrstvy
+        - HCNN - !!!!!!
     - Voicing detection
         - řada mých experimentů, mám k tomu fůru dat, stačí shrnout a popsat zajímavé příklady
-    - přidat grafy!
-
-    - popsat baseline s multif0?
-        - výsledky na mamutovi - `bakalarka-experimenty/multif0->melody/oracle-multif0`
 
 - evaluation
     - dopsat zbytek metrik
     - popsat malé datasety
 
-## Experimenty
+- výsledky
+    - Pitch Estimation
+        - tabulka - kvantitativní
+        - kvalitativní příklady
+    - Voicing
+        - tabulka s celkovýma výsledkama
 
-- popsat Prostředí pro spouštění, replikaci a evaluaci experimentů
-    - viz `experimenty.md`
+## Experimenty
 
 - problém s voicingem
     - proč se mi nedaří replikovat voicing od Bittnerové?
@@ -112,17 +109,16 @@ kdyby nebyly limitace, tak by nebylo co dělat
     - spustit můj nejlepší voicing modul spolu s nějkaým dobrým modelem
         - srovnání, když má voicing jen spektrogram a když má spektrogram+výstup melody modelu
 
-- přepsat spectrogram.py tak, aby byl parametrizovatelný a pak spustit řadu experimentů
-    - přepsaný už skoro je, tak jen pročistit
-    - vymyslet pár srovnání hyperparam.
-        - zkusit odebrat residuální propojení ke konci, aby síť mohla vyhladit výstup
-        - zkusit residualní udělat jednou za dvě vrstvy
-        - zkusit žonglovat s pořadim resnetových bloků, batchnormu, aktivace, relu
-    - spustit je
+- HCNN
+    - dilatované konvoluce
+    - zkusit odebrat residuální propojení ke konci, aby síť mohla vyhladit výstup
+    - zkusit residualní udělat jednou za dvě vrstvy
+    - zkusit žonglovat s pořadim resnetových bloků, batchnormu, aktivace, relu
 
 - zkusit ještě jednou Durrieu s menším počtem iterací
     - čerpat správné hyperparametry z MIREX2009, Bosch githubu, ..?
     - Možná zkusit Bosch github implementaci Durrieu (případně to forknul ještě někdo jinej)
+    - Bosch to opravil
 
 - (tone tracking)
     - tak tam dát alespoň Viterbi decoding s ručně nastavenými pravděpodobnostmi přechodu (tak jak to mají třeba Ikemia, CREPE, další..)
