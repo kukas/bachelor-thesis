@@ -85,6 +85,7 @@ Typografické dodělávky, lahůdky a drobnosti:
 
     - Salience function
         - CREPE - překopat ještě asi dvě sekce, co jsem nepřepsal, jen trochu upravit, ať se to dá číst
+            - přidat obrázek první vrstvy? Je to vděčný podle mě
         - WaveNet - je to naprd, ale asi skoro hotový - chybí popis poslední vrstvy
         - HCNN - !!!!!!
     - Voicing detection

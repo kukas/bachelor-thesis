@@ -1,8 +1,10 @@
 \chapter{Experimenty}\label{experimenty}
 
-V této kapitole prezentujeme přehled výsledků různých architektur pro extrakci melodie, trénované nad datasetem MedleyDB. Data byla rozdělena na trénovací, validační a testovací množinu tak, aby skladby od jednoho interpreta náležely právě do jedné z množin. Využili jsme existujícího rozdělení používaného v článcích \cite{Bittner2017} a \cite{DBasaranSEssid2018}, validační i testovací výsledky jsou tedy díky tomu porovnatelné s výsledky uvedenými v článcích.
+V této kapitole prezentujeme návrhy nových architektur hlubokých neuronových sítí pro extrakci melodie a jejich výsledky. Modely byly trénované nad datasetem MedleyDB. Data byla rozdělena na trénovací, validační a testovací množinu tak, aby skladby od jednoho interpreta náležely právě do jedné z množin. Využili jsme existujícího rozdělení používaného v článcích \cite{Bittner2017} a \cite{DBasaranSEssid2018}, validační i testovací výsledky jsou tedy díky tomu porovnatelné s výsledky uvedenými v článcích.
 
-Pro odhad výšky tónů porovnáváme architektury inspirované pracemi \cite{Kim2018}, \cite{Oord2016} a \cite{Bittner2017}. V prvním případě jde o architekturu CREPE původně navrženou pro sledování výšky tónů v jednohlasých nahrávkách. \cite{Oord2016} používají WaveNet složený z dilatovaných konvolucí pro generování lidské řeči. \cite{Bittner2017} používá hlubokou konvoluční síť pro kompletní přepis nahrávek i pro přepis melodie. 
+Těžiště experimentů leží v hledání nové salienční funkce, která by odlišovala znějící melodii od doprovodu lépe, než existující metody. V závěru kapitoly se pak pomocí hlubokých neuronových sítí pokusíme řešit i úlohu detekce melodie.
+
+Pro výpočet salienční funkce porovnáváme architektury inspirované pracemi \cite{Kim2018}, \cite{Oord2016} a \cite{Bittner2017}. V prvním případě jde o architekturu CREPE původně navrženou pro sledování výšky tónů v jednohlasých nahrávkách. \cite{Oord2016} používají architekturu WaveNet složený z dilatovaných konvolucí pro generování lidské řeči. \cite{Bittner2017} používá hlubokou konvoluční síť pro kompletní přepis nahrávek i pro přepis melodie. 
 
 Pro detekci melodie pak srovnáváme jednoduchou metodu práhování a složitější samostatný modul, založený na hlubokých neuronových sítích.
 
@@ -13,7 +15,7 @@ První sada experimentů se zakládá na architektuře popsané v článku od \c
 Jinými slovy je sledování jednohlasu speciálním případem extrakce melodie a tudíž přinejmenším stojí za zkoušku pokusit se tuto architekturu pro extrakci využít. Mimo to jednohlasé stopy často obsahují přeslech ostatních nástrojů, pokud nahrávka vznikala při společném hraní ve studiu, tudíž by model trénovaný na vícehlasé mixech mohl být robustní vůči tomuto druhu rušení. 
 
 \begin{figure}[h]\centering
-\includegraphics{../img/crepe_arch}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/crepe_arch}
 \caption{Diagram architektury CREPE, multiplikační koeficient 16x.}
 \label{obr:wavenet_dilated}
 \end{figure}
@@ -306,7 +308,7 @@ Experiment jsem provedl na síti se vstupním oknem 2048 vzorků, multiplikátor
 \caption{Architektura CREPE, vliv multirezoluční vstupní konvoluční vrstvy.}\label{tab:crepe_multirozliseni}
 \end{table}
 
-\begin{figure}[h]\centering
+\begin{figure}[h!]\centering
     \includegraphics[scale=0.6]{../img/figures/crepe_multirozliseni.pdf}
 \caption{Architektura CREPE, vliv multirezoluční vstupní konvoluční vrstvy.}\label{obr:crepe_multirozliseni}
 \end{figure}
@@ -318,14 +320,14 @@ Zlepšení výsledků se pohybuje v řádu desetin procentních bodů, tedy nen�
 
 Generativní model WaveNet popsaný týmem \cite{Oord2016} je architektura navržená pro generování zvukového signálu. Autoři však v článku zmiňují, že se architekturu pokusili využít i pro převod mluvené řeči na text (dataset TIMIT), a podařilo se jim dosáhnout výsledků srovnatelných se state-of-the-art. Architektura spočívá ve vrstvení dilatovaných konvolucí s rozšiřujícím se rozsahem. Díky exponenciálně rostoucím dilatacím se také exponenciálně zvětšuje receptivní pole jednotlivých konvolučních vrstev. Díky této vlastnosti pak například stačí pro pokrytí 1024 vzorků vstupu pouze 9 vrstev s šířkou kernelu 2 a dilatacemi 1,2,4,8 ... 512. Pokud bychom stejného receptivního pole chtěli dosáhnout pomocí obvyklých konvolucí počet potřebných vrstev by byl lineární vzhledem k šířce pole. Vrstvení konvolucí je porovnáno na obrázcích \ref{obr:wavenet_conv} a \ref{obr:wavenet_dilated}. Síť tedy velmi snadno pokryje široký kontext, což je vlastnost, která je pro zpracování zvukového signálu užitečná.
 
-\begin{figure}[h]\centering
-\includegraphics{../img/wavenet_konvoluce}
+\begin{figure}[h!]\centering
+\includegraphics[scale=0.7]{../img/wavenet_konvoluce}
 \caption{Vrstvení obyčejných konvolucí s lineárně rozšiřovaným dosahem, obrázek převzat z \cite{Oord2016}.}
 \label{obr:wavenet_conv}
 \end{figure}
 
-\begin{figure}[h]\centering
-\includegraphics{../img/wavenet_dilatace_konvoluce}
+\begin{figure}[h!]\centering
+\includegraphics[scale=0.7]{../img/wavenet_dilatace_konvoluce}
 \caption{Vrstvení dilatovaných konvolucí s exponenciálně rozšiřovaným dosahem, obrázek převzat z \cite{Oord2016}.}
 \label{obr:wavenet_dilated}
 \end{figure}
@@ -335,7 +337,7 @@ Síť se pro Music Information Retrieval úlohy od svého zveřejnění příli�
 
 
 \begin{figure}[h]\centering
-\includegraphics{../img/wavenet_arch}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/wavenet_arch}
 \caption{Architektura WaveNet upravená pro kompletní přepis skladeb, upraveno na základě \cite{Martak2018}.}
 \label{obr:wavenet_arch}
 \end{figure}
@@ -463,7 +465,7 @@ Z tabulky \ref{tab:wavenet_dilation_width} a grafu \ref{obr:wavenet_dilation_wid
 
 \subsection{Vliv výstupní transformace skip propojení}
 
-Volba transformace skip propojení se v článku týmu \cite{Oord2016} nediskutuje, \cite{Martak2018} také přejímají součet všech skip výstupů Vyzkoušíme proto dvě další možnosti práce se skip propojeními - výběr posledního skip propojení a dále konkatenace všech skip propojení do mnohakanálového výstupu. V případě výběru posledního či součtu jde o transformace, které lze popsat konvolucí nad konkatenovanými skip propojeními. Dalo by se tedy říct, že výběr a součet jsou v tomto případě speciálními případy konkatenace výstupů. Výběr poslední vrstvy také znamená, že nejsou potřeba předchozí skip propojení, což urychluje trénování.
+Volba transformace skip propojení se v článku týmu \cite{Oord2016} nediskutuje, \cite{Martak2018} také přejímají součet všech skip výstupů. Vyzkoušíme proto dvě další možnosti práce se skip propojeními - výběr posledního skip propojení a dále spojení všech skip propojení do mnohakanálového výstupu. V případě výběru posledního propojení či součtu jde o transformace, které lze vyjádřit jako speciální případ konvoluce nad spojenými skip propojeními. Dalo by se tedy říct, že výběr a součet jsou v tomto případě speciálními případy spojených výstupů. Testovaná možnost výběr poslední vrstvy skip propojení naopak přináší jinou výhodu - pro výpočet výsledku sítě nejsou potřeba zbylá skip propojení, což urychluje trénování.
 
 \begin{table}[h!]
 \centering
@@ -489,9 +491,8 @@ Všechny tři transformace vedou ke stejné přesnosti. Síť tedy netěží z v
 
 \subsection{Vliv velikosti první konvoluce}
 
-\cite{Oord2016} používá pro předzpracování zvukového signálu obvyklou konvoluci, nespecifikuje však její šířku. Veřejná implementace architektury WaveNet pracuje s šířkou 32 \footnote{\url{https://github.com/ibab/tensorflow-wavenet/blob/master/wavenet_params.json}}. \cite{Martak2018} používají šířku 2, čímž fakticky jen duplikují první dilatační vrstvu. První vrstva může sloužit jako banka filtrů, podobně jako první vrstva v architektuře CREPE, pro tento účel však musí být široká minimálně 512 vzorků, aby mohla zachytit periodu i té nejnižší frekvence ve výstupním rozsahu. 
+Tým \cite{Oord2016} používá pro předzpracování zvukového signálu před vstupem do dilatovaných bloků obvyklou konvoluci, nespecifikuje však její šířku. Veřejná implementace architektury WaveNet pracuje s šířkou 32 \footnote{\url{https://github.com/ibab/tensorflow-wavenet/blob/master/wavenet_params.json}}. \cite{Martak2018} používají šířku 2, čímž fakticky jen duplikují první dilatační vrstvu. První vrstva může sloužit jako banka filtrů, podobně jako první vrstva v architektuře CREPE. Aby však pro tento účel mohla fungovat plnohodnotně, musela by být široká minimálně 512 vzorků, aby mohla zachytit periodu i té nejnižší frekvence ve výstupním rozsahu. Pomocí sady experimentů se pokusíme zjistit, zda má první konvoluční vrstva pozitivní vliv na výslednou přesnost.
 
-\textcolor{red}{vizualizace první vrstvy? Co tam vlastně může být, když pomáhá šestnácti samplová konvoluce?}
 
 \begin{table}[h!]
 \centering
@@ -512,21 +513,54 @@ Všechny tři transformace vedou ke stejné přesnosti. Síť tedy netěží z v
 \end{table}
 
 \begin{figure}[h]\centering
-    \includegraphics[scale=0.6]{../img/figures/wavenet_first_layer.pdf}
+    \includegraphics[scale=0.6]{../img/figures/wavenet_first_layer}
 \caption{Architektura WaveNet, vliv velikosti první konvoluce.}\label{obr:wavenet_first_layer}
 \end{figure}
 
-\textcolor{red}{TODO: Dopsat vyhodnocení}
+Sítě, které mají možnost využít první konvoluce jako banky filtrů, dosahují výrazně horší přesnosti, než sítě s menší konvolucí. Přeskočení tohoto předzpracování však také není nejlepším nastavením pro tuto architekturu. Vhodná šířka první konvoluce se pohybuje kolem 8 vstupních vzorků, do takové šířky se vejde jedna perioda signálu frekvence $2000\,\rm Hz$, jinými slovy vrstva jistě nemůže zastávat ani z části funkci banky filtrů. Mohla by však popisovat sklon křivky vstupních dat, ze kterých se v dalších vrstvách dilatovaných bloků složí již celý frekvenční popis vstupu.
 
-\subsection{Vliv návrhu posledních vrstev}
+\textcolor{red}{vizualizace první vrstvy? Co tam vlastně může být, když pomáhá šestnácti samplová konvoluce?}
 
-\begin{table}[h!]
-\centering
-\caption{Architektura WaveNet, vliv návrhu posledních vrstev.}\label{tab:wavenet_output_transform}
-\end{table}
+% \subsection{Vliv návrhu posledních vrstev}
+
+% \begin{table}[h!]
+% \centering
+% \caption{Architektura WaveNet, vliv návrhu posledních vrstev.}\label{tab:wavenet_output_transform}
+% \end{table}
+
+% \begin{figure}[h]\centering
+%     \includegraphics[scale=0.6]{../img/figures/wavenet_output_transform}
+% \caption{Architektura WaveNet, vliv návrhu posledních vrstev.}\label{obr:wavenet_output_transform}
+% \end{figure}
+
+\section{Architektura HCNN}
+
+V práci prezentujeme také novou architekturu pro zpracování harmonicky strukturovaných zvukových signálů nazvanou \emph{Harmonic Convolutional Neural Network}. Vycházíme z práce \cite{Bittner2017}, která problém výpočtu salienční funkce zasazuje do rámce úlohy odstranění šumu v obrázku pomocí konvolučních sítí. Její architektura vstupní spektrogram zpracovává několika konvolučními vrstvami, výsledkem pak je nový spektrogram s odstraněným \uv{šumem hudebního doprovodu}. Dalším přínosem její práce je popis vstupní spektrální reprezentace HCQT, která spočívá ve výpočtu několika CQT spektrogramů s různými frekvenčními rozsahy. Ty jsou vzájemně posunuty takovým způsobem, aby se překrývaly různé harmonické frekvence mezi všemi spektrogramy, díky čemuž se pak receptivní pole první konvoluční vrstvy rozšiřuje pro danou frekvenci i na související harmonické složky. 
 
 \begin{figure}[h]\centering
-    \includegraphics[scale=0.6]{../img/figures/wavenet_output_transform.pdf}
-\caption{Architektura WaveNet, vliv návrhu posledních vrstev.}\label{obr:wavenet_output_transform}
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/hcnn_harmonic_stacking}
+\caption{Diagram transformace vstupu konvoluční vrstvy pro zachycení harmonických souvislostí.}\label{obr:hcnn_harmonic_stacking}
 \end{figure}
+
+Z myšlenky rozšiřování harmonického receptivního pole vychází naše architektura HCNN. Síť je koncipována jako obvyklé vrstvení konvolučních vrstev, každému konvolučnímu bloku však předchází úprava vstupu takovým způsobem, aby do výpočtu nadcházející konvoluce byly zahrnuty i potenciální harmonické složky dané frekvence. Na obrázku \ref{obr:hcnn_harmonic_stacking} tuto úpravu vstupu znázorňujeme; výstup předchozí konvoluční vrstvy duplikujeme a vzájemně posuneme o pevně dané počty půltónů tak, aby harmonicky související složky byly umístěny \uv{vedle sebe} v dimenzi kanálů. Následně výstupy v této dimenzi spojíme a chybějící složky doplníme nulami.
+
+% Pokud v síti použijeme konvoluce s malým kernelem (například 3x3), informace ze spektrogramu si zachovávají své umístění (například složka noty C4 nemá možnost ovlivnit složku G4), tudíž výstup každé vrstvy celého modelu lze vždy považovat za druh časově-frekvenční reprezentace původního vstupu. Tento předpoklad uvádí i \cite{Bittner2017} pro obhájení své architektury.
+
+\begin{figure}[h]\centering
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/hcnn_layer}
+\caption{Diagram konvolučního bloku architektury HCNN.}\label{obr:hcnn_layer}
+\end{figure}
+
+\begin{figure}[h]\centering
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/hcnn_arch}
+\caption{Diagram celkového propojení architektury HCNN.}\label{obr:hcnn_arch}
+\end{figure}
+
+Zbývající prvky architektury již čerpají ze zavedených postupů. Diagram \ref{obr:hcnn_layer} znázorňuje strukturu jednoho konvolučního bloku; po každé konvoluční vrstvě s aktivační funkcí ReLU následuje dropout vrstva a kolem konvoluce vedeme residuální propojení pro umožnění trénování hlubokých architektur. Celková architektura (\ref{obr:hcnn_arch}) pak spočívá v harmonické tranformaci vstupní CQT (čímž vytvoříme reprezentaci odpovídající HCQT), aplikaci několika konvolučních bloků a aplikaci konvoluce 1x1 pro transformaci výstupu zpět na jeden dvoudimenzionání výstup.
+
+Vstupní CQT počítáme z původních audio souborů se vzorkovací frekvencí $44\,100\,\rm Hz$, používáme implementaci algoritmu z balíku \texttt{librosa} a parametry transformace jsou: počáteční frekvence (\texttt{fmin}) = 32.7 (Tón C1), počet složek na oktávu (\texttt{bins\_per\_octave}) = 60 (vychází 5 složek na půltón, jako v předchozích sekcích), počet složek (\texttt{n\_bins}) = 540 (vychází na 9 oktáv, po první harmonické transformaci však spektrogram ořízneme na výšku 360, zbylé složky jsou přítomny, aby zaplnily chybějící hodnoty při harmonických posunech), \texttt{hop\_size}=256 (tudíž jedno anotační okno MedleyDB odpovídá jednomu sloupci vstupního spektrogramu). Dále pak vstup převedeme na logaritmickou škálu dBFS (funkce \texttt{librosa.core.amplitude\_to\_db}).
+
+Cílový výstup počítáme v souladu s implementacemi v předchozích sekcích, tedy použijeme normální rozdělení se střední hodnotou rovnou výšce znějící melodie a rozptylem 18 centů.
+
+\subsection{Vliv }
 
