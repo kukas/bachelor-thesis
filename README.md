@@ -1,6 +1,16 @@
 # Bakalářská práce
 
 ## TODO do příští sch
+
+dnes:
+    - popsat voicing
+        - přetrénovat s HCNN výsledky
+    - výsledky
+    - hcnn
+    - večer dát echo Hajičovi
+
+pátek: 
+
 - výsledky
 - github
     - readme tak, abych mohl navzázet za 5 let

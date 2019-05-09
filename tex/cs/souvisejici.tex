@@ -47,17 +47,47 @@ Prvním krokem metod pracujících s hudebním signálem je proto provedení spe
 
 \subsubsection{Krátkodobá Fourierova transformace}
 
-Přístupů ke spektrální analýze je více, přímočará a podle \cite{Dressler2016} nejčastěji používaná metoda je \emph{krátkodobá Fourierova transformace} (STFT). Jejím principem je rozdělení vstupního signálu na množinu překrývajících se oken konstantní délky a výpočet Fourierovy transformace těchto krátkých zvukových úseků. Komplexní výsledek transformace umocníme a získáme tzv. výkonové spektrum signálu, které obsahuje informaci o poměrech energie frekvencí, ze kterých se signál v okně skládá. 
+Přístupů ke spektrální analýze je více, přímočará a podle \cite{Dressler2016} nejčastěji používaná metoda je \emph{krátkodobá Fourierova transformace} (STFT). Jejím principem je rozdělení vstupního signálu na množinu překrývajících se oken konstantní délky a výpočet Fourierovy transformace těchto krátkých zvukových úseků. Komplexní výsledek transformace umocníme a získáme tzv. výkonové spektrum signálu, které obsahuje informaci o poměrech energie frekvencí, ze kterých se signál v okně skládá. Spektrogram $X(f, \tau)$ vypočteme v čase $\tau$ a frekvenční složce $f$ jako:
 
-    $$X(f, \tau) = \int_{-W/2}^{W/2}{w(t)y(\tau + t)e^{-j2\pi f t} \mathrm{d}t}$$
+    % $$X(f, \tau) = \int_{-W/2}^{W/2}{w(t)y(\tau + t)e^{-j2\pi f t} \mathrm{d}t}$$
 
-\textcolor{red}{TODO vysvětlit vzoreček, minimálně písmena}
+$$ X(f, \tau) = \abs{\sum^{\infty}_{n=-\infty}{x(n)w(n-\tau)e^{-2\pi i \cdot n \cdot f}}}^2 $$
+
+Pro diskrétní vstupní signál $x(n)$ a okénkovou funkci $w(n)$. V této práci budeme pro výpočty spektrogramů používat Hannovo okno, které omezuje tzv. prosakování ve spektru. 
+
+\[
+w_{hann}(n) =
+\begin{cases}
+    \cos^2{\frac{\pi n}{N}}, & \text{pro} -\frac{N}{2} \leq n \leq \frac{N}{2},\\
+    0, & \text{jinak}.
+\end{cases}
+\]
+
+Kde $N$ je požadovaná velikost okna STFT tranformace (kvůli obvyklé praxi výpočtu STFT pomocí algoritmu rychlé Fourierovy transformace (FFT) se hodnota $N$ volí z $N \in \{512, 1024, 2048, \dots\}$).
+
+\subsubsection{Logaritmická osa spektrogramu}
+
+\begin{figure}[h]\centering
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/stft_triangular_filters}
+\caption{Příklad trojúhelníkových filtrů pro transformaci frekvenční domény na logaritmickou škálu.}
+\label{obr:stft_triangular_filters}
+\end{figure}
+
+Výsledkem STFT je rozložení signálu na jednoduché frekvenční složky (sinusoidy) s konstantně vzdálenými frekvencemi. Jinými slovy frekvenční osa spektrogramu vytvořeném metodou STFT je lineární. Jak jsme již nastínili v úvodu, povaha hudebních intervalů a harmonických struktur tónů spočívá v tom, že téměř všechny periodické signály se v hudební skladbě vyskytují ve vzájemných poměrech (v případě intervalů v poměrech $2^{\frac{n}{12}}$ a v případě harmonických frekvencí v celočíselných). K tónu, jehož základní frekvence je rovna $440\,\rm Hz$, patří také harmonické složky s frekvencemi $880\,\rm Hz$, $1320\,\rm Hz$, \dots, tedy absolutní vzdálenosti na spektrogramu STFT mezi frekvencemi harmonických složek jsou závislé na výšce základní frekvence. Toto způsobuje obtíže při analýze signálů, jelikož všechny uvažované frekvenční rozdíly jsou relativní. Častým druhem zpracování STFT je proto převod frekvenční osy na logaritmickou, na té pak platí pro vzdálenost libovolné fundamentální frekvence $f_0$ a její libovolné $h$-té harmonické frekvence $f_h = f_0 \cdot h$:
+
+$$ \log{f_h} - \log{f_0} = \log{(h \cdot f_0)} - \log{f_0} = \log{h} + \log{f_0} - \log{f_0} = \log{h} = \rm const.$$
+
+Tedy absolutní vzdálenosti uvnitř harmonické struktury tónů na spektrogramu s logaritmickou osou frekvence zůstávají konstantní nezávisle na výšce fundamentální frekvence. Tento přepočet se obvykle provádí pomocí banky filtrů s trojúhelníkovou odezvou, pro transformovaný signál $X(f, \tau)$ s $N$ frekvenčními složkami spočteme nový spektrogram s logaritmickou osou následovně:
+
+$$ X_{\mathrm{log}}(\omega, \tau) = \sum^{\infty}_{f=-\infty}{g_\omega(f)X(f, \tau)}$$
+
+Přičemž $g_\omega(f)$ značí odezvu trojúhelníkového filtru pro výstupní frekvenční složku $\omega$.
 
 \subsubsection{Multirezoluční transformace}
 
 Na libovolnou metodu převodu diskretizovaného signálu na frekvenční doménu se vztahuje Gaborův limit, který popisuje závislost přesnosti lokalizace signálu ve frekvenční a časové doméně \citep{Gabor1945}. Volbou délky vstupního okna transformace zpřesňujeme buď frekvenční nebo časové rozlišení výsledné spektrální reprezentace. Zvolíme-li krátké vstupní okno, zvyšujeme časové rozlišení (krátké okno lépe zachycuje rychlé změny průběhu signálu), avšak ztrácíme přesnost na frekvenční ose, opačný vztah platí pro volbu delšího okna.
 
-Tato limitace je markatní zejména pokud STFT používáme pro hudební data. Z povahy hudebních intervalů a harmonických struktur tónů platí, že téměř všechny periodické signály se v hudební skladbě vyskytují ve vzájmených poměrech (v případě intervalů v poměrech $2^{\frac{n}{12}}$ a v případě harmonických frekvencí v celočíselných), u vyšších tónů jsou proto vzdálenosti mezi frekvencemi signálů větší než u nižších tónů. Frekvenční rozlišení STFT je však konstantní na celém výstupním frekvenčním rozsahu a volba velikosti okna transformace zajistí dobrý poměr frekvenčního a časového rozlišení jen pro část rozsahu. Ve výsledku je pak buď pro vyšší frekvence okno příliš velké (zbytečně detailní frekvenční rozlišení na úkor časového rozlišení) a nebo naopak pro nižší frekvence je okno nedostačující (rozlišení frekvence nemusí být pro basy ani na úrovni půltónů).
+Tato limitace je markatní zejména pokud STFT používáme pro hudební data. , u vyšších tónů jsou proto vzdálenosti mezi frekvencemi signálů větší než u nižších tónů. Frekvenční rozlišení STFT je však konstantní na celém výstupním frekvenčním rozsahu a volba velikosti okna transformace zajistí dobrý poměr frekvenčního a časového rozlišení jen pro část rozsahu. Ve výsledku je pak buď pro vyšší frekvence okno příliš velké (zbytečně detailní frekvenční rozlišení na úkor časového rozlišení) a nebo naopak pro nižší frekvence je okno nedostačující (rozlišení frekvence nemusí být pro basy ani na úrovni půltónů).
 
 Z tohoto důvodu existují vedle STFT i další metody, jejichž cílem je nabídnout lepší kompromis frekvenčně-časového rozlišení v kontextu melodických dat. \cite{Goto1999} používají MRFFT (Multi-Resolution Fast Fourier Transform), principem je opakovaný downsampling signálu (převzorkování na nižší vzorkovací frekvenci) a aplikace Fourierovy transformace na každý vzniklý signál; s každou iterací spektrum obsahuje čím dál podrobnější informace o nižších frekvencích, protože vyšší frekvence se při downsamplingu ztratí. \cite{Brown1990} popsala metodu Constant-Q Transform (CQT), která spočívá v použití proměnné délky okna Fourierovy transformace pro výstupní frekvenční pásma, která rovnoměrně pokrývají logaritmickou osu frekvence. \cite{Cancela2010} kombinuje CQT a Chirp Z-transform, jedná se o zobecnění diskrétní Fourierovy transformace, ve které je signál rozložen na tzv. lineární čerpy --- sinusoidy s proměnnou frekvencí. Díky tomu transformace dokáže s lepším rozlišením zachytit signály, které rychle mění výšku tónu, v hudbě například vibrato. \cite{Paiva2004} napodobují mechanismy lidského sluchu pomocí banky pásmových filtrů (Cochleagram) s logaritmicky rozmístěnými mezními frekvencemi a sumy autokorelací na jednotlivých frekvenčních pásmech signálu (Summary correlogram).
 

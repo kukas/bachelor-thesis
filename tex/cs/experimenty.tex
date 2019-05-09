@@ -2,9 +2,10 @@
 
 V této kapitole prezentujeme návrhy nových architektur hlubokých neuronových sítí pro extrakci melodie a jejich výsledky. Modely byly trénované nad datasetem MedleyDB. Data byla rozdělena na trénovací, validační a testovací množinu tak, aby skladby od jednoho interpreta náležely právě do jedné z množin. Využili jsme existujícího rozdělení používaného v článcích \cite{Bittner2017} a \cite{DBasaranSEssid2018}, validační i testovací výsledky jsou tedy díky tomu porovnatelné s výsledky uvedenými v článcích.
 
-Těžiště experimentů leží v hledání nové salienční funkce, která by odlišovala znějící melodii od doprovodu lépe, než existující metody. V závěru kapitoly se pak pomocí hlubokých neuronových sítí pokusíme řešit i úlohu detekce melodie.
+Těžiště experimentů leží v hledání nové salienční funkce, která by odlišovala znějící melodii od doprovodu lépe, než existující metody.
 
 Pro výpočet salienční funkce porovnáváme architektury inspirované pracemi \cite{Kim2018}, \cite{Oord2016} a \cite{Bittner2017}. V prvním případě jde o architekturu CREPE původně navrženou pro sledování výšky tónů v jednohlasých nahrávkách. \cite{Oord2016} používají architekturu WaveNet složený z dilatovaných konvolucí pro generování lidské řeči. \cite{Bittner2017} používá hlubokou konvoluční síť pro kompletní přepis nahrávek i pro přepis melodie. 
+\textcolor{red}{líp popsat moje architektur}
 
 Pro detekci melodie pak srovnáváme jednoduchou metodu práhování a složitější samostatný modul, založený na hlubokých neuronových sítích.
 
@@ -354,12 +355,12 @@ Pro extrakci melodie využijeme jako výchozí model upravenou architekturu od \
 
 Pro výpočet odhadů výšky tónu sečteme všechna skip propojení, tento součet zpracujeme dvěma konvolucemi, druhá z nich má na výstupu 128 kanálů zpracovaných sigmoidou, což odpovídá rozsahu odhadovaných not. Jelikož všechny popsané transformace zachovávají šířku vstupu, dostáváme po této konvoluci odhady výšek not pro každý vstupní vzorek zvuku, taková anotace je zbytečně podrobná, tudíž výsledné anotace podvzorkujeme pomocí pooling vrstvy počítající průměr hodnot.
 
-\begin{figure}[h]\centering
-    \includegraphics[scale=0.6]{../img/figures/wavenet_overfit}
-    \caption{Vývoj ztrátové funkce při učení architektury \cite{Martak2018} pro extrakci melodie. Zatímco hodnoty pro trénovací množinu mají klesající tendenci, hodnoty na validační množině rostou, síť se velmi rychle přeučuje.}\label{obr:wavenet_overfit}
-\end{figure}
+% \begin{figure}[h]\centering
+%     \includegraphics[scale=0.6]{../img/figures/wavenet_overfit}
+%     \caption{Vývoj ztrátové funkce při učení architektury \cite{Martak2018} pro extrakci melodie. Zatímco hodnoty pro trénovací množinu mají klesající tendenci, hodnoty na validační množině rostou, síť se velmi rychle přeučuje.}\label{obr:wavenet_overfit}
+% \end{figure}
 
-Po $20\,000$ iteracích s velikostí dávky 20 a parametrem learning rate $0.001$ síť dosahuje na validačních datech přesnost odhadu tónu $0.583$ (RPA) a přesnost odhadu tónu nezávisle na oktávě $0.692$ (RCA). V porovnání s výsledky architektury CREPE jsou tyto výsledky výrazně nižší, krom toho učení sítě trvá velmi dlouho (14 minut na 1000 iterací), zejména kvůli obrovské kapacitě a topologické komplexitě modelu ($2\,009\,728$ trénovatelných parametrů). Veliká kapacita modelu také způsobuje přeučení sítě (viz \ref{obr:wavenet_overfit}), pokusíme se tedy zrychlit trénování a zabránit přeučení výrazným snížením počtu filtrů dilatačních a skip propojení ze 128 na 16, a použitím pouze jednoho dilatačního bloku. Také snížíme velikost trénovací dávky na 8 pro další zrychlení učení. Nová síť obsahuje 10 vrstev s dilatacemi $(1, 2, 4, 8, \dots, 512)$, a tedy $34\,736$ parametrů a dosahuje RPA $0.598$ a RCA $0.696$ po $100\,000$ iteracích při rychlosti trénování 30 sekund na 1000 iterací. Síť tedy dosahuje stejných výsledků ve výrazně kratším čase.
+Po $20\,000$ iteracích s velikostí dávky 20 a parametrem learning rate $0.001$ síť dosahuje na validačních datech přesnost odhadu tónu $0.583$ (RPA) a přesnost odhadu tónu nezávisle na oktávě $0.692$ (RCA). V porovnání s výsledky architektury CREPE jsou tyto výsledky výrazně nižší, krom toho učení sítě trvá velmi dlouho (14 minut na 1000 iterací), zejména kvůli obrovské kapacitě a topologické komplexitě modelu ($2\,009\,728$ trénovatelných parametrů). Veliká kapacita modelu také způsobuje přeučení sítě, pokusíme se tedy zrychlit trénování a zabránit přeučení výrazným snížením počtu filtrů dilatačních a skip propojení ze 128 na 16, a použitím pouze jednoho dilatačního bloku. Také snížíme velikost trénovací dávky na 8 pro další zrychlení učení. Nová síť obsahuje 10 vrstev s dilatacemi $(1, 2, 4, 8, \dots, 512)$, a tedy $34\,736$ parametrů a dosahuje RPA $0.598$ a RCA $0.696$ po $100\,000$ iteracích při rychlosti trénování 30 sekund na 1000 iterací. Síť tedy dosahuje stejných výsledků ve výrazně kratším čase.
 
 Z předchozích experimentů na architektuře CREPE víme, že jemnější výstupní reprezentace pomáhá snížit počet chyb o půltón, upravíme tedy síť tak, aby na jeden půltón připadalo 5 výstupních složek vektoru, zmenšíme výstupní frekvenční rozsah a hodnoty cílového vektoru změníme z ostré predikce konkrétního tónu na \uv{rozmlžený} gaussián se směrodatnou odchylkou $18\,\rm centů$ (pro podrobnější popis viz \ref{sec:crepe}). Síť po této úpravě dosahuje RPA 0.629 a RCA 0.731 po $100\,000$ iteracích. 
 
