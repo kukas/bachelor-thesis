@@ -536,16 +536,20 @@ Sítě, které mají možnost využít první konvoluce jako banky filtrů, dosa
 
 \section{Architektura HCNN}
 
-V práci prezentujeme také novou architekturu pro zpracování harmonicky strukturovaných zvukových signálů nazvanou \emph{Harmonic Convolutional Neural Network}. Vycházíme z práce \cite{Bittner2017}, která problém výpočtu salienční funkce zasazuje do rámce úlohy odstranění šumu v obrázku pomocí konvolučních sítí. Její architektura vstupní spektrogram zpracovává několika konvolučními vrstvami, výsledkem pak je nový spektrogram s odstraněným \uv{šumem hudebního doprovodu}. Dalším přínosem její práce je popis vstupní spektrální reprezentace HCQT, která spočívá ve výpočtu několika CQT spektrogramů s různými frekvenčními rozsahy. Ty jsou vzájemně posunuty takovým způsobem, aby se překrývaly různé harmonické frekvence mezi všemi spektrogramy, díky čemuž se pak receptivní pole první konvoluční vrstvy rozšiřuje pro danou frekvenci i na související harmonické složky. 
-
 \begin{figure}[h]\centering
-    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/hcnn_harmonic_stacking}
-\caption{Diagram transformace vstupu konvoluční vrstvy pro zachycení harmonických souvislostí.}\label{obr:hcnn_harmonic_stacking}
+    \includegraphics[scale=0.5]{../img/spectrograms}
+\caption{Znázornění harmonických závislostí na spektrogramu s logaritmickou osou frekvence.}\label{obr:hcqt}
 \end{figure}
 
-Z myšlenky rozšiřování harmonického receptivního pole vychází naše architektura HCNN. Síť je koncipována jako obvyklé vrstvení konvolučních vrstev, každému konvolučnímu bloku však předchází úprava vstupu takovým způsobem, aby do výpočtu nadcházející konvoluce byly zahrnuty i potenciální harmonické složky dané frekvence. Na obrázku \ref{obr:hcnn_harmonic_stacking} tuto úpravu vstupu znázorňujeme; výstup předchozí konvoluční vrstvy duplikujeme a vzájemně posuneme o pevně dané počty půltónů tak, aby harmonicky související složky byly umístěny \uv{vedle sebe} v dimenzi kanálů. Následně výstupy v této dimenzi spojíme a chybějící složky doplníme nulami.
+V práci prezentujeme také novou architekturu pro zpracování harmonicky strukturovaných zvukových signálů nazvanou \emph{Harmonic Convolutional Neural Network}. Vycházíme z práce \cite{Bittner2017}, která problém výpočtu salienční funkce zasazuje do rámce úlohy odstranění šumu v obrázku pomocí konvolučních sítí. Její architektura vstupní spektrogram zpracovává několika konvolučními vrstvami, výsledkem pak je nový spektrogram s odstraněným \uv{šumem hudebního doprovodu}. 
 
-% Pokud v síti použijeme konvoluce s malým kernelem (například 3x3), informace ze spektrogramu si zachovávají své umístění (například složka noty C4 nemá možnost ovlivnit složku G4), tudíž výstup každé vrstvy celého modelu lze vždy považovat za druh časově-frekvenční reprezentace původního vstupu. Tento předpoklad uvádí i \cite{Bittner2017} pro obhájení své architektury.
+Dalším přínosem její práce je popis vstupní spektrální reprezentace HCQT. CQT spektrogramy mají logaritmickou osu frekvence, tato reprezentace má tu vlastnost, že dvě libovolné harmonické frekvence jednoho tónu mají na spektrogramu mezi sebou konstantní vzdálenost, nezávislou na fundamentální frekvenci. HCQT spočívá ve výpočtu několika CQT spektrogramů, které jsou vzájemně posunuty právě o tyto konstatní vzdálenosti. Pokud pak tyto spektrogramy poskládáme za sebe v nové ose kolmé na osu frekvence a času, harmonické frekvence se překryjí (viz obrázek \ref{obr:hcqt}). Tento vícekanálový spektrogram pak může sloužit jako vstup pro konvoluční vrstvu, která má při výpočtu jedné frekvenční složky k dispozici také informace o souvisejících harmonických složkách.
+
+Z této myšlenky posunů vstupní reprezentace pro rozšiřování receptivního pole konvoluce na související harmonické složky vychází naše architektura HCNN. Síť je koncipována jako obvyklé vrstvení konvolučních vrstev, každému konvolučnímu bloku však předchází zmiňovaná úprava vstupu takovým způsobem, aby do výpočtu nadcházející konvoluce byly zahrnuty i potenciální harmonické složky dané frekvence. Na obrázku \ref{obr:hcnn_harmonic_stacking} tuto úpravu vstupu znázorňujeme; výstup předchozí konvoluční vrstvy duplikujeme a vzájemně posuneme o pevně dané počty půltónů tak, aby harmonicky související složky byly umístěny \uv{vedle sebe} v dimenzi kanálů. Následně výstupy v této dimenzi spojíme a chybějící složky doplníme nulami.
+\begin{figure}[h]\centering
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/hcnn_harmonic_stacking_2}
+\caption{Diagram transformace vstupu konvoluční vrstvy pro zachycení harmonických souvislostí.}\label{obr:hcnn_harmonic_stacking}
+\end{figure}
 
 \begin{figure}[h]\centering
     \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/hcnn_layer}
