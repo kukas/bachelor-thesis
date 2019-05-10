@@ -68,6 +68,8 @@ https://librosa.github.io/librosa/generated/librosa.core.iirt.html
 - **gaussovské rozmazání v čase, pro snížení počtu jednooknových predikcí**
 - různý window fn jako kanály?
 
+- FChT - akorát z něj nemusím dělat jeden spektrogram, prostě ty transformovaný okna budou různý kanály MOAR FEATURES
+
 ### Temporal dependencies
 - LSTM
 - seq2seq + attention

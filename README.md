@@ -48,7 +48,7 @@ Typografické dodělávky, lahůdky a drobnosti:
 ## Písemná část
 - úvod
     - ! opravit diagram metod
-    - (další důvody, proč je ME složitá)
+    - ! přínosy metod
     - definice pojmů
         - monofonní v této práci je jednohlas, nikoli jeden kanál!
 
@@ -76,7 +76,7 @@ Typografické dodělávky, lahůdky a drobnosti:
 
 - datasety
     "datasety mají mnohem delší poločas rozpadu, jejich pochopení je zásadní k interpretaci výsledků, jejich vznik formuje směr, kterým se výzkum ubírá"
-
+    čtenář musí pochopit, na čem se evalkuuje, co znamenají výsledky
     - dopsat pasáž o MDB-synth
     - dopsat úvod
     - dopsat wjazzd
@@ -103,6 +103,7 @@ Typografické dodělávky, lahůdky a drobnosti:
 
 - evaluation
     - dopsat zbytek metrik
+    - příkladové obrázky jednotlivých chyb
     - popsat malé datasety
 
 - výsledky
