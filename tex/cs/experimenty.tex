@@ -569,3 +569,173 @@ Cílový výstup počítáme v souladu s implementacemi v předchozích sekcích
 
 \subsection{Vliv }
 
+\section{Detekce melodie}
+
+\begin{figure}[h]\centering
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/voicing_struktura}
+\caption{Diagram společné struktury modelů pro detekci melodie.}\label{obr:voicing_struktura}
+\end{figure}
+
+Podobně jako v práci \cite{Rigaud2016} jsme otestovali možnosti oddělení modulu pro odhad výšky melodie a pro její detekci. V této sekci proto nejprve provedeme sadu experimentů, ve kterých návrhy na modul pro detekci trénujeme samostatně a poté otestujeme jeho přesnost také v kombinaci s modulem pro odhad výšky.
+
+Při hledání nejlepší architektury pro detekci jsme postupovali iterativním prohlubování návrhů sítí. Společná struktura všech experimentů je znázorněna na diagramu \ref{obr:voicing_struktura}. Vstupem modelů je CQT spektrogram, podobně jako pro modely HCNN. Ten v některých experimentech transformujeme pomocí harmonického posunu (viz diagram \ref{obr:hcnn_harmonic_stacking}). Dále tento spektrogram potenciálně zmenšíme pomocí jedné pooling vrstvy tak, aby na jeden půltón připadala jedna složka výstupu, u většiny experimetů však tuto transformaci vynecháváme. Tento upravený vstup pak zpracováváme jedním z konvolučních bloků znázorněných na obrázku \ref{obr:voicing_moduly}. Výstup bloku pomocí konvoluce a následné sigmoidy zredukujeme na výstupní hodnoty označující přítomnost melodie v každém ze vstupních oken. 
+
+V diagramu konvolučních bloků \ref{obr:voicing_moduly} obsahují bloky \texttt{dilated\_block}, \texttt{octave\_block} a \texttt{note\_block} podsoučást \texttt{reg. blok}, tedy regularizační blok. Ten se skládá z kombinace dropout vrstvy a batch normalizace, nejvýhodnější kombinaci budeme ověřovat experimentálně. Dále také na obrázku používáme proměnné $\mathbf{ T_{CTX}}$ pro parametrizaci šířky konvolucí a $\mathbf{K}$ multiplikační koeficient kapacity. Nastavení těchto proměnných budeme také porovnávat v následujících podsekcích. Dále se v diagramech používá proměnná N, která je vázaná na šířku vstupu daného bloku. 
+
+Úlohu detekce formulujeme jako binární klasifikaci pro každé uvažované vstupní okno signálu. Síť je trénována pomocí vzájemné korelace mezi výstupem a cílovou množinou binárních veličin, které indikují přítomnost melodie.
+
+
+\begin{figure}[h]\centering
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/voicing_moduly}
+\caption{Diagram testovaných druhů konvolučních bloků pro detekci melodie.}\label{obr:voicing_moduly}
+\end{figure}
+
+\subsection{Vliv počáteční pooling vrstvy}
+
+Motivací pro použití pooling vrstvy je zmenšení nejspíše zbytečně podrobné frekvenční dimenze vstupu. Protože výstup úlohy detekce melodie nemusí obsahovat přesnou informaci o výšce tónu, pouze binární informaci o její přítomnosti v daném časovém okamžiku, jemná frekvenční osa se zdá redundantní a ponechání plného rozlišení vede ke zbytečně větším modelům. Pomocí experimentů na sadě architektur se proto pokusíme ověřit vliv této redukce.
+
+\begin{table}[h!]
+\centering
+    \begin{tabular}{llrrr}
+    \toprule
+            Model & Pooling &    VR &   VFA &    VA \\
+    \midrule
+    full\_1layer &    None & 0.818 & 0.606 & 0.616 \\
+    full\_1layer &     avg & 0.820 & 0.600 & 0.616 \\
+    full\_1layer &     max & 0.830 & 0.589 & 0.628 \\
+    note\_1layer &    None & 0.722 & 0.451 & 0.636 \\
+    note\_1layer &     avg & 0.751 & 0.547 & 0.605 \\
+    note\_1layer &     max & 0.733 & 0.477 & 0.626 \\
+    note\_dilated &    None & 0.720 & 0.441 & 0.636 \\
+    note\_dilated &     avg & 0.680 & 0.473 & 0.595 \\
+    note\_dilated &     max & 0.668 & 0.413 & 0.617 \\
+        note\_note &    None & 0.701 & 0.401 & 0.648 \\
+        note\_note &     avg & 0.722 & 0.519 & 0.602 \\
+        note\_note &     max & 0.682 & 0.436 & 0.619 \\
+    octave\_1layer &    None & 0.789 & 0.523 & 0.638 \\
+    octave\_1layer &     avg & 0.793 & 0.527 & 0.634 \\
+    octave\_1layer &     max & 0.809 & 0.561 & 0.628 \\
+    octave\_octave &    None & 0.588 & 0.337 & 0.617 \\
+    octave\_octave &     avg & 0.709 & 0.454 & 0.624 \\
+    octave\_octave &     max & 0.740 & 0.473 & 0.632 \\
+    \bottomrule
+    \end{tabular}
+\caption{Detekce melodie, vliv počáteční pooling vrstvy.}\label{tab:voicing_pooling}
+\end{table}
+
+\begin{figure}[h]\centering
+    \includegraphics[scale=0.6]{../img/figures/voicing_pooling}
+\caption{Detekce melodie, vliv počáteční pooling vrstvy.}\label{obr:voicing_pooling}
+\end{figure}
+
+Z tabulky \ref{tab:voicing_pooling} a obrázku \ref{obr:voicing_pooling} vidíme, že u většiny experimentů zpracování vstupu pooling vrstvou spíše zhoršilo, v dalších experimentech proto zpracování pooling vrstvou nepoužíváme.
+
+\subsection{Vliv použití dropout jako regularizace}
+
+Sadou experimentů prozkoumáme účinnost regularizace pomocí dropout vrstvy po každé konvoluční vrstvě v modelu. Parametr pravděpodobnosti vynechání složky jsme nastavili na $0.3$. 
+
+\begin{table}[h!]
+\centering
+    \begin{tabular}{llrrr}
+    \toprule
+            Model & Dropout &    VR &   VFA &    VA \\
+    \midrule
+    full\_1layer &     0.0 & 0.782 & 0.565 & 0.618 \\
+    full\_1layer &     0.3 & 0.825 & 0.632 & 0.610 \\
+    octave\_1layer &     0.0 & 0.610 & 0.357 & 0.625 \\
+    octave\_1layer &     0.3 & 0.832 & 0.586 & 0.629 \\
+    note\_1layer &     0.0 & 0.691 & 0.418 & 0.634 \\
+    note\_1layer &     0.3 & 0.791 & 0.519 & 0.642 \\
+    octave\_octave &     0.0 & 0.588 & 0.337 & 0.617 \\
+    octave\_octave &     0.3 & 0.824 & 0.564 & 0.636 \\
+        note\_note &     0.0 & 0.743 & 0.438 & 0.648 \\
+        note\_note &     0.3 & 0.758 & 0.424 & 0.666 \\
+    note\_dilated &     0.0 & 0.720 & 0.441 & 0.636 \\
+    note\_dilated &     0.3 & 0.686 & 0.362 & 0.656 \\
+    \bottomrule
+    \end{tabular}
+\caption{Detekce melodie, vliv dropout vrstvy.}\label{tab:voicing_dropout}
+\end{table}
+
+\begin{figure}[h]\centering
+    \includegraphics[scale=0.6]{../img/figures/voicing_dropout}
+\caption{Detekce melodie, vliv dropout vrstvy.}\label{obr:voicing_dropout}
+\end{figure}
+
+Výsledky experimentů můžeme porovnat na obrázku \ref{obr:voicing_dropout} a v tabulce \ref{tab:voicing_dropout}, dropout vrstva výrazně pomáhá zvýšit přesnost modelu, zejména pak u architektur se dvěma vrstvami. V následujících experimentech dropout proto používáme.
+
+\subsection{Vliv použití batch normalizace jako regularizace}
+
+Sadou experimentů prozkoumáme účinnost regularizace pomocí batch normalizace po každé konvoluční vrstvě v modelu. 
+
+\begin{table}[h!]
+\centering
+    \begin{tabular}{llrrr}
+    \toprule
+            Model & Batch normalizace &    VR &   VFA &    VA \\
+    \midrule
+    full\_1layer &        Ne & 0.849 & 0.678 & 0.598 \\
+    full\_1layer &        Ano & 0.825 & 0.632 & 0.610 \\
+    note\_1layer &        Ne & 0.767 & 0.485 & 0.644 \\
+    note\_1layer &        Ano & 0.791 & 0.519 & 0.642 \\
+    note\_dilated &        Ne & 0.720 & 0.426 & 0.646 \\
+    note\_dilated &        Ano & 0.686 & 0.362 & 0.656 \\
+        note\_note &        Ne & 0.761 & 0.439 & 0.659 \\
+        note\_note &        Ano & 0.758 & 0.424 & 0.666 \\
+    octave\_1layer &        Ne & 0.841 & 0.557 & 0.647 \\
+    octave\_1layer &        Ano & 0.832 & 0.586 & 0.629 \\
+    octave\_octave &        Ne & 0.845 & 0.607 & 0.631 \\
+    octave\_octave &        Ano & 0.824 & 0.564 & 0.636 \\
+    \bottomrule
+    \end{tabular}
+
+\caption{Detekce melodie, vliv batch normalizace.}\label{tab:voicing_batchnorm}
+\end{table}
+
+\begin{figure}[h]\centering
+    \includegraphics[scale=0.6]{../img/figures/voicing_batchnorm}
+\caption{Detekce melodie, vliv batch normalizace.}\label{obr:voicing_batchnorm}
+\end{figure}
+
+Z výsledků na obrázku \ref{obr:voicing_batchnorm} a v tabulce \ref{tab:voicing_batchnorm} vyplývá, že batch normalizace přesnost sítí mírně zlepšuje, proto ji v následujících experimentech používáme společně s dropout regularizací.
+
+\subsection{Vliv kapacity sítě}
+
+Konstrukcí a natrénováním sítí s různou kapacitou nastavenou pomocí parametru $\mathbf{K}$ na diagramu \ref{obr:voicing_moduly} ověříme, jaký počet konvolučních filtrů je pro úlohu a danou architekturu vhodný. 
+
+\begin{table}[h!]
+\centering
+    \begin{tabular}{lrrrr}
+    \toprule
+            Model & Mult. Koef. Kapacity &    VR &   VFA &    VA \\
+    \midrule
+    full\_1layer &                    8 & 0.825 & 0.632 & 0.610 \\
+    full\_1layer &                   16 & 0.923 & 0.765 & 0.601 \\
+    full\_1layer &                   32 & 0.858 & 0.690 & 0.600 \\
+    note\_1layer &                    8 & 0.791 & 0.519 & 0.642 \\
+    note\_1layer &                   16 & 0.845 & 0.583 & 0.641 \\
+    note\_1layer &                   32 & 0.829 & 0.565 & 0.641 \\
+    note\_dilated &                    8 & 0.686 & 0.362 & 0.656 \\
+    note\_dilated &                   16 & 0.766 & 0.474 & 0.649 \\
+    note\_dilated &                   32 & 0.694 & 0.395 & 0.646 \\
+        note\_note &                    8 & 0.758 & 0.424 & 0.666 \\
+        note\_note &                   16 & 0.711 & 0.368 & 0.662 \\
+        note\_note &                   32 & 0.676 & 0.338 & 0.659 \\
+    octave\_1layer &                    8 & 0.832 & 0.586 & 0.629 \\
+    octave\_1layer &                   16 & 0.842 & 0.588 & 0.636 \\
+    octave\_1layer &                   32 & 0.859 & 0.612 & 0.634 \\
+    octave\_octave &                    8 & 0.824 & 0.564 & 0.636 \\
+    octave\_octave &                   16 & 0.799 & 0.487 & 0.659 \\
+    octave\_octave &                   32 & 0.648 & 0.343 & 0.640 \\
+    \bottomrule
+    \end{tabular}
+
+\caption{Detekce melodie, vliv batch normalizace.}\label{tab:voicing_capacity}
+\end{table}
+
+\subsection{Vliv kontextu}
+
+\begin{figure}[h]\centering
+    \includegraphics[scale=0.6]{../img/figures/voicing_context}
+\caption{Detekce melodie, vliv kontextu.}\label{obr:voicing_context}
+\end{figure}

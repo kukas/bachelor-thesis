@@ -25,7 +25,7 @@ pátek:
 | Související | 55%  | 0%      | 0%      |
 | Evaluace    | 75%  | 0%      | 0%      |
 | Experimenty | 60%  | 50%     | 50%     |
-| Výsledky    | 10%  | 0%      | 0%      |
+| Výsledky    | 50%  | 0%      | 0%      |
 | Závěr       | 0%   | 0%      | 0%      |
 
 Typografické dodělávky, lahůdky a drobnosti:
@@ -81,15 +81,12 @@ Typografické dodělávky, lahůdky a drobnosti:
     - dopsat úvod
     - dopsat wjazzd
     - napsat krátký popis MIREX dat
-    - tabulka!
-        - hodit ji na konec úvodu a před ní ještě vysvětlit jednotlivé sloupce
     - tabulka s přehledem počtu a délky train, validačních a test dat
-
-    - pod každou kapitolu napsat, jakým způsobem je dataset používaný v práci
 
     - možná kapitola o tom, jaké různé postupy vytváření dat existují (zvlášť zahrnutí multif0 postupů)
 
 - experimenty
+    - popsat co je hluboké učení
     - popsat Prostředí pro spouštění, replikaci a evaluaci experimentů
         - viz `experimenty.md`
 
