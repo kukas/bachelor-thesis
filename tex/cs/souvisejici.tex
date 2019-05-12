@@ -163,11 +163,11 @@ Jiným přístupem k hledání melodie je použití statistických metod, jako j
 
 \subsubsection{Přítomnost melodie (voicing)}
 
-Důležitou součástí algoritmů pro extrakci melodie je detekce melodie v signálu. Většina metod tento krok provádí na konci vyhodnocování pomocí pevně nastaveného či dynamického práhování, jiné metody detekci melodie řeší filtrováním melodických kontur (\cite{Salamon2012a}). V případě statistických metod je stav neznějící melodie často přímo zabudován do statistického modelu \citep{Ryynanen2008}.
+Důležitou součástí algoritmů pro extrakci melodie je detekce melodie v signálu. Většina metod tento krok provádí na konci vyhodnocování pomocí pevně nastaveného či dynamického práhování, jiné metody detekci melodie řeší filtrováním melodických kontur (\cite{Salamon2012a}). V případě statistických metod je stav neznějící melodie často přímo zabudován do statistického modelu \citep{Ryynanen2008}. Některé metody také používají klasifikační metody strojového učení \citep{Rigaud2016}.
 
 \section{Srovnání existujících metod}
 
-Pro celkové kvantitativní srovnání metod jsme zpracovali výsledky všech ročníků soutěže MIREX. V této sekci prezentujeme shrnutí metod, pro které existují výsledky na všech dostupných datasetech, tedy vybíráme převážně z metod od roku 2015. Díky práci \cite{Bosch2014}, který starší metody spustil na svém datasetu ORCHSET, můžeme ke srovnání přidat také výsledky metod \cite{Dressler2009}, \cite{Salamon2012a} a \cite{Durrieu2010}. Celkové srovnání nalezneme v tabulce \ref{obr:mirex_results}. Na základě těchto výsledků vybíráme metodu \cite{Salamon2012a} jakožto zástupce metod, které nejsou založeny na strojovém učení\footnote{metoda \cite{Dressler2009} nemá zveřejněnou implementaci.}.
+Pro celkové kvantitativní srovnání metod jsme zpracovali výsledky všech ročníků soutěže MIREX. Tuto soutěž a používané datasety blíže popisujeme v kapitole \hyperref[chap:evaluace]{Metody evaluace}. V této sekci prezentujeme shrnutí výsledků metod, pro které existují výsledky na všech evaluačních datasetech soutěže MIREX, vybíráme tedy převážně z metod od roku 2015, kdy byl vydán doposud nejnovější evaluační dataset ORCHSET. Díky práci \cite{Bosch2014}, který starší metody spustil na svém datasetu ORCHSET, můžeme ke srovnání přidat také výsledky metod \cite{Dressler2009}, \cite{Salamon2012a} a \cite{Durrieu2010}. Celkové srovnání nalezneme v tabulce \ref{obr:mirex_results}. Na základě těchto výsledků vybíráme metodu \cite{Salamon2012a} jakožto zástupce metod, které nejsou založeny na strojovém učení\footnote{metoda \cite{Dressler2009} nemá zveřejněnou implementaci.}.
 
 \begin{figure}[h]\centering
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/mirex_results}

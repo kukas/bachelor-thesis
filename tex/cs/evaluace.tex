@@ -1,57 +1,97 @@
-\chapter{Metody evaluace}
+\chapter{Metody evaluace}\label{chap:evaluace}
+
+V této sekci prezentujeme zavedené a standardní způsoby vzájemného kvantitativního i kvalitativního porovnávání výsledků metod pro extrakci melodie, které vychází z postupů evaluace v soutěži MIREX. V první sekci uvádíme soutěž MIREX jako takovou, následně definujeme používané metriky a v závěru kapitoly zmiňujeme některé praktické metriky používané při trénování modelů v této práci.
 
 \section{MIREX}
 
-Soutěž MIREX (Music Information Retrieval Evaluation eXchange) probíhá již od roku 2005 a v MIR komunitě zastává hlavní postavení jakožto každoroční událost pro nezávislé, objektivní srovnání state-of-the-art metod a algoritmů pro řešení širokého spektra úloh souvisejících se zpracováním hudebních dat. Mezi tyto úlohy patří například \textit{rozpoznání žánru}, \textit{odhad tempa}, \textit{odhad akordů}, \textit{identifikace coveru} a samozřejmě také \textit{extrakce melodie}.
+Soutěž MIREX (Music Information Retrieval Evaluation eXchange) probíhá již od roku 2005 a v MIR komunitě zastává hlavní postavení jakožto každoroční událost pro nezávislé, objektivní srovnání state-of-the-art metod a algoritmů pro řešení širokého spektra úloh souvisejících se zpracováním hudebních dat. Mezi tyto úlohy patří například rozpoznání žánru, odhad tempa, odhad akordů, identifikace coveru a samozřejmě také extrakce melodie.
 
-Na rozdíl od jiných úloh, kde debata o zvolení nejvhodnějších objektivních metrik pro porovnávání stále probíhá, metriky pro extrakci melodie se ustanovily již v prvním ročníku (na základě dřívějších zkušeností) a zůstaly neměnné dodnes \cite{Raffel2014}. Naopak data použitá pro testování se postupně kumulují a dnes soutěž probíhá již s řadou datasetů (ADC04, MIREX05, MIREX08, MIREX09, ORCHSET), které blíže popisuje kapitola o dostupných datech.
+Na rozdíl od jiných úloh, kde debata o zvolení nejvhodnějších objektivních metrik pro porovnávání metod stále probíhá, metriky pro extrakci melodie se ustanovily již v prvním ročníku (na základě dřívějších zkušeností) a zůstaly neměnné dodnes \citep{Raffel2014}. Naopak data použitá pro testování se postupně kumulují a dnes soutěž probíhá již s řadou datasetů (ADC04, MIREX05, MIREX08, MIREX09, ORCHSET15). V tabulce \ref{tab:mirex_datasety} uvádíme přehled těchto evaluačních datasetů.
 
-% \cite{Downie2010}
+\begin{table}[h!]
+\centering
+\begin{tabular}{p{2.5cm}p{11cm}}
+\toprule
+Dataset        & Popis \\
+\midrule
+ADC2004        & 20 výňatků délky kolem 20 sekund, žánry pop, jazz, opera. Obsahuje živé a syntetické MIDI nahrávky. Celková délka 369 sekund. Dataset je kompletně zveřejněn. \\
+MIREX05        & 25 výňatků délky 10-40 sekund, žánry rock, R\&B, pop, jazz a sólové piano. Obsahuje živé a syntetické MIDI nahrávky. Celková délka 686 sekund. K datasetu je dostupná trénovací množina MIREX05train \\
+INDIAN08       & Čtyři minutové výňatky tradičního zpěvu z oblasti severní Indie. Ke každému výňatku existují dvě verze s různě hlasitým doprovodem, celkově se tedy dataset skládá z osmi nahrávek. Celková délka 501 sekund. Dataset je neveřejný \\
+MIREX09 ($0\,\rm dB$)  & 374 čínských karaoke písní. Poměr hlasitosti zpěvu k doprovodu je 0dB. Celková délka $10\,020$ sekund. K datasetu je dostupná trénovací množina MIR1K \\
+MIREX09 ($-5\,\rm dB$) & Stejné výňatky jako v případě MIREX09 ($0\,\rm dB$), poměr hlasitosti zpěvu k doprovodu je však -5dB. Celková délka $10\,020$ sekund. \\
+MIREX09 ($+5\,\rm dB$) & Stejné výňatky jako v případě MIREX09 ($0\,\rm dB$), poměr hlasitosti zpěvu k doprovodu je však +5dB. Celková délka $10\,020$ sekund. \\
+ORCHSET15      & 64 orchestrálních výňatků z různých období vývoje klasické hudby. Anotace melodie je uvedena s přesností jednoho půltónu, Celková délka 1404 sekund. Dataset je kompletně zveřejněn. \\
+\bottomrule
+\end{tabular}
+\caption{Přehled evaluačních datasetů v soutěži MIREX, částečně převzato z práce \cite{Salamon2014}.}\label{tab:mirex_datasety}
+\end{table}
+
+
+\subsection{Formát výstupu v soutěži MIREX}
+
+Obvyklý formát výstupu algoritmů je CSV soubor se dvěma sloupci. První sloupec obsahuje pravidelné časové značky, druhý sloupec pak odhad základní frekvence melodie. Některé algoritmy uvádí i odhady výšky základní frekvence mimo detekovanou melodii (může jít například o doprovod, který zní i po hlavním melodickém hlasu). Aby tyto odhady byly odlišené od odhadů hlavní melodie, jsou uvedeny v záporných hodnotách. Díky tomu pak lze nezávisle vyhodnotit přesnost \textit{odhadu výšky} a \textit{detekce melodie}. Odhad výšky se vyhodnocuje podle absolutní hodnoty frekvence ve všech časových oknech, ke kterým existuje anotace, detekce melodie pak na všech hodnotách vyšších než 0. 
 
 \section{Trénovací, validační a testovací množina}
 
-Z dostupných dat, které pro úlohu máme k dispozici, musíme vyhradit množiny pro trénování, validaci a testování, aby byly metody porovnatelné jak mezi sebou, tak se stávajícími state-of-the-art metodami. Pro trénování se jeví jako nejvhodnější dataset MedleyDB, jednak pro svou délku a jednak pro žánrovou rozmanitost, proto je použit pro většinu popsaných experimentů. Rozdělení na tři části vychází z práce \cite{Bittner2017} a \cite{DBasaranSEssid2018}, aby byly metriky přímo porovnatelné s výsledky v uvedených článcích. 
+Z dostupných dat, které pro úlohu máme k dispozici, musíme vyhradit množiny pro trénování, validaci a testování, aby byly metody porovnatelné jak mezi sebou, tak se stávajícími state-of-the-art metodami. Pro trénování se jeví jako nejvhodnější dataset MedleyDB, jednak pro svou délku a jednak pro žánrovou rozmanitost, proto je použit všechny popsané experimenty. Konkrétní rozdělení MedleyDB na tři části je přímo převzaté z práce \cite{Bittner2017} a \cite{DBasaranSEssid2018}, aby byly metriky porovnatelné s výsledky v uvedených článcích. 
 
 % Další výhodou použití stejného \textit{splitu} je možnost replikace výsledků, za použití popisované architektury, a tím pádem minimalizování možnosti nějaké velké implementační chyby v kódu. Pokud by se totiž výsledky nepodařilo replikovat se stejnými daty i architekturou, musela by být chyba jinde - tedy s největší určitostí v vyvinutém frameworku.
 
-Dalším užitečným zdrojem dat je dataset MDB-melody-synth, který je přesyntetizován z vícestopých nahrávek MedleyDB. Proto se nabízí použít stejné rozdělení dat, jaké se používá pro MedleyDB, ze stejných důvodů uvedených v předchozím odstavci. Jelikož dataset neobsahuje veškerá data, ale pouze jejich podmnožinu, i v experimentech používané rozdělení dat obsahuje pouze podmnožinu z původního rozdělení datasetu MedleyDB. 
+Dalším užitečným zdrojem dat je dataset MDB-melody-synth, který je syntetizován z vícestopých nahrávek MedleyDB. Proto je vhodné použít stejné rozdělení dat, jaké se používá pro MedleyDB, protože data budou silně korelovaná s původními nahrávkami a tak bychom mohli dojít k chybným, uměle vysokým výsledkům, pokud bychom množiny změnili. Jelikož dataset neobsahuje veškerá data, ale pouze jejich podmnožinu, i v experimentech používané rozdělení dat obsahuje pouze podmnožinu z původního rozdělení datasetu MedleyDB. 
 
-Posledním velkým datasetem, používaným pro trénování, je Weimar Jazz Database. Zde žádný doporučený postup ani výběr rozdělení dataestu v relevatní literatuře neexistuje, proto jsem dataset rozdělil podle metody \cite{Bittner2017} na tři části (v celkové délce nahrávek na části v poměrech 63\%, 14\% a 23\%). Skladby jsou rozděleny do částí podle interpretů tak, aby se každý interpret vyskytoval právě v jedné části datasetu. Toto omezení na podmnožiny \cite{Bittner2017} nediskutuje, lze však doložit (práce \cite{Sturm2013}), že pro úlohu rozpoznání žánru metody založené na strojovém učení vykazují po trénování a validaci na datech bez tohoto filtru výrazně lepší výsledky než stejné metody spuštěné na roztříděných datech, takové zlepšení výkonu je ale jistě umělým důsledkem špatné volby trénovací množiny. 
+Posledním velkým datasetem používaným v práci, je Weimar Jazz Database. Původním záměrem bylo dataset použít i pro trénování a validaci metod proto jsme jej rozdělili na datové množiny, nakonec byla však použita pouze testovací množina. Při rozdělování datasetu jsme postupovali podle práce \cite{Bittner2017}, data jsme rozdělili na tři části. Skladby jsou rozděleny do částí podle interpretů tak, aby se každý interpret vyskytoval právě v jedné části datasetu. Toto omezení na podmnožiny \cite{Bittner2017} nediskutuje, lze však doložit (práce \cite{Sturm2013}), že pro úlohu rozpoznání žánru metody založené na strojovém učení vykazují po trénování a validaci na datech bez tohoto filtru výrazně lepší výsledky než stejné metody spuštěné na roztříděných datech, takové zlepšení výkonu je ale jistě umělým důsledkem špatné volby trénovací množiny. 
 
-Ostatní datasety (ADC04, MIREX05, ORCHSET) jsou v práci použity pouze jako testovací data, díky tomu lze korektně výsledky přímo srovnávat s žebříčky úlohy Melody Extraction v soutěži MIREX.
+Délky a počty nahrávek datových množin používaných v této práci shrnujeme v tabulce \ref{tab:data_splits}, přesný výčet skladeb použitých v každé množině je v příloze práce.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{llll}
+\toprule
+Dataset          & Množina & Počet nahrávek & Délka \\
+\midrule
+MedleyDB         & train   & 67             & $3.06\,\rm h$ \\
+                 & valid   & 15             & $0.85\,\rm h$ \\
+                 & test    & 27             & $1.71\,\rm h$ \\
+MDB-melody-synth & train   & 44             & $1.88\,\rm h$ \\
+                 & valid   & 8              & $0.46\,\rm h$ \\
+                 & test    & 14             & $0.87\,\rm h$ \\
+WJazzD           & train   & 169            & $5.49\,\rm h$ \\
+                 & valid   & 54             & $1.25\,\rm h$ \\
+                 & test    & 74             & $2.08\,\rm h$ \\
+\bottomrule
+\end{tabular}
+\caption{Přehled trénovacích, validačních a testovacích množin použitých v práci.}\label{tab:data_splits}
+\end{table}
+
+Dále k testování používáme datasety ADC04, MIREX05train a ORCHSET, blíže popsané v kapitole \hyperref[chap:datasety]{Datasety}. Protože jsou datasety ADC04 a ORCHSET jsou v práci použity pouze jako testovací data, můžeme výsledky přímo srovnávat s odpovídajícími žebříčky úlohy Melody Extraction v soutěži MIREX.
 
 % ------
 
 % - MatthewEntwistle_FairerHopes
 % obsahuje harfu, ale trénovací data ji neobsahují, chce to ale víc prozkoumat, jelikož trénovací data neobsahují víc nástrojů, tak zjistit přesně přesnost anotace pro tyto nástroje
 
-\section{Kvalitativní příklady}
-
-Pro lepší porozumění hranic testovaných metod je vhodné studovat také výsledky na kvalitativních ukázkách. Modely byly při práci vyhodnocovány na několikaminutových množinách výňatků z validačních a testovacích dat. Metodika výběru spočívala v poslechu nahrávek a ručním hledáním zajímavých hudebních jevů a také v seřazení nahrávek podle úspěšnosti přepisu stávajícími metodami a výběrem výňatků právě z těchto nejproblematičtějších příkladů.
-
-Omezení plynoucí z potřeby zkrátit výňatky na minimum,
-
 
 \section{Metriky}
 
-Celkovou kvalitu metody pro extrakci melodie určuje její schopnost určit výšku tónu hrající melodie (\textit{odhad výšky melodie}) a také rozpoznat části skladby, které melodii neobsahují (\textit{detekce melodie}). Jelikož jsou tyto podúlohy na sobě nezávislé, standardní sada metrik zahrnuje jak celkové vyhodnocení přesnosti, tak dílčí vyhodnocení pro \textit{odhad výšky} a \textit{detekci melodie}. 
+Celková kvalita výstupu metody pro extrakci melodie je určena její schopností odhadnout správně výšku tónu hrající melodie a také rozpoznat části skladby, které melodii neobsahují. Jelikož jsou tyto podúlohy na sobě nezávislé, standardní sada metrik zahrnuje jak celkové vyhodnocení přesnosti, tak dílčí vyhodnocení pro \textit{odhad výšky} a \textit{detekci melodie}. 
 
 % -------
 
 % - můžu zmínit to, že je toto rozdělení důležité pro Orchset, který je z většiny voiced, a tedy overall accuracy může být zavádějící u algoritmů s přísným voicing detection.
 % - celkové skóre na datasetu je průměr všech písní
 
-\subsection{Formát výstupu}
-
-Obvyklý formát výstupu algoritmů je CSV soubor se dvěma sloupci. První sloupec obsahuje pravidelné časové značky, druhý sloupec pak odhad základní frekvence melodie. Některé algoritmy uvádí i odhady výšky základní frekvence mimo detekovanou melodii (může jít například o doprovod, který zní i po hlavním melodickém hlasu). Aby tyto odhady byly odlišené od odhadů hlavní melodie, jsou uvedeny v záporných hodnotách. Díky tomu pak lze nezávisle vyhodnotit přesnost \textit{odhadu výšky} a \textit{detekce melodie}. Odhad výšky se vyhodnocuje podle absolutní hodnoty frekvence ve všech časových oknech, ke kterým existuje anotace, detekce melodie pak na všech hodnotách vyšších než 0. 
 
 \subsection{Definice metrik}
 
-Většina metrik je definována na základě porovnávání jednotlivých anotačních oken - tedy typicky srovnáním odhadovaných a pravdivých výšek melodie po konstantních časových skocích. Datasety používané pro vyhodnocování v soutěži MIREX používají časový skok délky 10 ms. V definicích budu vycházet ze značení v práci \cite{Salamon2014}. 
+Většina metrik je definována na základě porovnávání jednotlivých anotačních oken --- tedy typicky srovnáním odhadovaných a pravdivých výšek melodie po konstantních časových skocích. Datasety používané pro vyhodnocování v soutěži MIREX používají časový skok délky 10 ms. V definicích budu vycházet ze značení v práci \cite{Salamon2014}. 
 
     Označme vektor odhadovaných základních frekvencí $\mathbf{f}$ a cílový vektor $\mathbf{f^*}$, složka $f_\tau$ je buď rovna hodnotě $f_0$ melodie, nebo $0$, pokud v daném čase melodie nezní. Obdobně zaveďme vektor indikátorů $\mathbf{v}$, jehož prvek na pozici $\tau$ je roven $v_\tau=1$, pokud je v daném časovém okamžiku detekována melodie a $v_\tau = 0$ v opačném případě. Podobným způsobem zavedeme i vektor cílových indikátorů melodického hlasu $\mathbf{v^*}$ a také vektor indikátorů absence melodie $\bar{v}_\tau = 1 - v_\tau$. 
 
-\textcolor{red}{přidat obrázky příkladů chyby}
+\begin{figure}[h!]\centering
+\includegraphics[scale=0.5]{../img/chyba_VR}
+\caption{Příklady chyb špatné detekce melodie negativně ovlivňující metriku VR.}
+\label{obr:chyba_VR}
+\end{figure}
 
 \subsubsection{Voicing Recall rate (Úplnost detekce)}
 
@@ -59,25 +99,29 @@ Poměr počtu časových oken, které byly správně označené jakožto obsahuj
 
     $$\mathrm{VR}(\mathbf{v}, \mathbf{v^*}) = \frac{\sum_\tau{v_\tau v^*_\tau}}{\sum_\tau{v^*_\tau}}$$
 
-% ------
-
-% The proportion of frames labeled as melody frames in the ground truth that are estimated as melody frames by the algorithm.
+\begin{figure}[h!]\centering
+\includegraphics[scale=0.5]{../img/chyba_VFA}
+\caption{Příklady chyb špatné detekce melodie zvyšující metriku VFA.}
+\label{obr:chyba_VFA}
+\end{figure}
 
 \subsubsection{Voicing False Alarm rate (Nesprávné detekce)}
 
-Poměr počtu časových oken, které byly nesprávně označené jako melodické, k počtu doopravdy nemelodických oken.
+Poměr počtu časových oken, které byly nesprávně označené jako obsahující melodii, a počtu časových oken, které doopravdy melodii neobsahují. Pro interpretaci této metriky platí, že nižší hodnota je lepší, vyšší hodnota je horší.
 
     $$\mathrm{FA}(\mathbf{v}, \mathbf{v^*}) = \frac{\sum_\tau{v_\tau \bar{v}^*_\tau}}{\sum_\tau{\bar{v}^*_\tau}}$$
 
 
-\textcolor{red}{upozornit, že nižší je lepší!}
-% -------
+\begin{figure}[h!]\centering
+\includegraphics[scale=0.5]{../img/chyba_RPA}
+\caption{Příklady chyb ovlivňujících metriku RPA a RCA.}
+\label{obr:chyba_RPA}
+\end{figure}
 
-% The proportion of frames labeled as non-melody in the ground truth that are mis- takenly estimated as melody frames by the algorithm.
 
 \subsubsection{Raw Pitch Accuracy (Přesnost odhadu výšky)}
 
-Poměr správně odhadnutých tónů k celkovému počtu melodických oken. Výška správně určeného tónu se může lišit až o jeden půltón.
+Poměr správně odhadnutých tónů k celkovému počtu oken, které obsahují melodii. Výška správně určeného tónu se může lišit až o jeden půltón.
 
 
     $$\mathrm{RPA}(\mathbf{f}, \mathbf{f^*}) = \frac{\sum_\tau{v^*_\tau v_\tau \mathcal{T}[\mathcal{M}(f_\tau) - \mathcal{M}(f^*_\tau)}] }{\sum_\tau{v^*_\tau}}$$
@@ -86,25 +130,24 @@ kde $\mathcal{T}$ je prahová funkce
 
     \begin{equation*}
         \mathcal{T}[a] = \begin{cases}
-                1 & \mathrm{pro} \lvert |a| \le 0.5 \\
+                1 & \mathrm{pro} \abs{a} \le 0.5 \\
                 0 & \text{jinak}
                 
             \end{cases}
     \end{equation*}
 
-\textcolor{red}{přidat zmínku o možnosti změnění práhu}
+Dodáme, že práh $0.5$ je v některých případech použití vhodné snížit na restriktivnější hodnoty, jako je $0.25$ nebo dokonce $0.1$. Jedná se zejména o použití metriky pro úlohu odhadu výšky jednohlasu (jako například v práci \cite{Kim2018}).
 
 a $\mathcal{M}$ je funkce zobrazující frekvenci $f$ na reálné číslo počtu půltónů od nějakého referenčního tónu $f_{\mathrm{ref}}$ (například od 440 Hz, tedy komorního A4).
 
     $$\mathcal{M}(f) = 12 \log_2(\frac{f}{f_{\mathrm{ref}}})$$
 
 
-% -------
-
-% The proportion of melody frames in the ground truth for which f_τ is considered correct
-
-% Raw Pitch Accuracy: The proportion of melody frames in the ground truth for which fτ is considered correct
-% (i.e. within half a semitone of the ground truth f∗τ ).
+\begin{figure}[h!]\centering
+\includegraphics[scale=0.5]{../img/chyba_RCA}
+\caption{Příklady chyb \uv{o oktávu} ovlivňujících pouze metriku RPA, nikoli metriku RCA.}
+\label{obr:chyba_RPA}
+\end{figure}
 
 \subsubsection{Raw Chroma Accuracy (Přesnost odhadu výšky nezávisle na oktávě)}
 
@@ -116,10 +159,6 @@ Nezávislost na oktávě zajistíme pomocí zobrazení rozdílu cílového a vý
 
     $$\langle a \rangle_{12} = a - 12 \lfloor \frac{a}{12} + 0.5 \rfloor  $$
 
-% -------
-
-% As raw pitch accuracy, except that both the estimated and ground truth f0 sequences are mapped onto a single octave.
-
 
 \subsubsection{Overall Accuracy (Celková přesnost)}
 
@@ -127,18 +166,10 @@ Celková přesnost měří výkon algoritmu jak v odhadu melodie tak v detekci m
 
     $$\mathrm{OA}(\mathbf{f}, \mathbf{f^*}) = \frac{\sum_\tau{v^*_\tau v_\tau \mathcal{T}[\mathcal{M}(f_\tau) - \mathcal{M}(f^*_\tau)}] + \bar{v}^*_\tau \bar{v}_\tau }{L}$$
 
-% ---------
-
-% this measure combines the perfor- mance of the pitch estimation and voicing detection tasks to give an overall performance score for the system.
-
 \subsubsection{Poznámka k definicím metrik}
 
-Definice RPA, RCA a OA zde uvedené se mírně liší od výchozích v práci \cite{Salamon2014}, jejich přímá implementace podle vzorce totiž vede kvůli nedostatečně dobře zadefinovanému vektoru frekvencí $\mathbf{f}$ k chybě, která se týká zejména metriky RCA. Ta původní definici chybně zahrnovala jako správné tóny ty, které algoritmus odhadl jako nulové (tedy neznějící) a zároveň jejich pravdivá hodnota byla po zobrazení na jednu společnou oktávu blízká nule (tedy původní tón byl blízký nějakému násobku referenční frekvence). Kvůli zobrazení na společnou oktávu se stanou \uv{neznělé nulové odhady} a tóny blízké referenčním frekvencím nerozlišitelné a byly nesprávně považované za korektní. \footnote{
-    která byla přítomna i v nejpoužívanější, veřejné implementaci MIR metrik \textit{mir\_eval}. V praxi chyba této metriky na datasetu MedleyDB mohla dosahovat až sedmi procentních bodů, na repozitáři hostovaném na serveru Github jsme již spolu s autory chybu odstranili (odkaz na Github issue: \url{https://github.com/craffel/mir_eval/issues/311}). Opravný patch bude zahrnut do další verze balíku. Výsledky v této práci jsou počítány s opravenou verzí.}
-
-\textcolor{red}{přepsat footnote ještě trochu}
-% TODO:
-% 
+Definice RPA, RCA a OA zde uvedené se mírně liší od výchozích v práci \cite{Salamon2014}, jejich přímá implementace podle vzorce totiž vede kvůli nedostatečně dobře zadefinovanému vektoru frekvencí $\mathbf{f}$ k chybě, která se týká zejména metriky RCA. Ta v původním znění definice chybně zahrnovala jako správné tóny ty, které algoritmus odhadl jako nulové (tedy neznějící) a zároveň jejich pravdivá hodnota byla po zobrazení na jednu společnou oktávu blízká nule (tedy původní tón byl blízký nějakému násobku referenční frekvence). Kvůli zobrazení na společnou oktávu se stanou \uv{neznělé nulové odhady} a tóny blízké referenčním frekvencím nerozlišitelné a byly nesprávně považované za korektní. \footnote{
+    Tato chyba byla přítomná i v nejpoužívanější, veřejné implementaci MIR metrik \textit{mir\_eval}. V praxi rozdíl chybné a opravené hodnoty této metriky na datasetu MedleyDB mohla dosahovat až sedmi procentních bodů, na repozitáři hostovaném na serveru Github jsme již spolu s autory chybu odstranili (odkaz na Github issue: \url{https://github.com/craffel/mir_eval/issues/311}). Opravný patch bude zahrnut do další verze balíku. Výsledky v této práci jsou počítány s opravenou verzí.}
 
 \subsection{Další metriky}
 
@@ -158,9 +189,16 @@ Metrika počítá odhadovaný tón jako správný, pokud se trefil do některé 
 
 Pro podrobnější souhrnný přehled četností chyb se pro klasifikační úlohy používá matice záměn. Sloupce označují správné noty, řádky odhadované. Buňka na pozici $(x,y)$ má pak hodnotu podle četnosti odhadu noty $y$ místo správné noty $x$.
 
-% \subsubsection{Histogram vzdáleností odhadu}
+\subsubsection{Histogram vzdáleností odhadu}
 
-% Histogram hodnot rozdílu $\mathbf{f} - \mathbf{f^*}$, 
+Histogram hodnot rozdílu $\mathcal{M}(\mathbf{f}) - \mathcal{M}(\mathbf{f^*})$, tedy histogram vzdáleností odhadů výšky tónů od správné hodnoty.
+
+
+\subsubsection{Kvalitativní příklady}
+
+Pro lepší vyhodnocování vyvíjených metod je vhodné studovat také výsledky na kvalitativních ukázkách. Modely byly při práci vyhodnocovány na několikaminutových množinách výňatků z validačních a testovacích dat. Metodika výběru spočívala v poslechu nahrávek a ručním výběru zajímavých hudebních jevů. Několik ukázek bylo také vybráno na základě seřazení nahrávek podle úspěšnosti přepisu stávajícími metodami a výběrem výňatků z tohoto seznamu nejproblematičtějších příkladů.
+
+
 
 % - confusion matrix
 % - estimation distance histogram

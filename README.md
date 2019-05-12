@@ -21,9 +21,9 @@ pátek:
 | Kapitola    | Text | Tabulky | Obrázky |
 | ----------- | ---- | ------- | ------- |
 | Úvod        | 90%  | -       | 100%    |
-| Datasety    | 80%  | 20%     | 0%      |
+| Datasety    | 99%  | 100%    | --      |
 | Související | 99%  | --      | 100%    |
-| Evaluace    | 75%  | 0%      | 0%      |
+| Evaluace    | 99%  | 100%    | 100%    |
 | Experimenty | 60%  | 50%     | 50%     |
 | Výsledky    | 50%  | 0%      | 0%      |
 | Závěr       | 0%   | 0%      | 0%      |
@@ -46,6 +46,12 @@ Typografické dodělávky, lahůdky a drobnosti:
 
 
 ## Písemná část
+- příloha
+    - audio příklady
+    - splits v csv souboru
+        - pomocí http://10.0.0.42:6088/notebooks/bakalarka/datasety/dataset_info_summaries.ipynb 
+
+
 - úvod
     - ! opravit diagram metod
     - ! přínosy metod
@@ -61,14 +67,14 @@ Typografické dodělávky, lahůdky a drobnosti:
 - datasety
     "datasety mají mnohem delší poločas rozpadu, jejich pochopení je zásadní k interpretaci výsledků, jejich vznik formuje směr, kterým se výzkum ubírá"
     čtenář musí pochopit, na čem se evalkuuje, co znamenají výsledky
-    - dopsat pasáž o MDB-synth
-    - dopsat úvod
-    - dopsat wjazzd
-    - napsat krátký popis MIREX dat
     - tabulka s přehledem počtu a délky train, validačních a test dat
-    - přidat RWC do datasetů
 
-    - možná kapitola o tom, jaké různé postupy vytváření dat existují (zvlášť zahrnutí multif0 postupů)
+    - (možná kapitola o tom, jaké různé postupy vytváření dat existují (zvlášť zahrnutí multif0 postupů))
+
+- evaluation
+    - dopsat zbytek metrik
+    - příkladové obrázky jednotlivých chyb
+    - popsat malé datasety
 
 - experimenty
     - popsat co je hluboké učení
@@ -82,11 +88,6 @@ Typografické dodělávky, lahůdky a drobnosti:
         - HCNN - !!!!!!
     - Voicing detection
         - řada mých experimentů, mám k tomu fůru dat, stačí shrnout a popsat zajímavé příklady
-
-- evaluation
-    - dopsat zbytek metrik
-    - příkladové obrázky jednotlivých chyb
-    - popsat malé datasety
 
 - výsledky
     - Pitch Estimation
