@@ -54,24 +54,24 @@ V tabulce \ref{tab:dataset_summary} nalezneme přehledné shrnutí obsahu všech
 
 \scalebox{0.75}{%
 \centering
-    \begin{tabular}{llllllll}
+    \begin{tabular}{lllllllll}
     \toprule
-                      {} & MedleyDB & Orchset & ADC04  & \shortstack[l]{MIREX05\\train}  & MDB-synth & WJAZZD & MIR-1K \\
+                      {} & MedleyDB & Orchset & ADC04  & \shortstack[l]{MIREX05\\train}  & MDB-synth & WJAZZD & MIR-1K & RWC \\
     \midrule
-        Audio            & Ano        & Ano       & Ano        & Ano        & Ano         & Ne\tablefootnote{Autoři audio poskytují neveřejně pro výzkumné účely}  & Ano       \\
-        F0 melodie       & Ano        & Ne      & Ano        & Ano        & Ano         & Ano      & Ano      \\
-        MIDI melodie      & Ne       & Ano       & Ne       & Ne       & Ne        & Ano      & Ne     \\
-        Audio stopy      & Ano \tablefootnote{Část stop obsahuje přeslech ostatních nástrojů, informace o přeslechu je současí metadat každé skladby.}     & Ne      & Ne       & Ne       & Ano         & Ne     & Ano\tablefootnote{Oddělený zpěv a karaoke doprovod} \\
-        Multi-F0         & Ne\tablefootnote{Je dostupný přepis všech znějících melodií, viz Definice 3 v sekci MedleyDB.}        & Ne      & Ne       & Ne       & Ano         & Ne     & Ne     \\
-        MIDI             & Ne       & Ne      & Ne       & Ne       & Ne        & Ne     & Ne     \\
-        Priorita stop    & Ano        & Ne      & Ne       & Ne       & Ano         & Ne     & Ne     \\
-        \shortstack[l]{Informace\\o instrumentaci}    & Ano        & Ano      & Ne       & Ne       & Ano         & Ano     & Ne     \\
-        Celková délka    & $7.3\,\rm h$\tablefootnote{$5.59\,\rm h$ s anotací melodie} & $23.4\,\rm m$   & $6.1\,\rm m$     & $6.5\,\rm m$     & $3.19\,\rm h$      & $8.85\,\rm h$   & $2.22\,\rm h$    \\
-        \shortstack[l]{Poměr znějící\\melodie} & 60.9\%   & 93.69\% & 85.7\%   & 63.1\%   & 50.4\%    & 62.8\% &  ---   \\
-        Počet souborů    & 122\tablefootnote{108 s anotací melodie}   & 64      & 20       & 13       & 65        & 299    & 1000    \\
-        Webová stránka   & \tablefootnote{\url{https://medleydb.weebly.com/}} & \tablefootnote{\url{https://www.upf.edu/web/mtg/orchset}}      & \tablefootnote{\url{http://ismir2004.ismir.net/melody_contest/results.html}}       & \tablefootnote{\url{https://labrosa.ee.columbia.edu/projects/melody/}}       & \tablefootnote{\url{http://synthdatasets.weebly.com/mdb-melody-synth.html}}        & \tablefootnote{\url{https://jazzomat.hfm-weimar.de/}}    & \tablefootnote{\url{https://sites.google.com/site/unvoicedsoundseparation/mir-1k}} \\
-        Žánr    & \shortstack[l]{mnoho-\\žánrový} & orchestr & \shortstack[l]{pop,jazz,\\opera,midi} & \shortstack[l]{pop,\\midi} & \shortstack[l]{mnoho-\\žánrový} & jazz & karaoke   \\
-        \shortstack[l]{Účel v této\\práci} & \shortstack[l]{Trénování\\Validace\\Testování} & Testování & Testování  & Testování  & Testování & Testování & Žádný \\
+        Audio            & Ano        & Ano       & Ano        & Ano        & Ano         & Ne\tablefootnote{Autoři audio poskytují neveřejně pro výzkumné účely}  & Ano & Ano\tablefootnote{Přístup k datasetu je zpoplatněn}      \\
+        F0 melodie       & Ano        & Ne      & Ano        & Ano        & Ano         & Ano      & Ano & Ano     \\
+        MIDI melodie      & Ne       & Ano       & Ne       & Ne       & Ne        & Ano      & Ne & Ne    \\
+        Audio stopy      & Ano \tablefootnote{Část stop obsahuje přeslech ostatních nástrojů, informace o přeslechu je současí metadat každé skladby.}     & Ne      & Ne       & Ne       & Ano         & Ne     & Ano\tablefootnote{Oddělený zpěv a karaoke doprovod} & Ne \\
+        Multi-F0         & Ne\tablefootnote{Je dostupný přepis všech znějících melodií, viz Definice 3 v sekci MedleyDB.}        & Ne      & Ne       & Ne       & Ano         & Ne     & Ne  & Ne   \\
+        MIDI             & Ne       & Ne      & Ne       & Ne       & Ne        & Ne     & Ne  & Ano   \\
+        Priorita stop    & Ano        & Ne      & Ne       & Ne       & Ano         & Ne     & Ne  & Ne   \\
+        \shortstack[l]{Informace\\o instrumentaci}    & Ano        & Ano      & Ne       & Ne       & Ano         & Ano     & Ne  & Částečné  \\
+        Celková délka    & $7.3\,\rm h$\tablefootnote{$5.59\,\rm h$ s anotací melodie} & $23.4\,\rm m$   & $6.1\,\rm m$     & $6.5\,\rm m$     & $3.19\,\rm h$      & $8.85\,\rm h$   & $2.22\,\rm h$ & ---   \\
+        \shortstack[l]{Poměr znějící\\melodie} & 60.9\%   & 93.69\% & 85.7\%   & 63.1\%   & 50.4\%    & 62.8\% &  --- & ---  \\
+        Počet nahrávek    & 122\tablefootnote{108 s anotací melodie}   & 64      & 20       & 13       & 65        & 299    & 1000  & 315  \\
+        Webová stránka   & \tablefootnote{\url{https://medleydb.weebly.com/}} & \tablefootnote{\url{https://www.upf.edu/web/mtg/orchset}}      & \tablefootnote{\url{http://ismir2004.ismir.net/melody_contest/results.html}}       & \tablefootnote{\url{https://labrosa.ee.columbia.edu/projects/melody/}}       & \tablefootnote{\url{http://synthdatasets.weebly.com/mdb-melody-synth.html}}        & \tablefootnote{\url{https://jazzomat.hfm-weimar.de/}}    & \tablefootnote{\url{https://sites.google.com/site/unvoicedsoundseparation/mir-1k}} & \tablefootnote{\url{https://staff.aist.go.jp/m.goto/RWC-MDB/}} \\
+        Žánr    & \shortstack[l]{mnoho-\\žánrový} & klasika & \shortstack[l]{pop,jazz,\\opera,midi} & \shortstack[l]{pop,\\midi} & \shortstack[l]{mnoho-\\žánrový} & jazz & karaoke & \shortstack[l]{pop, jazz\\klasika}  \\
+        \shortstack[l]{Účel v této\\práci} & \shortstack[l]{Trénování\\Validace\\Testování} & Testování & Testování  & Testování  & Testování & Testování & Žádný & Žádný \\
     \bottomrule
     \end{tabular}
 }%

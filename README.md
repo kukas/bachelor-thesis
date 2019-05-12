@@ -22,7 +22,7 @@ pátek:
 | ----------- | ---- | ------- | ------- |
 | Úvod        | 90%  | -       | 100%    |
 | Datasety    | 80%  | 20%     | 0%      |
-| Související | 55%  | 0%      | 0%      |
+| Související | 99%  | --      | 100%    |
 | Evaluace    | 75%  | 0%      | 0%      |
 | Experimenty | 60%  | 50%     | 50%     |
 | Výsledky    | 50%  | 0%      | 0%      |
@@ -51,26 +51,10 @@ Typografické dodělávky, lahůdky a drobnosti:
     - ! přínosy metod
     - definice pojmů
         - monofonní v této práci je jednohlas, nikoli jeden kanál!
+        - harmonické subharmonické
 
 - related work
-    - obecně: nebát se zmínit limitace metod, to jsou doopravdy východiska pro další práce
-        - kdyby nebyly limitace, tak by nebylo co dělat
-    - strojové učení pro funkci salience !!!!!!
     - (Durrieu)
-    - hledání melodie !!
-    - přítomnost melodie
-
-    - co se umí (a jak dobře)
-        - srovnání metod v rámci MIREXu
-        - srovnání metod mimo MIREX (nad MedleyDB)
-            - mám Salamona, Bittnerovou, Basarana
-        - replication
-            - popsat co jsem spustil, a že jsem dosáhl stejných výsledků
-            - Durrieu byl k smrti pomalý a ani neházel tak dobré výsledky
-                - běží absurdně dlouho a podařilo se mi zpracovat jen Orchset (23 minut za dva dny výpočtu)
-            - Bosch nešel spustit kvůli Essentie, nepodařilo se mi to opravit
-                - Bosch to opravil sám! Když zbyde čas, tak ho můžu vyhodnotit!
-
     - (krátký popis CREPE a Wavenetu, protože je používám v experimentech)
     - taky popis neuronových sítí, convnetů, asi prostě bohužel všeho, co používám v experimentech
 
@@ -82,6 +66,7 @@ Typografické dodělávky, lahůdky a drobnosti:
     - dopsat wjazzd
     - napsat krátký popis MIREX dat
     - tabulka s přehledem počtu a délky train, validačních a test dat
+    - přidat RWC do datasetů
 
     - možná kapitola o tom, jaké různé postupy vytváření dat existují (zvlášť zahrnutí multif0 postupů)
 
@@ -123,6 +108,7 @@ Typografické dodělávky, lahůdky a drobnosti:
     - zkusit odebrat residuální propojení ke konci, aby síť mohla vyhladit výstup
     - zkusit residualní udělat jednou za dvě vrstvy
     - zkusit žonglovat s pořadim resnetových bloků, batchnormu, aktivace, relu
+    - jak to udělat širší a zrychlit to - harmonic stacking jen každou n-tou vrstvu, mezitím můžou být konvoluce hodně široké a na konci naopak bottleneck, protože se bude stackovat a narostl by počet kanálů na nechutný množství
 
 - zkusit ještě jednou Durrieu s menším počtem iterací
     - čerpat správné hyperparametry z MIREX2009, Bosch githubu, ..?

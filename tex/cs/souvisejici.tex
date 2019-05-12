@@ -2,16 +2,11 @@
 
 Pokusy o vytvoření automatické metody pro kompletní transkripci hudby se podle \cite{Poliner2007} objevují již od sedmdesátých let, z důvodu značné obtížnosti této úlohy, která strmě roste s každým dalším přidaným hlasem ve zkoumaném signálu, však dodnes jedná o otevřený problém. Z tohoto důvodu se od devadesátých let objevují práce, které se pokouší alespoň o částečný automatický popis některých muzikálních aspektů skladeb.
 
-Jednou z prvních je práce týmu \cite{Goto1999}, který se záměrně omezuje na identifikaci jedné, nejhlasitější, spojité křivky fundamentní frekvence hlasu (F0) v omezeném frekvenčním rozsahu. Vzniklé transkripce pak sice nejsou kompletní, na druhou stranu je jejich získání výpočetně nenáročné a přitom poskytují sémanticky bohatý popis nahrávek, který je poměrně často shodný s melodií. Ustanovením úlohy pojmenované jako "Predominant-F0 Estimation" (PreFEst), byly položeny základy pro vznik navazujících prací a soutěží zabývající se automatickým přepisem melodie.
+Jednou z prvních je práce týmu \cite{Goto1999}, který se záměrně omezuje na identifikaci jedné, nejhlasitější, spojité křivky fundamentní frekvence hlasu (F0) v omezeném frekvenčním rozsahu. Vzniklé transkripce pak sice nejsou kompletní, na druhou stranu je jejich získání výpočetně nenáročné a přitom poskytují sémanticky bohatý popis nahrávek, který je poměrně často shodný s melodií. Ustanovením úlohy pojmenované jako \uv{Predominant-F0 Estimation} (PreFEst), byly položeny základy pro vznik navazujících prací a soutěží zabývající se automatickým přepisem melodie.
 
 Největší rozkvět v oboru začal od roku 2004. Uspořádáním první soutěže pro porovnání systémů pro automatický popis hudby v rámci konference ISMIR (ISMIR 2004 Audio Description Contest), se ustanovily priority, formalizovaly podmínky evaluace a byly sestaveny první kolekce dat pro testování algoritmů (\cite{Downie2010}). Soutěž se v následujícím roku přerodila do samostatné každoroční události, v níž soutěží stále více týmů v rostoucím počtu úloh. 
 
-\textcolor{red}{TODO: dopsat signpost}
-% tady by to chtělo nějaký odstaveček jako „signpost“. Metoda psaní ve třech fázích:
-% - napřed vám řeknu, co vám budu říkat
-% - pak vám to teda řeknu
-% - a nakonec vám řeknu, co jsem vám říkal
-
+V této kapitole představíme existující metody a společné přístupy k řešení úlohy extrakce melodie. Nejprve úlohu dekomponujeme na podúlohy a pro tyto podúlohy uvedeme příklady přístupů existujících metod. V závěru kapitoly pak provádíme kvantitativní srovnání existujících metod na základě dat ze soutěže MIREX pro výběr replikovaných metod v této práci.
 
 \section{Průzkum existujících metod}
 
@@ -41,7 +36,12 @@ Většina existujících metod sdílí podobnou základní strukturu při řeše
 
 Zvuk hraného tónu na melodickém nástroji je z fyzikálního pohledu periodická změna tlaku vzduchu. Perioda tohoto signálu se nazývá fundamentální frekvence (označujeme F0) a zpravidla je tento signál složen ze součtu řady sinusoid, jejichž frekvence jsou celočíselným násobkem fundamentální frekvence. V čase měnící se amplitudy těchto \emph{harmonických frekvencí} udávají hlasitost a barvu hlasu, výška první harmonické frekvence (tj. výška fundamentální frekvence) pak ve většině případů odpovídá posluchačem vnímané výšce tónu. 
 
-\textcolor{red}{TODO obrázek: signál -> spektrum -> salience}
+\begin{figure}[h]\centering
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/sig_spec_sal}
+\caption{Znázornění kroků spektrální analýzy a výpočtu funkce salience.}
+\label{obr:sig_spec_sal}
+\end{figure}
+
 
 Prvním krokem metod pracujících s hudebním signálem je proto provedení spektrální analýzy, jde o převod zvuku do frekvenční reprezentace, která odhaluje tyto harmonické struktury tónů a umožňuje s nimi dále pracovat. 
 
@@ -115,68 +115,82 @@ Metody založené na sčítání harmonických frekvencí jsou principiálně ne
 
     $$S_x(f_\tau, \tau) = \sum_{h=1}^{N_h}{g(f_\tau, h)\abs{X(h \cdot f, \tau)}}$$
 
-Pro ilustraci uvažme jednohlasý harmonický signál s fundamentální frekvencí $f^\star$. Hodnoty spektrogramu $X(f, \tau)$ tedy budou vyšší kolem frekvencí $H_{f^\star} = \{1\cdot f^\star, 2\cdot f^\star, 3\cdot f^\star, \dots\}$ a jinde nulové. Funkce $S_x(f, \tau)$ bude tedy pro $f \not\in H_{f^\star}$ nulová a v $f^\star$ bude nabývat globálního maxima. Příklad výstupu této metody pro polyfonní nahrávku je na obrázku \ref{obr:salience}.
+Pro ilustraci uvažme jednohlasý harmonický signál s fundamentální frekvencí $f^\star$. Hodnoty spektrogramu $X(f, \tau)$ tedy budou vyšší kolem frekvencí $H_{f^\star} = \{1\cdot f^\star, 2\cdot f^\star, 3\cdot f^\star, \dots\}$ a jinde nulové. Funkce $S_x(f, \tau)$ bude tedy pro $f \not\in H_{f^\star}$ nulová a v $f^\star$ bude nabývat globálního maxima. Příklad výstupu této metody pro polyfonní nahrávku je na obrázku \ref{obr:sig_spec_sal}.
 
 \cite{Dressler2011} tuto metodu vylepšuje zpracováváním dvojic vrcholů vstupního spektrogramu, její výsledný salienční spektrogram obsahuje méně kandidátů na fundamentální frekvenci. \cite{Cancela2008} se pokouší zmenšovat chybné hodnoty salienční funkce pomocí vyhodnocení subharmonických frekvencí.
 
 \subsubsection{Statistické modelování signálu}
 
-\textcolor{red}{TODO: obrázek salience pomocí modelů tónů}
+\begin{figure}[h]\centering
+    \includegraphics[scale=0.8]{../img/tone_model}
+\caption{Ilustrace modelu tónu spolu se signálem}\label{obr:tone_model}
+\end{figure}
 
-Jiným přístupem k počítání \emph{funkce salience}, který používá \cite{Goto1999}, je modelování okna spektrogramu váženým součtem harmonických struktur (modelů tónů). Snažíme se vrcholy ve spektru rozdělit mezi různě silně znějící tóny tak, aby v součtu co nejlépe odpovídaly měřeným intenzitám. Přístup se jinými slovy snaží zjistit, jaké tóny musely v danou chvíli znít, aby vzniklo dané spektrum. 
+Jiným přístupem k počítání funkce salience, který používá \cite{Goto1999}, je modelování okna spektrogramu váženým součtem harmonických struktur (modelů tónů). Snažíme se vrcholy ve spektru rozdělit mezi různě silně znějící tóny tak, aby v součtu co nejlépe odpovídaly měřeným intenzitám. Přístup se jinými slovy snaží zjistit, jaké tóny musely v danou chvíli znít, aby vzniklo dané spektrum. 
 
-Vstupem metody je okno normalizovaného spektrogramu $p_X^{(t)}(x)$ v čase $t$. Okno se pokusíme modelovat jako hustotu pravděpodobnosti $p(x; \theta^{(t)})$ vzniklou váženou směsí modelů všech možných tónů melodie v definovaném rozsahu frekvencí v intervalu $[F_l, F_h]$. Hustotu pravděpodobnosti jednoho z tónů s fundamentální frekvencí $F$ označíme jako $p(x|F)$, a jako $w^{(t)}(F)$ označíme váhu, kterou model tónu $p(x|F)$ přispívá do celkové smíšené hustoty pravděpodobnosti. Pak $p(x; \theta^{(t)})$ definujeme jako:
+Vstupem metody je okno normalizovaného spektrogramu $p_X^{(t)}(x)$ v čase $t$. Okno se pokusíme modelovat jako hustotu pravděpodobnosti $p(x; \theta^{(t)})$ vzniklou váženou směsí modelů všech možných tónů melodie v definovaném rozsahu frekvencí v intervalu $[F_l, F_h]$. Hustotu pravděpodobnosti jednoho z tónů s fundamentální frekvencí $F$ označíme jako $p(x|F)$ (obrázek \ref{obr:tone_model} ukazuje jeden z možných modelů tónu), a jako $w^{(t)}(F)$ označíme váhu, kterou model tónu $p(x|F)$ přispívá do celkové smíšené hustoty pravděpodobnosti. Pak $p(x; \theta^{(t)})$ definujeme jako:
 
 $$p(x; \theta^{(t)}) = \int_{F_l}^{F_h}{w^{(t)}(F)p(x|F) \mathrm{d}F}$$
 $$\theta^{(t)} = \{\, w^{(t)}(F) \mid F_l < F < F_h \,\}$$
 
 Cílem pak je nalezení takových parametrů $\theta^{(t)}$, aby model $p(x; \theta^{(t)})$ dobře popisoval pozorovaní $p_X^{(t)}(x)$. K tomu \cite{Goto1999} využívá Expectation-Maximization (EM) algoritmus. Výsledné parametry $\theta^{(t)}$ jsou pak hodnoty salienční funkce.
 
-\textcolor{red}{TODO: popsat Durrieu, jakožto jiný přístup k modelování signálu}
+% \textcolor{red}{TODO: popsat Durrieu, jakožto jiný přístup k modelování signálu}
 
 \subsubsection{Metody strojového učení}
 
-\textcolor{red}{TODO}
-% musim doprojít všechny existujícíc metdy
-% poliner
-% - nejsou nejlépe srovnatelné s ostatními salience funkcemi, protože často mají pro výpočet salience větší kontext než jedno FFT okno
-% - multicolumn deep neural networks \cite{Kum2016}
+K výpočtu funkce salience můžeme využít také metody strojového učení. První práci využívající těchto metod představují \cite{Poliner}, kteří úlohu formulují jako klasifikační. Vstupní okno signálu jejich metoda klasifikuje do jednotlivých tříd tónů melodie, výstup je tedy kvantizován na rozlišení jednoho půltónu. Pro tento účel využívají metodu podpůrných vektorů (SVM) přičemž vstupními příznaky je část spektrogramu signálu, konkrétně vektor s 256 složkami, který získávají pomocí krátkodobé Fourierovy transformace podvzorkovaného signálu. Metoda dosahovala průměrných výsledků v soutěžích MIREX 2005 a 2006. Strojové učení se v oboru příliš neuchytilo, z důvodu nedostupnosti dat, ale možná také i kvůli limitacím, které \cite{Poliner} ve své práci prezentují.
 
+V roce 2016 na tyto nedostatky odpovídá práce \cite{Kum2016}. Augmentací dat a zaměřením se na odhad výšky zpěvu místo melodie úspěšně překovávají problém nedostatku dat. Místo klasifikátoru SVM používají hluboké neuronové sítě (3 skryté plně propojené vrstvy) a problém kvantizace na úroveň půltónu řeší natrénováním tří nezávislých sítí s různě jemným rozlišením výstupu, které pak spojí v jeden výstup. V jejich případě platí, že jemná síť má sice lepší výstupní rozlišení, celkově má ale horší přesnost, naopak je tomu u sítě s hrubým rozlišením, proto jejich výsledky kombinují a dosahují tehdejších state-of-the-art výsledků na vokálních datech. Podobný postup v tomtéž roce podniká i tým \cite{Rigaud2016}, podobně jako v práci \cite{Kum2016} se tým omezuje na odhad výšky zpěvu, používá augmentaci dat, přechází na hlubokou neuronovu síť (2 skryté plně propojené vrstvy) a používá jemnější rozlišení výsledného vektoru pravděpodobnostního rozdělení znějící výšky. Rozdílem je ale předzpracování dat pomocí dekompozice na harmonické a perkusivní složky pomocí HPSS. Práce \cite{Balke2017} používá neuronovou síť s jednou skrytou vrstvou pro anotaci jazzových sól ze spektrogramu s logaritmickou osou frekvence. 
 
+\cite{Bittner2017} představuje první pokus o použití hlubokých sítí na úlohu extrakce melodie bez zaměření na zpěv. Úlohu formuluje jako odstranění šumu obrázku, cílem je ze vstupního spektrogramu pomocí hluboké sítě s konvolučními vrstvami vytvořit salienční funkci. Vstupní a výstupní data mají tedy stejné měřítko, výstup však v ideálním případě obsahuje pouze informace o fundamentálních frekvencích znějící melodie. Velmi přínosný je také popis vstupní spektrální reprezentace HCQT, která spočívá ve výpočtu několika CQT spektrogramů (kanálů), jejichž počáteční frekvence jsou vzdálené v harmonických poměrech, tudíž (protože CQT spektrogram používá logaritmickou osu frekvence) všechny související harmonické složky na celém spektru jsou na těchto spektrogramech zarovnané nad sebou v ose kanálů. Tento koncept je hlouběji popsán v kapitole Experimenty v sekci HCNN, kde tento nápad aplikujeme nejen na vstupní spektrogram, ale nově také na propojení celé neuronové sítě. Dalším důležitým přínosem práce je úprava reprezentace cílové salienční funkce pomocí rozostření hranic cílové výšky tónu. Zatímco předchozí metody trénovali sítě jako diskrétní klasifikaci s jednou správnou výstupní třídou, v této práci je cíl trénování gaussián se střední hodnotou uprostřed výšky tónu.
+
+Práce \cite{Bittner2017} dokázala překonat state-of-the-art metody pouhým výpočtem salienční funkce. Metoda tedy úplně přeskakuje vyhlazování odhadů v čase a používá pouze nejzákladnější metody pro detekci melodie pomocí práhování. Zároveň však její salienční funkce pro odhad jednoho okna délky $\approx 11\,\rm ms$ zpracovává přibližně $150\,\rm ms$ vstupního okna, tedy v porovnání s existujícími metodami její salienční funkce zpracovává velmi široký kontext, proto není vyhlazování jejich výsledků nezbytné.
+
+\cite{DBasaranSEssid2018} na této práci buduje a jednak prozkoumává možnosti použití jiné vstupní spektrální reprezentace (založené na práci \cite{Durrieu2011a}) a jednak do architektury sítě zabudovává rekurentní neuronové sítě, které zajišťují zmiňované vyhlazování odhadů. Jeho metoda překonává výsledky \cite{Bittner2017}, nevýhodou jeho přístupu je však hrubý výstup s rozlišením na půltóny.
+
+V rámci soutěže MIREX také přibývají od roku 2016 nové metody založené na hlubokých sítích, ty se však buď stále zaměřují pouze na extrakci zpěvu (například \cite{Su2018}) případně k nim nelze dohledat související článek (v roce 2016 metody účastníka Zhe-Cheng Fan a v roce 2018 metoda od týmu Sanguen Kum, Juhan Nam).
 
 \subsection{Hledání melodie}
 
-\textcolor{red}{TODO: tady bude popis tone trackingu různých metod, asi nemusí být tak rozsáhlý, jelikož moje práce se tím nejspíš nestihne zabývat}
-\textcolor{red}{TODO: píšu to unavenej,kdyžtak přepsat}
+Po výpočtu funkce salience $S_x(f_\tau, \tau)$ máme k dispozici odhady fundamentálních frekvencí v signálu, z těchto ohodnocení pak musíme vybrat výslednou konturu melodie. V závislosti na způsobu výpočtu funkce salience tyto ohodnocení frekvencí více či méně odpovídají jejich důležitosti v signálu. Triviálním řešením zpracování těchto hodnot by bylo vybrat frekvence s maximální saliencí pro každé časové okno $\hat{f}_\tau = \argmax_{f_\tau}{S_x(f_\tau, \tau)}$, tento jednoduchý přístup však nevolí mnoho metod, protože jeho výstup má u složitějších skladeb tendenci \uv{přeskakovat} mezi doprovodem a melodií.
 
-Po výpočtu funkce salience $S_x(f_\tau, \tau)$ máme k dispozici odhady fundamentálních frekvencí v signálu, z těchto ohodnocení pak musíme vybrat výslednou konturu melodie. Triviálním řešením by bylo vybrat frekvence s maximální saliencí pro každé časové okno $\hat{f}_\tau = \argmax_{f_\tau}{S_x(f_\tau, \tau)}$, tento jednoduchý přístup však nevolí mnoho metod. 
+Obecně se dají přístupy rozdělit na pravidlové metody a statistické metody, dále se pak metody liší v tom, zda na základě salienční funkce vytváří abstraktnější popisy obsahu - ať už na úrovni jednotlivých celistvých konturů, tónů nebo celých frází.
 
-% -         - získání melodie
-%         - množina pravidel pro výběr z nalezených not
-%             - důraz na kontinuitu výšky a síly not v melodii
-%             - vymazání velkých skoků, krátkých v délce
-%             - preference pro nějaký frekvenční rozsah
-%             - výběr nejvyšších nebo nejnižších frekvencí při souzvuku
-%         - tracking agents
-%             - soupeřící hypotézy, výtězí ta, která nejlépe splňuje stanovené podmínky
-%         - HMM
-%                     - tracking
-%                         - získání melodie z kandidátů v salience function
-%                         - zde se algoritmy nejvíce různí - clustering, heuristic-based agents, HMMs, dynamic programming, ...
-% PŘEDTIM PROJÍT DRESSLERKU
+\cite{Goto1999} pro sledování melodie používá množinu \uv{agentů}, pohybujících se v čase po výstupu salienční funkce a na základě předem definovaných pravidel jejich pohyb zaručuje kontinuitu výstupní fundamentální frekvence. Podobné sledování kontur v čase na základě salienční funkce využívá i \cite{Dressler2009}. Jinou pravidlovou metodou je opakované nalezení globálního maxima, jeho iterativní prodlužování v obou směrech časové osy a následné vymazání této nalezené kontury z výstupu salienční funkce, čímž dovolíme nalezení nového globálního maxima (\cite{Cancela2008}, \cite{Salamon2012a}). Z extrahovaných kontur následně můžeme vybrat ty, které splňují kritéria pro melodické kontury.
 
+Jiným přístupem k hledání melodie je použití statistických metod, jako je například modelování pomocí skrytých Markovových modelů. Na salienční funkci tyto metody pohlíží jako na sérii pozorování a pomocí hledání nejpravděpodobnější cesty skrz stavy modelu s vhodně nastavenými či z dat získanými pravděpodobnostmi přechodu získávají vyhlazenou konturu melodie. Tyto modely mohou být velmi komplexní a můžou zahrnovat modely průběhu not \citep{Ryynanen2008} nebo naopak velmi minimalistické, zahrnující pouze stavy pro jednotlivé tóny (\cite{Yeh2012})
 
 \subsubsection{Přítomnost melodie (voicing)}
-% - některé metody nemusí (když shlukují a odstraňují, tak tam přirozeně vzniknou prázná místa)
-% - common approach is to use a fixed or dynamic per-frame salience-based threshold
+
+Důležitou součástí algoritmů pro extrakci melodie je detekce melodie v signálu. Většina metod tento krok provádí na konci vyhodnocování pomocí pevně nastaveného či dynamického práhování, jiné metody detekci melodie řeší filtrováním melodických kontur (\cite{Salamon2012a}). V případě statistických metod je stav neznějící melodie často přímo zabudován do statistického modelu \citep{Ryynanen2008}.
 
 \section{Srovnání existujících metod}
 
-Pro celkové kvantitativní srovnání metod jsme zpracovali výsledky všech ročníků soutěže MIREX a dostupné, state-of-the-art metody spustili na dalších datech, která do vyhodnocování v soutěži MIREX nejsou zahrnuta. Výsledkem je podrobné srovnání většiny relevantních, existujících metod pro extrakci melodie.
+Pro celkové kvantitativní srovnání metod jsme zpracovali výsledky všech ročníků soutěže MIREX. V této sekci prezentujeme shrnutí metod, pro které existují výsledky na všech dostupných datasetech, tedy vybíráme převážně z metod od roku 2015. Díky práci \cite{Bosch2014}, který starší metody spustil na svém datasetu ORCHSET, můžeme ke srovnání přidat také výsledky metod \cite{Dressler2009}, \cite{Salamon2012a} a \cite{Durrieu2010}. Celkové srovnání nalezneme v tabulce \ref{obr:mirex_results}. Na základě těchto výsledků vybíráme metodu \cite{Salamon2012a} jakožto zástupce metod, které nejsou založeny na strojovém učení\footnote{metoda \cite{Dressler2009} nemá zveřejněnou implementaci.}.
 
-\textcolor{red}{TODO: tabulka metod s popisem architektury}
-\textcolor{red}{TODO: tabulka metod s výsledky v mirexu a na mých datech}
+\begin{figure}[h]\centering
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/mirex_results}
+\caption{Výsledky metod v soutěži MIREX v letech 2015-2018 s vybranými metodami ze starších ročníků.}
+\label{obr:mirex_results}
+\end{figure}
 
-%  jde zejména o zohlednění frekvenčních charakteristik melodických signálů a metody se liší například ve volbě druhu spektrální transformace signálu
+Na základě grafu \ref{obr:mirex_results} také vidíme, že největší variabilitu mají výsledky na datasetu ORCHSET, zde mají metody velký prostor pro zlepšení, naopak u datasetů INDIAN08 a variant MIREX09 je zřejmá jistá hranice kterou je pro metody obtížné překonat. \cite{Salamon2014} ve svém přehledovém článku dochází k závěru, že vývoj metod extrakce melodie začal od roku 2009 stagnovat, na obrázku \ref{obr:mirex_results_cumulative} znázorňujeme maximální dosaženou celkovou přesnost metod na jednotlivých datasetech od počátku soutěže MIREX. Bohužel musíme konstatovat, že v rámci soutěže MIREX stagnace pokračuje doposud, přitom výzkum metod stále pokračuje a zejména díky strojovému učení se obor posouvá. V rámci MIREXu však nebyly vyhodnoceny nové stěžejní metody \cite{Bittner2017} a \cite{DBasaranSEssid2018} a zájem o soutěž v této kategorii postupně upadá (v roce 2017 nesoutěžily žádné týmy, v roce 2018 pouze dva). Důvodem může být právě nedostatečný prostor pro zlepšení kvůli nedostatku nových, zajímavých dat.
 
-%  společnou základní strukturu algoritmů pro extrakci melodie.  
+\begin{figure}[h]\centering
+\includegraphics[scale=0.5]{../img/mirex_results_cumulative}
+\caption{Stagnující vývoj metod pro extrakci melodie.}
+\label{obr:mirex_results_cumulative}
+\end{figure}
+
+\subsection{Replikace výsledků}
+
+Pro srovnání metod představovaných v této práci spouštíme metody \cite{Salamon2012a}, \cite{Bittner2017} a \cite{DBasaranSEssid2018} na testovacích množinách. Všechny tři metody mají volně dostupnou implementaci, první ve formě VAMP plug-inu\footnote{\url{https://www.upf.edu/web/mtg/melodia}}, zbylé jsou implementovány v jazyce Python a používají standardní knihovny určené pro hluboké učení\footnote{\url{https://github.com/rabitt/ismir2017-deepsalience/}}\footnote{\url{https://github.com/dogacbasaran/ismir2018_dominant_melody_estimation}}. Výsledky těchto metod uvádíme v kapitole Výsledky.
+
+Poznamenáme, že implementace algoritmu \cite{Salamon2012a} existují dvě, druhá v rámci knihovny Essentia\footnote{https://essentia.upf.edu/documentation/}, tato implementace však v porovnání s implementací VAMP podávala výrazně horší výsledky napříč datasety. V kapitole Výsledky proto používáme implementaci VAMP.
+
+Pokusili jsme se také o replikaci výsledků \cite{Bosch2014}, bohužel se nám ale kvůli nekompatibilitě mezi verzemi knihoven nepodařilo tuto 5 let starou metodu spustit. Teprve nedávno tuto chybu autoři odstranili\footnote{\url{https://github.com/juanjobosch/SourceFilterContoursMelody/commit/6f88e709c470f1423dc429198cb3c261a772c66c}}, výsledky již ale do práce nezahrnujeme z časových důvodů. \textcolor{red}{je ok přiznat, že nestíhám?}
+
+Pro srovnání jsme se také pokusili spustit metodu \cite{Durrieu2010}, délka běhu algoritmu je však při zachování výchozího nastavení parametrů neúnosně dlouhá, 23 minut dat (ORCHSET) nám trvalo zpracovat dva dny. Tudíž její spuštění na větší korpusy (MedleyDB, WJazzD) je mimo možnosti autora práce. \textcolor{red}{tohle je asi blbě formulované?}
+
+% \textcolor{red}{TODO: tabulka metod s popisem architektury}

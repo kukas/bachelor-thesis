@@ -541,11 +541,11 @@ Sítě, které mají možnost využít první konvoluce jako banky filtrů, dosa
 \caption{Znázornění harmonických závislostí na spektrogramu s logaritmickou osou frekvence.}\label{obr:hcqt}
 \end{figure}
 
-V práci prezentujeme také novou architekturu pro zpracování harmonicky strukturovaných zvukových signálů nazvanou \emph{Harmonic Convolutional Neural Network}. Vycházíme z práce \cite{Bittner2017}, která problém výpočtu salienční funkce zasazuje do rámce úlohy odstranění šumu v obrázku pomocí konvolučních sítí. Její architektura vstupní spektrogram zpracovává několika konvolučními vrstvami, výsledkem pak je nový spektrogram s odstraněným \uv{šumem hudebního doprovodu}. 
+V práci prezentujeme také novou architekturu pro zpracování harmonicky strukturovaných zvukových signálů nazvanou \emph{Harmonic Convolutional Neural Network}. Inspirujeme se prací \cite{Bittner2017}, která problém výpočtu salienční funkce zasazuje do rámce úlohy odstranění šumu v obrázku pomocí konvolučních sítí. Její architektura vstupní spektrogram zpracovává několika konvolučními vrstvami, výsledkem pak je nový spektrogram s odstraněným \uv{šumem hudebního doprovodu}. 
 
-Dalším přínosem její práce je popis vstupní spektrální reprezentace HCQT. CQT spektrogramy mají logaritmickou osu frekvence, tato reprezentace má tu vlastnost, že dvě libovolné harmonické frekvence jednoho tónu mají na spektrogramu mezi sebou konstantní vzdálenost, nezávislou na fundamentální frekvenci. HCQT spočívá ve výpočtu několika CQT spektrogramů, které jsou vzájemně posunuty právě o tyto konstatní vzdálenosti. Pokud pak tyto spektrogramy poskládáme za sebe v nové ose kolmé na osu frekvence a času, harmonické frekvence se překryjí (viz obrázek \ref{obr:hcqt}). Tento vícekanálový spektrogram pak může sloužit jako vstup pro konvoluční vrstvu, která má při výpočtu jedné frekvenční složky k dispozici také informace o souvisejících harmonických složkách.
+Dalším přínosem její práce je popis vstupní spektrální reprezentace HCQT. CQT spektrogramy mají logaritmickou osu frekvence, tato reprezentace má tu vlastnost, že dvě libovolné harmonické frekvence jednoho tónu mají na spektrogramu mezi sebou konstantní vzdálenost, nezávislou na fundamentální frekvenci. HCQT spočívá ve výpočtu několika CQT spektrogramů, jejichž frekvenční rozsahy jsou vzájemně posunuty právě o tyto konstatní vzdálenosti. Pokud pak tyto spektrogramy poskládáme za sebe v nové ose kolmé na osu frekvence a času, harmonické frekvence se překryjí (viz obrázek \ref{obr:hcqt}). Tento vícekanálový spektrogram pak může sloužit jako vstup pro konvoluční vrstvu, která má při výpočtu jedné frekvenční složky k dispozici také informace o souvisejících harmonických složkách.
 
-Z této myšlenky posunů vstupní reprezentace pro rozšiřování receptivního pole konvoluce na související harmonické složky vychází naše architektura HCNN. Síť je koncipována jako obvyklé vrstvení konvolučních vrstev, každému konvolučnímu bloku však předchází zmiňovaná úprava vstupu takovým způsobem, aby do výpočtu nadcházející konvoluce byly zahrnuty i potenciální harmonické složky dané frekvence. Na obrázku \ref{obr:hcnn_harmonic_stacking} tuto úpravu vstupu znázorňujeme; výstup předchozí konvoluční vrstvy duplikujeme a vzájemně posuneme o pevně dané počty půltónů tak, aby harmonicky související složky byly umístěny \uv{vedle sebe} v dimenzi kanálů. Následně výstupy v této dimenzi spojíme a chybějící složky doplníme nulami.
+Z této myšlenky úpravy vstupní reprezentace pro rozšiřování receptivního pole konvoluce na související harmonické složky vychází naše architektura HCNN. Síť je koncipována jako obvyklé vrstvení konvolučních vrstev, každému konvolučnímu bloku však předchází úprava vstupu takovým způsobem, aby do výpočtu nadcházející konvoluce byly zahrnuty i potenciální harmonické složky dané frekvence. Naše metoda tedy nepracuje pouze s výpočtem různých CQT spektrogramů na vstupu jako práce \cite{Bittner2017}, upravujeme totiž mezivýsledky všech vrstev v síti a naše transformace spočívá v pouhém posunutí, nikoli přepočítávání. Na obrázku \ref{obr:hcnn_harmonic_stacking} tuto úpravu vstupu znázorňujeme; výstup předchozí konvoluční vrstvy duplikujeme a vzájemně posuneme o pevně dané počty půltónů tak, aby harmonicky související složky byly umístěny \uv{nad sebou} v dimenzi kanálů. Následně výstupy v této dimenzi spojíme a chybějící složky doplníme nulami.
 \begin{figure}[h]\centering
     \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/hcnn_harmonic_stacking_2}
 \caption{Diagram transformace vstupu konvoluční vrstvy pro zachycení harmonických souvislostí.}\label{obr:hcnn_harmonic_stacking}
@@ -561,13 +561,30 @@ Z této myšlenky posunů vstupní reprezentace pro rozšiřování receptivníh
 \caption{Diagram celkového propojení architektury HCNN.}\label{obr:hcnn_arch}
 \end{figure}
 
-Zbývající prvky architektury již čerpají ze zavedených postupů. Diagram \ref{obr:hcnn_layer} znázorňuje strukturu jednoho konvolučního bloku; po každé konvoluční vrstvě s aktivační funkcí ReLU následuje dropout vrstva a kolem konvoluce vedeme residuální propojení pro umožnění trénování hlubokých architektur. Celková architektura (\ref{obr:hcnn_arch}) pak spočívá v harmonické tranformaci vstupní CQT (čímž vytvoříme reprezentaci odpovídající HCQT), aplikaci několika konvolučních bloků a aplikaci konvoluce 1x1 pro transformaci výstupu zpět na jeden dvoudimenzionání výstup.
+Zbývající prvky architektury již čerpají ze zavedených postupů. Diagram \ref{obr:hcnn_layer} znázorňuje strukturu jednoho konvolučního bloku; po každé konvoluční vrstvě s aktivační funkcí ReLU následuje dropout vrstva a kolem konvoluce vedeme residuální propojení pro umožnění trénování hlubokých architektur. Celková architektura (obrázek \ref{obr:hcnn_arch}) pak spočívá v harmonické transformaci vstupní CQT (čímž efektivně vytvoříme reprezentaci odpovídající HCQT bez přepočítávání každého CQT zvlášť), aplikaci několika konvolučních bloků a aplikaci konvoluce 1x1 pro transformaci výstupu zpět na jeden dvoudimenzionání výstup.
 
 Vstupní CQT počítáme z původních audio souborů se vzorkovací frekvencí $44\,100\,\rm Hz$, používáme implementaci algoritmu z balíku \texttt{librosa} a parametry transformace jsou: počáteční frekvence (\texttt{fmin}) = 32.7 (Tón C1), počet složek na oktávu (\texttt{bins\_per\_octave}) = 60 (vychází 5 složek na půltón, jako v předchozích sekcích), počet složek (\texttt{n\_bins}) = 540 (vychází na 9 oktáv, po první harmonické transformaci však spektrogram ořízneme na výšku 360, zbylé složky jsou přítomny, aby zaplnily chybějící hodnoty při harmonických posunech), \texttt{hop\_size}=256 (tudíž jedno anotační okno MedleyDB odpovídá jednomu sloupci vstupního spektrogramu). Dále pak vstup převedeme na logaritmickou škálu dBFS (funkce \texttt{librosa.core.amplitude\_to\_db}).
 
 Cílový výstup počítáme v souladu s implementacemi v předchozích sekcích, tedy použijeme normální rozdělení se střední hodnotou rovnou výšce znějící melodie a rozptylem 18 centů.
 
-\subsection{Vliv }
+\subsection{Harmonické transformace}
+
+Abychom prokázali pozitivní vliv harmonické transformace, natrénujeme tři sady modelů. Jednu sadu bez jakýchkoliv transformací, sadu s transformací s posunutím o +-12 půltónů (zachycení druhé harmonické složky) a třetí sadu s posunutím o +-12 a o +-19 půltónů (zachycení druhé a třetí harmonické složky). Vstupem všech sítí bude HCQT (implementovaný efektivně pomocí harmonických posunů), aby byl posouzen vliv transformací uvnitř sítě, nikoli také na vstupu.
+
+
+% \begin{figure}[h]\centering
+%     \includegraphics[scale=0.6]{../img/figures/voicing_pooling}
+% \caption{Detekce melodie, vliv počáteční pooling vrstvy.}\label{obr:voicing_pooling}
+% \end{figure}
+
+\subsection{Velikost okna}
+
+Metoda \cite{Bittner2017} pracuje se spektrogramy CQT vypočítanými s velikostí okna $\approx 11\,\rm ms$. Data MedleyDB, která v práci používáme, jsou však anotována s velikostí okna $\approx 5.8\,\rm ms$. To znamená, že při trénování musíme anotace v trénovací množině MedleyDB podvzorkovat a podobně při vyhodnocování výsledků sítě musíme výstup převzorkovat zpět na původní časové rozlišení datasetu. V obou případech převzorkování můžeme ztratit informace, které se projeví v horší výsledné přesnosti. Je také otázkou, zda-li je nejlepší postup, pokud síť budeme trénovat na neoriginálních, převzorkovaných datech. Výhodou většího okna je větší receptivní pole konvoluce, kernel o šířce větší než 1 má na podvzorkovaných datech dvojnásobný dosah. Tento efekt lze nicméně napodobit nastavením dvojnásobné dilatace konvoluce. Na experimentech s kernely šířky 1 posoudíme dopad převzorkování bez této zmiňované výhody.
+
+\begin{figure}[h]\centering
+    \includegraphics[scale=0.6]{../img/figures/spectrogram_512_vs_256}
+\caption{Vliv velikosti okna, horní okno velikosti $\approx 11\,\rm ms$, dolní okno $\approx 5.8\,\rm ms$. Vlevo jsou výsledky metriky RPA, vpravo RCA.}\label{obr:spectrogram_512_vs_256}
+\end{figure}
 
 \section{Detekce melodie}
 
