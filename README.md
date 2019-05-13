@@ -45,6 +45,11 @@ Typografické dodělávky, lahůdky a drobnosti:
     - monofonní=jednohlas, jednokanálový zvuk píšu jen česky
 
 
+POKUD ODSTRANIM VOICING:
+uvod.tex, 130 -  V této práci se pokusíme navázat na zmiňované práce a otestovat nové architektury hlubokých neuronových sítí pro úlohu extrakce melodie, zejména pak pro hledání nových způsobů výpočtu funkce salience, v menší míře také pro detekci melodie.
+
+
+
 ## Písemná část
 - příloha
     - audio příklady
@@ -67,19 +72,20 @@ Typografické dodělávky, lahůdky a drobnosti:
 - datasety
     "datasety mají mnohem delší poločas rozpadu, jejich pochopení je zásadní k interpretaci výsledků, jejich vznik formuje směr, kterým se výzkum ubírá"
     čtenář musí pochopit, na čem se evalkuuje, co znamenají výsledky
-    - tabulka s přehledem počtu a délky train, validačních a test dat
-
     - (možná kapitola o tom, jaké různé postupy vytváření dat existují (zvlášť zahrnutí multif0 postupů))
 
 - evaluation
+    - ! splity do přílohy !
     - dopsat zbytek metrik
     - příkladové obrázky jednotlivých chyb
-    - popsat malé datasety
 
 - experimenty
     - popsat co je hluboké učení
-    - popsat Prostředí pro spouštění, replikaci a evaluaci experimentů
+    - (popsat Prostředí pro spouštění, replikaci a evaluaci experimentů)
         - viz `experimenty.md`
+
+    - ! zlepšit obrázek CREPE
+    - víc obrázků! K experimentům
 
     - Salience function
         - CREPE - překopat ještě asi dvě sekce, co jsem nepřepsal, jen trochu upravit, ať se to dá číst

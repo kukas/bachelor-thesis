@@ -75,6 +75,8 @@ Dále k testování používáme datasety ADC04, MIREX05train a ORCHSET, blíže
 
 Celková kvalita výstupu metody pro extrakci melodie je určena její schopností odhadnout správně výšku tónu hrající melodie a také rozpoznat části skladby, které melodii neobsahují. Jelikož jsou tyto podúlohy na sobě nezávislé, standardní sada metrik zahrnuje jak celkové vyhodnocení přesnosti, tak dílčí vyhodnocení pro \textit{odhad výšky} a \textit{detekci melodie}. 
 
+V práci pracujeme s metrikami vypočítanými na validačních a testovacích sadách, ty se počítají jako průměr výsledků na jednotlivých skladbách v sadě.
+
 % -------
 
 % - můžu zmínit to, že je toto rozdělení důležité pro Orchset, který je z většiny voiced, a tedy overall accuracy může být zavádějící u algoritmů s přísným voicing detection.

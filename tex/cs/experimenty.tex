@@ -1,19 +1,18 @@
 \chapter{Experimenty}\label{experimenty}
 
-V této kapitole prezentujeme návrhy nových architektur hlubokých neuronových sítí pro extrakci melodie a jejich výsledky. Modely byly trénované nad datasetem MedleyDB. Data byla rozdělena na trénovací, validační a testovací množinu tak, aby skladby od jednoho interpreta náležely právě do jedné z množin. Využili jsme existujícího rozdělení používaného v článcích \cite{Bittner2017} a \cite{DBasaranSEssid2018}, validační i testovací výsledky jsou tedy díky tomu porovnatelné s výsledky uvedenými v článcích.
+V této kapitole prezentujeme návrhy nových architektur hlubokých neuronových sítí pro extrakci melodie a jejich výsledky na validační množině. Modely byly trénované nad datasetem MedleyDB. Data byla rozdělena na trénovací, validační a testovací množinu tak, aby skladby od jednoho interpreta náležely právě do jedné z množin. Využili jsme existujícího rozdělení používaného v článcích \cite{Bittner2017} a \cite{DBasaranSEssid2018}, validační i testovací výsledky jsou tedy díky tomu porovnatelné s výsledky uvedenými v článcích.
 
-Těžiště experimentů leží v hledání nové salienční funkce, která by odlišovala znějící melodii od doprovodu lépe, než existující metody.
+Navrhované sítě jsou koncipovány jako nové způsoby výpočtu funkce salience. Cílem je ze vstupního okna signálu získat ohodnocení znějících tónů, přičemž v ideálním případě nejvyšší ohodnocení bude mít nejvýraznější tón --- tedy ten, který nese melodii. Naopak tóny doprovodu a frekvenční složky perkusí by měly být v této výstupní reprezentaci co možná nejvíce upozaděny.
 
-Pro výpočet salienční funkce porovnáváme architektury inspirované pracemi \cite{Kim2018}, \cite{Oord2016} a \cite{Bittner2017}. V prvním případě jde o architekturu CREPE původně navrženou pro sledování výšky tónů v jednohlasých nahrávkách. \cite{Oord2016} používají architekturu WaveNet složený z dilatovaných konvolucí pro generování lidské řeči. \cite{Bittner2017} používá hlubokou konvoluční síť pro kompletní přepis nahrávek i pro přepis melodie. 
-\textcolor{red}{líp popsat moje architektur}
+Pro výpočet salienční funkce porovnáváme tři různé architektury inspirované pracemi \cite{Kim2018}, \cite{Oord2016} a \cite{Bittner2017}, tyto architektury se pokoušíme systematickým hledáním přizpůsobit pro účel extrakce melodie pomocí vhodných úprav jak v jejich topologii tak nastavením hyperparametrů. První práce popisuje architekturu CREPE, původně navrženou pro sledování výšky tónů v jednohlasých nahrávkách. Architektura WaveNet popsaná týmem \cite{Oord2016} je složena z dilatovaných konvolucí a původně určena pro generování lidské řeči, autoři však zmiňují její možné použití i pro přepis řeči. \cite{Bittner2017} používá speciální vstupní reprezentaci signálu, kterou zpracovává pomocí hluboké konvoluční sítě, její práce se zabývá kompletním přepisem nahrávek i přepisem melodie. 
 
-Pro detekci melodie pak srovnáváme jednoduchou metodu práhování a složitější samostatný modul, založený na hlubokých neuronových sítích.
+% Pro detekci melodie pak srovnáváme jednoduchou metodu práhování a složitější samostatný modul, založený na hlubokých neuronových sítích.
 
 \section{Architektura CREPE}\label{sec:crepe}
 
-První sada experimentů se zakládá na architektuře popsané v článku od \cite{Kim2018} použité pro sledování jednohlasu. Jak blíže popisujeme v kapitole \nameref{cha:souvisejici}, cílem monopitch trackingu je určit konturu základní frekvence melodického nástroje v jednohlasé nahrávce. Tato nahrávka se zpravidla skládá ze směsi čistého signálu hlasu a šumu v pozadí. Pokud však rozšíříme pojem šumu v pozadí tak, aby zahrnoval i melodický doprovod, pak dostáváme polyfonní signál, tedy vstupní signál pro metody extrakce melodie.
+První sada experimentů se zakládá na architektuře popsané v článku od \cite{Kim2018} použité pro sledování jednohlasu. Jak blíže popisujeme v kapitole \nameref{cha:souvisejici}, cílem sledování jednohlasu je určit konturu základní frekvence melodického nástroje v jednohlasé nahrávce. Tato nahrávka se zpravidla skládá ze směsi čistého signálu hlasu a šumu v pozadí. Pokud však rozšíříme pojem šumu v pozadí tak, aby zahrnoval i melodický doprovod, pak dostáváme polyfonní signál, tedy vstupní signál pro metody extrakce melodie.
 
-Jinými slovy je sledování jednohlasu speciálním případem extrakce melodie a tudíž přinejmenším stojí za zkoušku pokusit se tuto architekturu pro extrakci využít. Mimo to jednohlasé stopy často obsahují přeslech ostatních nástrojů, pokud nahrávka vznikala při společném hraní ve studiu, tudíž by model trénovaný na vícehlasé mixech mohl být robustní vůči tomuto druhu rušení. 
+Jinými slovy je sledování jednohlasu speciálním případem extrakce melodie a tudíž přinejmenším stojí za zkoušku pokusit se tuto architekturu pro extrakci využít. Mimo to jednohlasé stopy často obsahují přeslech ostatních nástrojů, pokud nahrávka vznikala při společném hraní ve studiu, tudíž by model trénovaný na vícehlasých mixech mohl být robustní vůči tomuto druhu rušení. 
 
 \begin{figure}[h]\centering
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/crepe_arch}
@@ -23,7 +22,7 @@ Jinými slovy je sledování jednohlasu speciálním případem extrakce melodie
 
 Architektura CREPE se skládá ze šesti konvolučních a pooling vrstev, pro regularizaci používá batch normalization a dropout po každé konvoluční vrstvě, jako nelineární aktivace je použita funkce ReLU. Po konvolucích následuje výstupní plně propojená vrstva, jako finální aktivační funkce je použita sigmoida. Vstupem modelu je okno o velikosti 1024 vzorků jednokanálového audio signálu, převzorkovaného na 16 kHz. Před první konvolucí je signál normalizován tak, aby každé jednotlivé vstupní okno mělo střední hodnotu 0 a směrodatnou odchylku 1. Podrobnější popis modelu je naznačen na obrázku.
 
-Výsledný vektor o 640 složkách aproximuje pravděpodobnostní rozdělení výšky základní frekvence uprostřed vstupního okna, přičemž tento vektor pokrývá rozsah od noty $C_{-1}$ po $G_{9}$, mezi dvěma sousedními predikovanými tóny je vzdálenost 20 centů. Výšky tónů v centech označíme $\cent_1, \cent_2, \dots, \cent_{640}$. Rozsah tedy bezpečně pokrývá obvyklé hudební nástroje a na jednu notu připadá 5 složek (tónů) výsledného vektoru.
+Výsledný vektor o 640 složkách aproximuje pravděpodobnostní rozdělení výšky základní frekvence uprostřed vstupního okna, přičemž tento vektor pokrývá rozsah od noty $C_{-1}$ po $G_{9}$, mezi dvěma sousedními predikovanými výškami je tudíž vzdálenost 20 centů. Výšky tónů v centech označíme $\cent_1, \cent_2, \dots, \cent_{640}$. Rozsah výstupního vektoru tedy bezpečně pokrývá obvyklé rozsahy hlasů hudebních nástrojů a na jednu notu připadá 5 složek (tónů) výsledného vektoru.
 
     $$\cent(f) = 1200 \log_2{\frac{f}{f_{\mathrm{ref}}}}$$
 
@@ -75,7 +74,7 @@ Abychom ověřili správnost implementace architektury CREPE pro sledování jed
 
 Na rozdíl od článku \cite{Kim2018}, ve kterém autoři používají pro celkové vyhodnocení architektury pětinásobnou křížovou validaci, jsme použili pouze jednu trénovací a testovací množinu. Zásadní rozdíly mezi implementacemi modelu jsme na základě článku a veřejně dostupného kódu neobjevili.
 
-Po jedné epoše trénování model dosáhl na testovací množině $98.6\%$ přesnosti odhadu výšky. \cite{Kim2018} uvádí přesnost modelu $97\%$. V jejich případě jde o průměrný výsledek pěti nezávislých běhů trénování a testování na různě rozdělených datových množinách. Rozdíl mezi dosaženými přesnostmi přičítáme odlišné evaluační strategii.
+Po jedné epoše trénování model dosáhl na testovací množině $98.6\%$ přesnosti odhadu výšky. \cite{Kim2018} uvádí přesnost modelu $97\%$. V jejich případě jde o průměrný výsledek pěti nezávislých běhů trénování a testování na různě rozdělených datových množinách. Rozdíl mezi dosaženými přesnostmi tedy přičítáme odlišné evaluační strategii.
 
 \begin{table}[h!]
 
@@ -149,7 +148,7 @@ Z validačních výsledků po $200\,000$ iteracích (přibližně 6 epoch) vidí
 
 \subsection{Vliv rozlišení diskretizace výšky noty}
 
-Otestujeme nastavení granularity výstupního vektoru. V článku \cite{Kim2018} se totiž důvod volby pěti frekvencí na notu nediskutuje. Intuitivně by však mělo vyšší rozlišení spíše pomáhat, důvodem je, že nástroje a zejména lidský hlas se často při hraní odchylují od přesných, definovaných frekvencí hraných not a vyšší rozlišení tyto odchylky může lépe zachytit. Ve výsledku by pak síť s jemnějším výstupem měla dělat méně chyb, kde se skutečná a výstupní hodnota liší o jeden půltón.
+Otestujeme nastavení granularity výstupního vektoru. V článku \cite{Kim2018} se totiž důvod volby pěti frekvencí na půltón nediskutuje. Intuitivně by však mělo vyšší rozlišení spíše pomáhat, důvodem je, že nástroje a zejména lidský hlas se často při hraní odchylují od přesných, definovaných frekvencí hraných not a vyšší rozlišení tyto odchylky může lépe zachytit. Ve výsledku by pak síť s jemnějším výstupem měla dělat méně chyb, u kterých se skutečná a výstupní hodnota liší o jeden půltón.
 
 
 \begin{table}[h!]
@@ -183,17 +182,15 @@ Jak můžeme pozorovat na výsledných hodnotách, jemná granularita výstupu j
 \caption{Histogramy vzdálenosti chybného odhadu, výstup prvního modelu má rozlišení 50 centů, výstup druhého 10 centů.}\label{obr:crepe_diskretizace}
 \end{figure}
 
-\textcolor{red}{odsud dolů přepsat}
-
 \subsection{Vliv rozptylu cílové pravděpodobnostní distribuce výšky noty}
 
 Podle \cite{Bittner2017} pomáhá cílová distribuce s vyšším rozptylem snížit penalizaci sítě za téměř korektní odhady výšek tónů. Mimo to u dostupných dat často nejsou anotace naprosto perfektní, jisté rozostření hranice anotace tudíž pomáhá i v případě nepřesné cílové anotace, síť pak není tolik penalizována za svou případnou správnou odpověď. 
 
-V článku se však nediskutuje, proč bylo zvoleno nastavení směrodatné odchylky na 20 centů. \cite{Kim2018} používá odchylku 25 centů a není na první pohled zřejmé, jaká je optimální hodnota. Příliš vysoký rozptyl způsobí, že síť bude tolerovat více chyb o půltón, příliš nízký rozptyl naopak penalizuje i téměř správné odhady. Intuitivně se nejlepší nastavení pravděpodobně bude pohybovat kolem používaných 25 centů, jelikož to je hranice chybné klasifikace, na druhou stranu optimální hodnota jistě bude závislá na nastavení rozlišení výstupního vektoru, jelikož nižší rozlišení bude jistě vyžadovat vyšší hodnotu rozptylu (v extrémním případě rozptylu blížícího se k nule a cílové frekvence mimo kvantizační hladiny by vzniklý cílový vektor nemusel obsahovat žádné ostré maximum).
+V článku se však nediskutuje, proč bylo zvoleno nastavení směrodatné odchylky na 20 centů. \cite{Kim2018} používá odchylku 25 centů a není na první pohled zřejmé, jaká je optimální hodnota. Příliš vysoký rozptyl způsobí, že síť bude tolerovat více chyb o půltón, příliš nízký rozptyl naopak penalizuje i za téměř správné odhady. Intuitivně se nejlepší nastavení pravděpodobně bude pohybovat kolem používaných 25 centů, jelikož to je hranice chybné klasifikace, na druhou stranu optimální hodnota jistě bude závislá na nastavení rozlišení výstupního vektoru, jelikož nižší rozlišení bude jistě vyžadovat vyšší hodnotu rozptylu (v extrémním případě rozptylu blížícího se k nule a cílové frekvence mimo kvantizační hladiny by vzniklý cílový vektor nemusel obsahovat žádné ostré maximum).
 
-Poznamenám také technický detail, který je důležitý při samotné implementaci. Přestože jsem cílový výstup sítě zadefinoval jako diskrétní pravděpodobnostní rozdělení, při trénování je tento vektor hodnot pronásoben koeficientem tak, aby $\max(\mathbf{y}) = 1.0$ a tedy součet prvků vektoru není roven jedné (a o pravděpodobnostní rozdělení se doopravdy nejedná). Důvodem je použití aktivační funkce *sigmoid* u výstupní vrstvy, která nezaručuje výstup korektního rozdělení. Díky tomu se na výstupu může objevit různé množství stejně pravděpodobných kandidátů na melodii.
+% Poznamenám také technický detail, který je důležitý při samotné implementaci. Přestože jsem cílový výstup sítě zadefinoval jako diskrétní pravděpodobnostní rozdělení, při trénování je tento vektor hodnot pronásoben koeficientem tak, aby $\max(\mathbf{y}) = 1.0$ a tedy součet prvků vektoru není roven jedné (a o pravděpodobnostní rozdělení se doopravdy nejedná). Důvodem je použití aktivační funkce *sigmoid* u výstupní vrstvy, která nezaručuje výstup korektního rozdělení. Díky tomu se na výstupu může objevit různé množství stejně pravděpodobných kandidátů na melodii.
 
-Testovaná síť má vstupní okno široké 4096 vzorků, používá multiplikátor kapacity 16x a vstup zpracovává 6 různě širokými konvolučními vrstvami (viz experiment *Vliv násobného rozlišení první konvoluční vrstvy*).
+Testovaná síť má vstupní okno široké 4096 vzorků, používá multiplikátor kapacity 16x a vstup zpracovává 6 různě širokými konvolučními vrstvami (viz experiment \ref{exp:crepe_multirozliseni}).
 
 
 \begin{table}[h!]
@@ -258,15 +255,17 @@ Architektura CREPE byla navržena pro monopitch tracking, dá se předpokládat,
 \caption{Architektura CREPE, vliv rozptylu cílové distribuce.}\label{obr:crepe_sirka}
 \end{figure}
 
+Na obrázku \ref{tab:crepe_sirka} vidíme výsledky experimentu, mezi přesnostmi modelů s šířkou okna 1024 až 4096 vzorků nevidíme příliš veliké zlepšení, výsledek okna 8192 je však skokově lepší. Tento výrazný rozdíl spíše přičítáme jisté variabilitě výsledků při trénování neuronových sítí, není totiž zřejmé, jaká vlastnost vstupních dat by mohla způsobit tento skokový rozdíl.
+
 % TODO: možná by to chtělo taky přetrénovat
 
 % - širší okno se také hodí pro onsety a offsety
 
-\subsection{Vliv násobného rozlišení první konvoluční vrstvy}
+\subsection{Vliv násobného rozlišení první konvoluční vrstvy}\label{exp:crepe_multirozliseni}
 
-Podle \cite{Kim2018} se přesnost CREPE snižuje s výškou tónu. Autoři si tuto skutečnost vysvětlují neschopností modelu generalizovat na barvy a výšky tónů neobsažených v trénovací množině, generalizaci by ale mohla pomoci také úprava modelu. Protože k rozpoznání vyšších frekvencí stačí méně vzorků než pro rozpoznání nižších, mohli bychom se pokusit upravit první konvoluční vrstvu sítě, která tento úkol zastává, a rozdělit ji na množiny různě širokých konvolucí, jejichž kanály následně sloučíme zpět do jednotné vrstvy. To by mělo mít za následek, že rozpoznávání vysokých tónů budou zastávat užší konvoluce a jejich kernel bude jednodušší než široké kernely s vysokou mírou redundance.
+Podle \cite{Kim2018} se přesnost CREPE snižuje s výškou tónu. Autoři si tuto skutečnost vysvětlují neschopností modelu generalizovat na barvy a výšky tónů neobsažených v trénovací množině, generalizaci by ale mohla pomoci také úprava modelu. Protože k rozpoznání vyšších frekvencí stačí méně vzorků než pro rozpoznání nižších, mohli bychom se pokusit upravit první konvoluční vrstvu sítě, která tento úkol rozpoznávání frekvencí ve vstupu zastává, a rozdělit ji na množinu různě širokých konvolucí, jejichž kanály následně sloučíme zpět do jednotné vrstvy. To by mohlo mít za následek, že rozpoznávání vysokých tónů budou zastávat užší konvoluce a jejich kernel bude jednodušší a obecnější, než když tuto funkci zastávají zbytečně široké kernely, u kterých je možné, že ve svých vahách obsahují redundantní informace.
 
-První vrstvu s kernelem s 256 filtry (tj. počet filtrů první vrstvy s multiplikátorem 8x, viz první experiment) jsem rozdělil na vícero různě širokých kernelů s menším počtem filtrů, tak aby kapacita sítě zůstala přibližně stejná a sítě byly porovnatelné. 
+První vrstvu s kernelem s 256 filtry (tj. počet filtrů první vrstvy s multiplikátorem 8x, viz první experiment) jsme rozdělili na více různě širokých kernelů s menším počtem filtrů, tak aby kapacita sítě zůstala přibližně stejná a sítě byly porovnatelné. Experiment jsme provedli na síti se vstupním oknem 2048 vzorků a multiplikátorem kapacity 8.
 
 \begin{table}[h!]
 \centering
@@ -287,8 +286,6 @@ První vrstvu s kernelem s 256 filtry (tj. počet filtrů první vrstvy s multip
     \end{tabular}
 \caption{Počet filtrů prvních vrstev multirezoluční vstupní konvoluční vrstvy.}\label{tab:crepe_velikosti_multirozliseni}
 \end{table}
-
-Experiment jsem provedl na síti se vstupním oknem 2048 vzorků, multiplikátorem kapacity 8, 
 
 \begin{table}[h!]
 \centering
@@ -314,7 +311,7 @@ Experiment jsem provedl na síti se vstupním oknem 2048 vzorků, multiplikátor
 \caption{Architektura CREPE, vliv multirezoluční vstupní konvoluční vrstvy.}\label{obr:crepe_multirozliseni}
 \end{figure}
 
-Zlepšení výsledků se pohybuje v řádu desetin procentních bodů, tedy není příliš vysoké. Zlepšení je nejvíce patrné v případě pěti různě širokých konvolučních vrstev, kde dosahuje $1.3$ procentního bodu. Analýzou výsledků přesnosti podle výšky noty se mi nepodařilo prokázat domněnku, že by konvoluce s více rozlišeními pomáhala u odhadu not vyšších frekvencí. Její přínos je drobný a projevuje se na většině frekvenčních pásem.
+Zlepšení výsledků se pohybuje v řádu desetin procentních bodů, tedy není příliš vysoké. Zlepšení je nejvíce patrné v případě pěti různě širokých konvolučních vrstev, kde dosahuje $1.3$ procentního bodu. Analýzou výsledků přesnosti podle výšky noty se mi nepodařilo prokázat domněnku, že by konvoluce s více rozlišeními pomáhala u odhadu not vyšších frekvencí. Její přínos je malý a projevuje se na většině frekvenčních pásem.
 
 
 \section{Architektura WaveNet}
@@ -541,7 +538,7 @@ Sítě, které mají možnost využít první konvoluce jako banky filtrů, dosa
 \caption{Znázornění harmonických závislostí na spektrogramu s logaritmickou osou frekvence.}\label{obr:hcqt}
 \end{figure}
 
-V práci prezentujeme také novou architekturu pro zpracování harmonicky strukturovaných zvukových signálů nazvanou \emph{Harmonic Convolutional Neural Network}. Inspirujeme se prací \cite{Bittner2017}, která problém výpočtu salienční funkce zasazuje do rámce úlohy odstranění šumu v obrázku pomocí konvolučních sítí. Její architektura vstupní spektrogram zpracovává několika konvolučními vrstvami, výsledkem pak je nový spektrogram s odstraněným \uv{šumem hudebního doprovodu}. 
+V práci prezentujeme také novou architekturu pro zpracování harmonicky strukturovaných zvukových signálů kterou nazýváme \emph{Harmonic Convolutional Neural Network}. Inspirujeme se prací \cite{Bittner2017}, která problém výpočtu salienční funkce zasazuje do rámce úlohy odstranění šumu v obrázku pomocí konvolučních sítí. Její architektura vstupní spektrogram zpracovává několika konvolučními vrstvami, výsledkem pak je nový spektrogram s odstraněným \uv{šumem hudebního doprovodu}. 
 
 Dalším přínosem její práce je popis vstupní spektrální reprezentace HCQT. CQT spektrogramy mají logaritmickou osu frekvence, tato reprezentace má tu vlastnost, že dvě libovolné harmonické frekvence jednoho tónu mají na spektrogramu mezi sebou konstantní vzdálenost, nezávislou na fundamentální frekvenci. HCQT spočívá ve výpočtu několika CQT spektrogramů, jejichž frekvenční rozsahy jsou vzájemně posunuty právě o tyto konstatní vzdálenosti. Pokud pak tyto spektrogramy poskládáme za sebe v nové ose kolmé na osu frekvence a času, harmonické frekvence se překryjí (viz obrázek \ref{obr:hcqt}). Tento vícekanálový spektrogram pak může sloužit jako vstup pro konvoluční vrstvu, která má při výpočtu jedné frekvenční složky k dispozici také informace o souvisejících harmonických složkách.
 
@@ -563,196 +560,279 @@ Z této myšlenky úpravy vstupní reprezentace pro rozšiřování receptivníh
 
 Zbývající prvky architektury již čerpají ze zavedených postupů. Diagram \ref{obr:hcnn_layer} znázorňuje strukturu jednoho konvolučního bloku; po každé konvoluční vrstvě s aktivační funkcí ReLU následuje dropout vrstva a kolem konvoluce vedeme residuální propojení pro umožnění trénování hlubokých architektur. Celková architektura (obrázek \ref{obr:hcnn_arch}) pak spočívá v harmonické transformaci vstupní CQT (čímž efektivně vytvoříme reprezentaci odpovídající HCQT bez přepočítávání každého CQT zvlášť), aplikaci několika konvolučních bloků a aplikaci konvoluce 1x1 pro transformaci výstupu zpět na jeden dvoudimenzionání výstup.
 
-Vstupní CQT počítáme z původních audio souborů se vzorkovací frekvencí $44\,100\,\rm Hz$, používáme implementaci algoritmu z balíku \texttt{librosa} a parametry transformace jsou: počáteční frekvence (\texttt{fmin}) = 32.7 (Tón C1), počet složek na oktávu (\texttt{bins\_per\_octave}) = 60 (vychází 5 složek na půltón, jako v předchozích sekcích), počet složek (\texttt{n\_bins}) = 540 (vychází na 9 oktáv, po první harmonické transformaci však spektrogram ořízneme na výšku 360, zbylé složky jsou přítomny, aby zaplnily chybějící hodnoty při harmonických posunech), \texttt{hop\_size}=256 (tudíž jedno anotační okno MedleyDB odpovídá jednomu sloupci vstupního spektrogramu). Dále pak vstup převedeme na logaritmickou škálu dBFS (funkce \texttt{librosa.core.amplitude\_to\_db}).
+Vstupní CQT počítáme z původních audio souborů se vzorkovací frekvencí $44\,100\,\rm Hz$, používáme implementaci algoritmu z balíku \texttt{librosa} a parametry transformace jsou: počáteční frekvence (\texttt{fmin}) = 32.7 (Tón C1), počet složek na oktávu (\texttt{bins\_per\_octave}) = 60 (vychází 5 složek na půltón, jako v předchozích sekcích), počet složek (\texttt{n\_bins}) = 540 (vychází na 9 oktáv, po první harmonické transformaci však spektrogram ořízneme na výšku 360, zbylé složky jsou přítomny, aby zaplnily chybějící hodnoty při harmonických posunech), \texttt{hop\_size}=256 (tudíž jedno anotační okno MedleyDB odpovídá jednomu sloupci vstupního spektrogramu). Dále pak hodnoty vstupu převedeme na logaritmickou škálu dBFS (funkce \texttt{librosa.core.amplitude\_to\_db}).
 
 Cílový výstup počítáme v souladu s implementacemi v předchozích sekcích, tedy použijeme normální rozdělení se střední hodnotou rovnou výšce znějící melodie a rozptylem 18 centů.
 
 \subsection{Harmonické transformace}
 
-Abychom prokázali pozitivní vliv harmonické transformace, natrénujeme tři sady modelů. Jednu sadu bez jakýchkoliv transformací, sadu s transformací s posunutím o +-12 půltónů (zachycení druhé harmonické složky) a třetí sadu s posunutím o +-12 a o +-19 půltónů (zachycení druhé a třetí harmonické složky). Vstupem všech sítí bude HCQT (implementovaný efektivně pomocí harmonických posunů), aby byl posouzen vliv transformací uvnitř sítě, nikoli také na vstupu.
+Abychom prokázali pozitivní vliv harmonické transformace, natrénujeme tři sady modelů. Jednu sadu bez jakýchkoliv transformací, sadu s transformací s posunutím o $\pm 12$ půltónů (zachycení druhé harmonické složky) a třetí sadu s posunutím o $\pm 12$ a o $\pm 19$ půltónů (zachycení druhé a třetí harmonické složky). Vstupem všech sítí bude HCQT (implementovaný efektivně pomocí harmonických posunů), aby byl posouzen vliv transformací uvnitř sítě, nikoli také na vstupu.
 
+\begin{figure}[h!]\centering
+    \includegraphics[scale=0.65]{../img/figures/spectrogram_harmonic_stacking}
+\caption{Detekce melodie, vliv počáteční pooling vrstvy.}\label{obr:spectrogram_harmonic_stacking}
+\end{figure}
+
+Na základě porovnání všech kombinací počtů filtrů a bloků na obrázku \ref{obr:spectrogram_harmonic_stacking} je jisté, že použití harmonické transformace uvnitř konvolučních sítí pomáhá zvyšovat přesnost. U všech testovaných šířek a hloubek sítí došlo k několikaprocentnímu nárustu přesnosti přepisu. Zajímavé je, že k tomuto nárustu došlo přidáním pouze dvou posunutí --- posunutí o oktávu v ose frekvence nahoru a dolů. Přidáním další zachycené harmonické frekvence sice pomůžeme zvýšit přesnost modelů s menší kapacitou, modelům s vyšší kapacitou již úprava nepomáhá. 
+
+\subsection{Parametr \texttt{hop\_size}}
+
+Metoda \cite{Bittner2017} pracuje se spektrogramy CQT vypočítanými s velikostí skoku $\approx 11\,\rm ms$. Data MedleyDB, která v práci používáme, jsou však anotována s velikostí skoku $\approx 5.8\,\rm ms$. To znamená, že při trénování musíme anotace v trénovací množině MedleyDB podvzorkovat a podobně při vyhodnocování výsledků sítě musíme výstup převzorkovat zpět na původní časové rozlišení datasetu. V obou případech převzorkování můžeme ztratit informace, které se projeví v horší výsledné přesnosti. Je také otázkou, zda-li je nejlepší postup, pokud síť budeme trénovat na neoriginálních, převzorkovaných datech. Na druhou stranu výhodou většího skoku je větší receptivní pole konvoluce, kernel o šířce větší než 1 má na podvzorkovaných datech dvojnásobný dosah. Tento efekt lze nicméně napodobit nastavením dvojnásobné dilatace konvoluce. Na experimentech s kernely šířky 1 posoudíme dopad převzorkování bez této zmiňované výhody.
+
+\begin{figure}[h]\centering
+    \includegraphics[scale=0.6]{../img/figures/spectrogram_512_vs_256}
+\caption{Vliv velikosti skoku pro výpočet vstupního spektrogramu}\label{obr:spectrogram_512_vs_256}
+\end{figure}
+
+Výsledek prezentovaný na obrázku \ref{obr:spectrogram_512_vs_256} je potenciálně využitelný i pro metodu \cite{Bittner2017}. Je možné, že pokud se původní architektura přetrénuje na datech s menším \texttt{hop\_size}, výsledky sítí se také zvýší, jako v našem případě.
+
+\subsection{Vícekanálový vstup CQT}
+
+Při výpočtu CQT spektrogramu můžeme specifikovat parametr \texttt{filter\_scale}, což je koeficient ovlivňující velikost okna transformace. S menší velikostí okna se pojí lepší časové rozlišení, s větší naopak lepší frekvenční. Otestujeme proto sítě, které mají na vstupu k dispozici více variant CQT spektrogramu. Další možností úpravy vstupní spektrogramu je druh práhování nastavitelný parametrem \texttt{top\_db} ve funkci \texttt{librosa.core.amplitude\_to\_db}, prozkoumáme i tato nastavení. Vstupní vícekanálový spektrogram se proto bude skládat ze tří spektrogramů s dvojicemi parametrů \texttt{filter\_scale}, \texttt{top\_db}: (0.5, 60), (1, 80), (2, 100).
+
+\begin{figure}[h]\centering
+    \includegraphics[scale=0.6]{../img/figures/spectrogram_fscqt}
+\caption{Vliv vstupního vícekanálového CQT}\label{obr:spectrogram_fscqt}
+\end{figure}
+
+Výsledné zlepšení se pohybuje v desetinách procentního bodu u většiny testovaných konfigurací, není tedy vysoké. Na druhou stranu vstupní reprezentace je nezávislá na architektuře zbytku modelu, tudíž je zde naděje, že toto zlepšení bude nezávislé na zvolené architektuře. Použití tohoto vstupu by tedy mohlo vylepšit i výsledky nejlepších objevených architektur.
+
+\subsection{Výška konvolucí}
+
+Otestujeme vliv velikosti konvoluce na frekvenční ose změnou velikosti kernelu z 1x3 na 1x4 a na 1x5 (viz obrázek \ref{obr:hcnn_layer}). Protože na jeden půltón připadá v používané vstupní reprezentaci 5 frekvenčních složek, volba větší konvoluce se zdá logická. Na druhou stranu dvě následující vrstvy 1x3 mají receptivní pole ekvivalentní velikosti při menším počtu.
+
+\textcolor{red}{trénuje se}
+
+\subsection{Kontext}
+
+Doposud jsme trénovali sítě, které pro výpočet salience uvažovaly pouze jedno okno vstupního CQT, následující sadou experimentů se pokusíme prozkoumat možnosti zvětšení tohoto kontextu. Všechny úpravy spočívají ve změně konvoluční vrstvy v blocích architektury (viz obrázek \ref{obr:hcnn_layer})
+
+\textcolor{red}{dopsat}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{llrr}
+
+\toprule
+Konfigurace &                   Kontext &   RPA &   RCA \\
+\midrule
+     f16-s4 &              -3,-1-d-2,-1 & 0.743 & 0.802 \\
+     f16-s4 &        -3,-3,-1-d-2,-2,-1 & 0.749 & 0.814 \\
+     f16-s4 &        -3,-3,-1-d-4,-2,-1 & 0.754 & 0.813 \\
+     f16-s4 &  -3,-3,-3,-1-d-2,-2,-2,-1 & 0.752 & 0.813 \\
+     f16-s4 &  -3,-3,-3,-1-d-8,-4,-2,-1 & 0.761 & 0.819 \\
+     f16-s4 &               -9,-7,-5,-1 & 0.757 & 0.817 \\
+     f16-s4 &                         1 & 0.737 & 0.802 \\
+     f16-s4 &                         3 & 0.744 & 0.806 \\
+     f16-s4 &                   9,7,5,1 & 0.744 & 0.804 \\
+     f16-s8 &              -3,-1-d-2,-1 & 0.753 & 0.817 \\
+     f16-s8 &        -3,-3,-1-d-2,-2,-1 & 0.758 & 0.819 \\
+     f16-s8 &        -3,-3,-1-d-4,-2,-1 & 0.759 & 0.819 \\
+     f16-s8 &  -3,-3,-3,-1-d-2,-2,-2,-1 & 0.757 & 0.817 \\
+     f16-s8 &  -3,-3,-3,-1-d-8,-4,-2,-1 & 0.749 & 0.809 \\
+     f16-s8 &               -9,-7,-5,-1 & 0.749 & 0.819 \\
+     f16-s8 &                         1 & 0.744 & 0.809 \\
+     f16-s8 &                         3 & 0.741 & 0.815 \\
+     f16-s8 &                   9,7,5,1 & 0.748 & 0.817 \\
+      f8-s4 &              -3,-1-d-2,-1 & 0.733 & 0.797 \\
+      f8-s4 &        -3,-3,-1-d-2,-2,-1 & 0.733 & 0.796 \\
+      f8-s4 &        -3,-3,-1-d-4,-2,-1 & 0.733 & 0.798 \\
+      f8-s4 &  -3,-3,-3,-1-d-2,-2,-2,-1 & 0.731 & 0.796 \\
+      f8-s4 &  -3,-3,-3,-1-d-8,-4,-2,-1 & 0.745 & 0.804 \\
+      f8-s4 &               -9,-7,-5,-1 & 0.737 & 0.800 \\
+      f8-s4 &                         1 & 0.722 & 0.786 \\
+      f8-s4 &                         3 & 0.728 & 0.796 \\
+      f8-s4 &                   9,7,5,1 & 0.728 & 0.795 \\
+      f8-s8 &              -3,-1-d-2,-1 & 0.745 & 0.806 \\
+      f8-s8 &        -3,-3,-1-d-2,-2,-1 & 0.751 & 0.814 \\
+      f8-s8 &        -3,-3,-1-d-4,-2,-1 & 0.754 & 0.814 \\
+      f8-s8 &  -3,-3,-3,-1-d-2,-2,-2,-1 & 0.749 & 0.806 \\
+      f8-s8 &  -3,-3,-3,-1-d-8,-4,-2,-1 & 0.751 & 0.803 \\
+      f8-s8 &               -9,-7,-5,-1 & 0.749 & 0.811 \\
+      f8-s8 &                         1 & 0.732 & 0.801 \\
+      f8-s8 &                         3 & 0.735 & 0.796 \\
+      f8-s8 &                   9,7,5,1 & 0.747 & 0.814 \\
+\bottomrule
+\end{tabular}
+
+\caption{Vliv úpravy architektury ovlivňující receptivní pole modelu.}\label{tab:spectrogram_ctx_archs}
+\end{table}
+
+\begin{figure}[h]\centering
+    \includegraphics[scale=0.6]{../img/figures/spectrogram_ctx_archs}
+\caption{Vliv úpravy architektury ovlivňující receptivní pole modelu.}\label{obr:spectrogram_ctx_archs}
+\end{figure}
+
+Nejlepší výsledek překvapivě podává velmi mělká architektura se čtyřmi bloky, jde o konfiguraci filtrů a bloky \texttt{f16-s4} a o   -3,-3,-3,-1-d-8,-4,-2,-1 
+
+
+% \section{Detekce melodie}
+
+% \begin{figure}[h]\centering
+%     \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/voicing_struktura}
+% \caption{Diagram společné struktury modelů pro detekci melodie.}\label{obr:voicing_struktura}
+% \end{figure}
+
+% Podobně jako v práci \cite{Rigaud2016} jsme otestovali možnosti oddělení modulu pro odhad výšky melodie a pro její detekci. V této sekci proto nejprve provedeme sadu experimentů, ve kterých návrhy na modul pro detekci trénujeme samostatně a poté otestujeme jeho přesnost také v kombinaci s modulem pro odhad výšky.
+
+% Při hledání nejlepší architektury pro detekci jsme postupovali iterativním prohlubování návrhů sítí. Společná struktura všech experimentů je znázorněna na diagramu \ref{obr:voicing_struktura}. Vstupem modelů je CQT spektrogram, podobně jako pro modely HCNN. Ten v některých experimentech transformujeme pomocí harmonického posunu (viz diagram \ref{obr:hcnn_harmonic_stacking}). Dále tento spektrogram potenciálně zmenšíme pomocí jedné pooling vrstvy tak, aby na jeden půltón připadala jedna složka výstupu, u většiny experimetů však tuto transformaci vynecháváme. Tento upravený vstup pak zpracováváme jedním z konvolučních bloků znázorněných na obrázku \ref{obr:voicing_moduly}. Výstup bloku pomocí konvoluce a následné sigmoidy zredukujeme na výstupní hodnoty označující přítomnost melodie v každém ze vstupních oken. 
+
+% V diagramu konvolučních bloků \ref{obr:voicing_moduly} obsahují bloky \texttt{dilated\_block}, \texttt{octave\_block} a \texttt{note\_block} podsoučást \texttt{reg. blok}, tedy regularizační blok. Ten se skládá z kombinace dropout vrstvy a batch normalizace, nejvýhodnější kombinaci budeme ověřovat experimentálně. Dále také na obrázku používáme proměnné $\mathbf{ T_{CTX}}$ pro parametrizaci šířky konvolucí a $\mathbf{K}$ multiplikační koeficient kapacity. Nastavení těchto proměnných budeme také porovnávat v následujících podsekcích. Dále se v diagramech používá proměnná N, která je vázaná na šířku vstupu daného bloku. 
+
+% Úlohu detekce formulujeme jako binární klasifikaci pro každé uvažované vstupní okno signálu. Síť je trénována pomocí vzájemné korelace mezi výstupem a cílovou množinou binárních veličin, které indikují přítomnost melodie.
+
+
+% \begin{figure}[h]\centering
+%     \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/voicing_moduly}
+% \caption{Diagram testovaných druhů konvolučních bloků pro detekci melodie.}\label{obr:voicing_moduly}
+% \end{figure}
+
+% \subsection{Vliv počáteční pooling vrstvy}
+
+% Motivací pro použití pooling vrstvy je zmenšení nejspíše zbytečně podrobné frekvenční dimenze vstupu. Protože výstup úlohy detekce melodie nemusí obsahovat přesnou informaci o výšce tónu, pouze binární informaci o její přítomnosti v daném časovém okamžiku, jemná frekvenční osa se zdá redundantní a ponechání plného rozlišení vede ke zbytečně větším modelům. Pomocí experimentů na sadě architektur se proto pokusíme ověřit vliv této redukce.
+
+% \begin{table}[h!]
+% \centering
+%     \begin{tabular}{llrrr}
+%     \toprule
+%             Model & Pooling &    VR &   VFA &    VA \\
+%     \midrule
+%     full\_1layer &    None & 0.818 & 0.606 & 0.616 \\
+%     full\_1layer &     avg & 0.820 & 0.600 & 0.616 \\
+%     full\_1layer &     max & 0.830 & 0.589 & 0.628 \\
+%     note\_1layer &    None & 0.722 & 0.451 & 0.636 \\
+%     note\_1layer &     avg & 0.751 & 0.547 & 0.605 \\
+%     note\_1layer &     max & 0.733 & 0.477 & 0.626 \\
+%     note\_dilated &    None & 0.720 & 0.441 & 0.636 \\
+%     note\_dilated &     avg & 0.680 & 0.473 & 0.595 \\
+%     note\_dilated &     max & 0.668 & 0.413 & 0.617 \\
+%         note\_note &    None & 0.701 & 0.401 & 0.648 \\
+%         note\_note &     avg & 0.722 & 0.519 & 0.602 \\
+%         note\_note &     max & 0.682 & 0.436 & 0.619 \\
+%     octave\_1layer &    None & 0.789 & 0.523 & 0.638 \\
+%     octave\_1layer &     avg & 0.793 & 0.527 & 0.634 \\
+%     octave\_1layer &     max & 0.809 & 0.561 & 0.628 \\
+%     octave\_octave &    None & 0.588 & 0.337 & 0.617 \\
+%     octave\_octave &     avg & 0.709 & 0.454 & 0.624 \\
+%     octave\_octave &     max & 0.740 & 0.473 & 0.632 \\
+%     \bottomrule
+%     \end{tabular}
+% \caption{Detekce melodie, vliv počáteční pooling vrstvy.}\label{tab:voicing_pooling}
+% \end{table}
 
 % \begin{figure}[h]\centering
 %     \includegraphics[scale=0.6]{../img/figures/voicing_pooling}
 % \caption{Detekce melodie, vliv počáteční pooling vrstvy.}\label{obr:voicing_pooling}
 % \end{figure}
 
-\subsection{Velikost okna}
+% Z tabulky \ref{tab:voicing_pooling} a obrázku \ref{obr:voicing_pooling} vidíme, že u většiny experimentů zpracování vstupu pooling vrstvou spíše zhoršilo, v dalších experimentech proto zpracování pooling vrstvou nepoužíváme.
 
-Metoda \cite{Bittner2017} pracuje se spektrogramy CQT vypočítanými s velikostí okna $\approx 11\,\rm ms$. Data MedleyDB, která v práci používáme, jsou však anotována s velikostí okna $\approx 5.8\,\rm ms$. To znamená, že při trénování musíme anotace v trénovací množině MedleyDB podvzorkovat a podobně při vyhodnocování výsledků sítě musíme výstup převzorkovat zpět na původní časové rozlišení datasetu. V obou případech převzorkování můžeme ztratit informace, které se projeví v horší výsledné přesnosti. Je také otázkou, zda-li je nejlepší postup, pokud síť budeme trénovat na neoriginálních, převzorkovaných datech. Výhodou většího okna je větší receptivní pole konvoluce, kernel o šířce větší než 1 má na podvzorkovaných datech dvojnásobný dosah. Tento efekt lze nicméně napodobit nastavením dvojnásobné dilatace konvoluce. Na experimentech s kernely šířky 1 posoudíme dopad převzorkování bez této zmiňované výhody.
+% \subsection{Vliv použití dropout jako regularizace}
 
-\begin{figure}[h]\centering
-    \includegraphics[scale=0.6]{../img/figures/spectrogram_512_vs_256}
-\caption{Vliv velikosti okna, horní okno velikosti $\approx 11\,\rm ms$, dolní okno $\approx 5.8\,\rm ms$. Vlevo jsou výsledky metriky RPA, vpravo RCA.}\label{obr:spectrogram_512_vs_256}
-\end{figure}
+% Sadou experimentů prozkoumáme účinnost regularizace pomocí dropout vrstvy po každé konvoluční vrstvě v modelu. Parametr pravděpodobnosti vynechání složky jsme nastavili na $0.3$. 
 
-\section{Detekce melodie}
+% \begin{table}[h!]
+% \centering
+%     \begin{tabular}{llrrr}
+%     \toprule
+%             Model & Dropout &    VR &   VFA &    VA \\
+%     \midrule
+%     full\_1layer &     0.0 & 0.782 & 0.565 & 0.618 \\
+%     full\_1layer &     0.3 & 0.825 & 0.632 & 0.610 \\
+%     octave\_1layer &     0.0 & 0.610 & 0.357 & 0.625 \\
+%     octave\_1layer &     0.3 & 0.832 & 0.586 & 0.629 \\
+%     note\_1layer &     0.0 & 0.691 & 0.418 & 0.634 \\
+%     note\_1layer &     0.3 & 0.791 & 0.519 & 0.642 \\
+%     octave\_octave &     0.0 & 0.588 & 0.337 & 0.617 \\
+%     octave\_octave &     0.3 & 0.824 & 0.564 & 0.636 \\
+%         note\_note &     0.0 & 0.743 & 0.438 & 0.648 \\
+%         note\_note &     0.3 & 0.758 & 0.424 & 0.666 \\
+%     note\_dilated &     0.0 & 0.720 & 0.441 & 0.636 \\
+%     note\_dilated &     0.3 & 0.686 & 0.362 & 0.656 \\
+%     \bottomrule
+%     \end{tabular}
+% \caption{Detekce melodie, vliv dropout vrstvy.}\label{tab:voicing_dropout}
+% \end{table}
 
-\begin{figure}[h]\centering
-    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/voicing_struktura}
-\caption{Diagram společné struktury modelů pro detekci melodie.}\label{obr:voicing_struktura}
-\end{figure}
+% \begin{figure}[h]\centering
+%     \includegraphics[scale=0.6]{../img/figures/voicing_dropout}
+% \caption{Detekce melodie, vliv dropout vrstvy.}\label{obr:voicing_dropout}
+% \end{figure}
 
-Podobně jako v práci \cite{Rigaud2016} jsme otestovali možnosti oddělení modulu pro odhad výšky melodie a pro její detekci. V této sekci proto nejprve provedeme sadu experimentů, ve kterých návrhy na modul pro detekci trénujeme samostatně a poté otestujeme jeho přesnost také v kombinaci s modulem pro odhad výšky.
+% Výsledky experimentů můžeme porovnat na obrázku \ref{obr:voicing_dropout} a v tabulce \ref{tab:voicing_dropout}, dropout vrstva výrazně pomáhá zvýšit přesnost modelu, zejména pak u architektur se dvěma vrstvami. V následujících experimentech dropout proto používáme.
 
-Při hledání nejlepší architektury pro detekci jsme postupovali iterativním prohlubování návrhů sítí. Společná struktura všech experimentů je znázorněna na diagramu \ref{obr:voicing_struktura}. Vstupem modelů je CQT spektrogram, podobně jako pro modely HCNN. Ten v některých experimentech transformujeme pomocí harmonického posunu (viz diagram \ref{obr:hcnn_harmonic_stacking}). Dále tento spektrogram potenciálně zmenšíme pomocí jedné pooling vrstvy tak, aby na jeden půltón připadala jedna složka výstupu, u většiny experimetů však tuto transformaci vynecháváme. Tento upravený vstup pak zpracováváme jedním z konvolučních bloků znázorněných na obrázku \ref{obr:voicing_moduly}. Výstup bloku pomocí konvoluce a následné sigmoidy zredukujeme na výstupní hodnoty označující přítomnost melodie v každém ze vstupních oken. 
+% \subsection{Vliv použití batch normalizace jako regularizace}
 
-V diagramu konvolučních bloků \ref{obr:voicing_moduly} obsahují bloky \texttt{dilated\_block}, \texttt{octave\_block} a \texttt{note\_block} podsoučást \texttt{reg. blok}, tedy regularizační blok. Ten se skládá z kombinace dropout vrstvy a batch normalizace, nejvýhodnější kombinaci budeme ověřovat experimentálně. Dále také na obrázku používáme proměnné $\mathbf{ T_{CTX}}$ pro parametrizaci šířky konvolucí a $\mathbf{K}$ multiplikační koeficient kapacity. Nastavení těchto proměnných budeme také porovnávat v následujících podsekcích. Dále se v diagramech používá proměnná N, která je vázaná na šířku vstupu daného bloku. 
+% Sadou experimentů prozkoumáme účinnost regularizace pomocí batch normalizace po každé konvoluční vrstvě v modelu. 
 
-Úlohu detekce formulujeme jako binární klasifikaci pro každé uvažované vstupní okno signálu. Síť je trénována pomocí vzájemné korelace mezi výstupem a cílovou množinou binárních veličin, které indikují přítomnost melodie.
+% \begin{table}[h!]
+% \centering
+%     \begin{tabular}{llrrr}
+%     \toprule
+%             Model & Batch normalizace &    VR &   VFA &    VA \\
+%     \midrule
+%     full\_1layer &        Ne & 0.849 & 0.678 & 0.598 \\
+%     full\_1layer &        Ano & 0.825 & 0.632 & 0.610 \\
+%     note\_1layer &        Ne & 0.767 & 0.485 & 0.644 \\
+%     note\_1layer &        Ano & 0.791 & 0.519 & 0.642 \\
+%     note\_dilated &        Ne & 0.720 & 0.426 & 0.646 \\
+%     note\_dilated &        Ano & 0.686 & 0.362 & 0.656 \\
+%         note\_note &        Ne & 0.761 & 0.439 & 0.659 \\
+%         note\_note &        Ano & 0.758 & 0.424 & 0.666 \\
+%     octave\_1layer &        Ne & 0.841 & 0.557 & 0.647 \\
+%     octave\_1layer &        Ano & 0.832 & 0.586 & 0.629 \\
+%     octave\_octave &        Ne & 0.845 & 0.607 & 0.631 \\
+%     octave\_octave &        Ano & 0.824 & 0.564 & 0.636 \\
+%     \bottomrule
+%     \end{tabular}
 
+% \caption{Detekce melodie, vliv batch normalizace.}\label{tab:voicing_batchnorm}
+% \end{table}
 
-\begin{figure}[h]\centering
-    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/voicing_moduly}
-\caption{Diagram testovaných druhů konvolučních bloků pro detekci melodie.}\label{obr:voicing_moduly}
-\end{figure}
+% \begin{figure}[h]\centering
+%     \includegraphics[scale=0.6]{../img/figures/voicing_batchnorm}
+% \caption{Detekce melodie, vliv batch normalizace.}\label{obr:voicing_batchnorm}
+% \end{figure}
 
-\subsection{Vliv počáteční pooling vrstvy}
+% Z výsledků na obrázku \ref{obr:voicing_batchnorm} a v tabulce \ref{tab:voicing_batchnorm} vyplývá, že batch normalizace přesnost sítí mírně zlepšuje, proto ji v následujících experimentech používáme společně s dropout regularizací.
 
-Motivací pro použití pooling vrstvy je zmenšení nejspíše zbytečně podrobné frekvenční dimenze vstupu. Protože výstup úlohy detekce melodie nemusí obsahovat přesnou informaci o výšce tónu, pouze binární informaci o její přítomnosti v daném časovém okamžiku, jemná frekvenční osa se zdá redundantní a ponechání plného rozlišení vede ke zbytečně větším modelům. Pomocí experimentů na sadě architektur se proto pokusíme ověřit vliv této redukce.
+% \subsection{Vliv kapacity sítě}
 
-\begin{table}[h!]
-\centering
-    \begin{tabular}{llrrr}
-    \toprule
-            Model & Pooling &    VR &   VFA &    VA \\
-    \midrule
-    full\_1layer &    None & 0.818 & 0.606 & 0.616 \\
-    full\_1layer &     avg & 0.820 & 0.600 & 0.616 \\
-    full\_1layer &     max & 0.830 & 0.589 & 0.628 \\
-    note\_1layer &    None & 0.722 & 0.451 & 0.636 \\
-    note\_1layer &     avg & 0.751 & 0.547 & 0.605 \\
-    note\_1layer &     max & 0.733 & 0.477 & 0.626 \\
-    note\_dilated &    None & 0.720 & 0.441 & 0.636 \\
-    note\_dilated &     avg & 0.680 & 0.473 & 0.595 \\
-    note\_dilated &     max & 0.668 & 0.413 & 0.617 \\
-        note\_note &    None & 0.701 & 0.401 & 0.648 \\
-        note\_note &     avg & 0.722 & 0.519 & 0.602 \\
-        note\_note &     max & 0.682 & 0.436 & 0.619 \\
-    octave\_1layer &    None & 0.789 & 0.523 & 0.638 \\
-    octave\_1layer &     avg & 0.793 & 0.527 & 0.634 \\
-    octave\_1layer &     max & 0.809 & 0.561 & 0.628 \\
-    octave\_octave &    None & 0.588 & 0.337 & 0.617 \\
-    octave\_octave &     avg & 0.709 & 0.454 & 0.624 \\
-    octave\_octave &     max & 0.740 & 0.473 & 0.632 \\
-    \bottomrule
-    \end{tabular}
-\caption{Detekce melodie, vliv počáteční pooling vrstvy.}\label{tab:voicing_pooling}
-\end{table}
+% Konstrukcí a natrénováním sítí s různou kapacitou nastavenou pomocí parametru $\mathbf{K}$ na diagramu \ref{obr:voicing_moduly} ověříme, jaký počet konvolučních filtrů je pro úlohu a danou architekturu vhodný. 
 
-\begin{figure}[h]\centering
-    \includegraphics[scale=0.6]{../img/figures/voicing_pooling}
-\caption{Detekce melodie, vliv počáteční pooling vrstvy.}\label{obr:voicing_pooling}
-\end{figure}
+% \begin{table}[h!]
+% \centering
+%     \begin{tabular}{lrrrr}
+%     \toprule
+%             Model & Mult. Koef. Kapacity &    VR &   VFA &    VA \\
+%     \midrule
+%     full\_1layer &                    8 & 0.825 & 0.632 & 0.610 \\
+%     full\_1layer &                   16 & 0.923 & 0.765 & 0.601 \\
+%     full\_1layer &                   32 & 0.858 & 0.690 & 0.600 \\
+%     note\_1layer &                    8 & 0.791 & 0.519 & 0.642 \\
+%     note\_1layer &                   16 & 0.845 & 0.583 & 0.641 \\
+%     note\_1layer &                   32 & 0.829 & 0.565 & 0.641 \\
+%     note\_dilated &                    8 & 0.686 & 0.362 & 0.656 \\
+%     note\_dilated &                   16 & 0.766 & 0.474 & 0.649 \\
+%     note\_dilated &                   32 & 0.694 & 0.395 & 0.646 \\
+%         note\_note &                    8 & 0.758 & 0.424 & 0.666 \\
+%         note\_note &                   16 & 0.711 & 0.368 & 0.662 \\
+%         note\_note &                   32 & 0.676 & 0.338 & 0.659 \\
+%     octave\_1layer &                    8 & 0.832 & 0.586 & 0.629 \\
+%     octave\_1layer &                   16 & 0.842 & 0.588 & 0.636 \\
+%     octave\_1layer &                   32 & 0.859 & 0.612 & 0.634 \\
+%     octave\_octave &                    8 & 0.824 & 0.564 & 0.636 \\
+%     octave\_octave &                   16 & 0.799 & 0.487 & 0.659 \\
+%     octave\_octave &                   32 & 0.648 & 0.343 & 0.640 \\
+%     \bottomrule
+%     \end{tabular}
 
-Z tabulky \ref{tab:voicing_pooling} a obrázku \ref{obr:voicing_pooling} vidíme, že u většiny experimentů zpracování vstupu pooling vrstvou spíše zhoršilo, v dalších experimentech proto zpracování pooling vrstvou nepoužíváme.
+% \caption{Detekce melodie, vliv batch normalizace.}\label{tab:voicing_capacity}
+% \end{table}
 
-\subsection{Vliv použití dropout jako regularizace}
+% \subsection{Vliv kontextu}
 
-Sadou experimentů prozkoumáme účinnost regularizace pomocí dropout vrstvy po každé konvoluční vrstvě v modelu. Parametr pravděpodobnosti vynechání složky jsme nastavili na $0.3$. 
-
-\begin{table}[h!]
-\centering
-    \begin{tabular}{llrrr}
-    \toprule
-            Model & Dropout &    VR &   VFA &    VA \\
-    \midrule
-    full\_1layer &     0.0 & 0.782 & 0.565 & 0.618 \\
-    full\_1layer &     0.3 & 0.825 & 0.632 & 0.610 \\
-    octave\_1layer &     0.0 & 0.610 & 0.357 & 0.625 \\
-    octave\_1layer &     0.3 & 0.832 & 0.586 & 0.629 \\
-    note\_1layer &     0.0 & 0.691 & 0.418 & 0.634 \\
-    note\_1layer &     0.3 & 0.791 & 0.519 & 0.642 \\
-    octave\_octave &     0.0 & 0.588 & 0.337 & 0.617 \\
-    octave\_octave &     0.3 & 0.824 & 0.564 & 0.636 \\
-        note\_note &     0.0 & 0.743 & 0.438 & 0.648 \\
-        note\_note &     0.3 & 0.758 & 0.424 & 0.666 \\
-    note\_dilated &     0.0 & 0.720 & 0.441 & 0.636 \\
-    note\_dilated &     0.3 & 0.686 & 0.362 & 0.656 \\
-    \bottomrule
-    \end{tabular}
-\caption{Detekce melodie, vliv dropout vrstvy.}\label{tab:voicing_dropout}
-\end{table}
-
-\begin{figure}[h]\centering
-    \includegraphics[scale=0.6]{../img/figures/voicing_dropout}
-\caption{Detekce melodie, vliv dropout vrstvy.}\label{obr:voicing_dropout}
-\end{figure}
-
-Výsledky experimentů můžeme porovnat na obrázku \ref{obr:voicing_dropout} a v tabulce \ref{tab:voicing_dropout}, dropout vrstva výrazně pomáhá zvýšit přesnost modelu, zejména pak u architektur se dvěma vrstvami. V následujících experimentech dropout proto používáme.
-
-\subsection{Vliv použití batch normalizace jako regularizace}
-
-Sadou experimentů prozkoumáme účinnost regularizace pomocí batch normalizace po každé konvoluční vrstvě v modelu. 
-
-\begin{table}[h!]
-\centering
-    \begin{tabular}{llrrr}
-    \toprule
-            Model & Batch normalizace &    VR &   VFA &    VA \\
-    \midrule
-    full\_1layer &        Ne & 0.849 & 0.678 & 0.598 \\
-    full\_1layer &        Ano & 0.825 & 0.632 & 0.610 \\
-    note\_1layer &        Ne & 0.767 & 0.485 & 0.644 \\
-    note\_1layer &        Ano & 0.791 & 0.519 & 0.642 \\
-    note\_dilated &        Ne & 0.720 & 0.426 & 0.646 \\
-    note\_dilated &        Ano & 0.686 & 0.362 & 0.656 \\
-        note\_note &        Ne & 0.761 & 0.439 & 0.659 \\
-        note\_note &        Ano & 0.758 & 0.424 & 0.666 \\
-    octave\_1layer &        Ne & 0.841 & 0.557 & 0.647 \\
-    octave\_1layer &        Ano & 0.832 & 0.586 & 0.629 \\
-    octave\_octave &        Ne & 0.845 & 0.607 & 0.631 \\
-    octave\_octave &        Ano & 0.824 & 0.564 & 0.636 \\
-    \bottomrule
-    \end{tabular}
-
-\caption{Detekce melodie, vliv batch normalizace.}\label{tab:voicing_batchnorm}
-\end{table}
-
-\begin{figure}[h]\centering
-    \includegraphics[scale=0.6]{../img/figures/voicing_batchnorm}
-\caption{Detekce melodie, vliv batch normalizace.}\label{obr:voicing_batchnorm}
-\end{figure}
-
-Z výsledků na obrázku \ref{obr:voicing_batchnorm} a v tabulce \ref{tab:voicing_batchnorm} vyplývá, že batch normalizace přesnost sítí mírně zlepšuje, proto ji v následujících experimentech používáme společně s dropout regularizací.
-
-\subsection{Vliv kapacity sítě}
-
-Konstrukcí a natrénováním sítí s různou kapacitou nastavenou pomocí parametru $\mathbf{K}$ na diagramu \ref{obr:voicing_moduly} ověříme, jaký počet konvolučních filtrů je pro úlohu a danou architekturu vhodný. 
-
-\begin{table}[h!]
-\centering
-    \begin{tabular}{lrrrr}
-    \toprule
-            Model & Mult. Koef. Kapacity &    VR &   VFA &    VA \\
-    \midrule
-    full\_1layer &                    8 & 0.825 & 0.632 & 0.610 \\
-    full\_1layer &                   16 & 0.923 & 0.765 & 0.601 \\
-    full\_1layer &                   32 & 0.858 & 0.690 & 0.600 \\
-    note\_1layer &                    8 & 0.791 & 0.519 & 0.642 \\
-    note\_1layer &                   16 & 0.845 & 0.583 & 0.641 \\
-    note\_1layer &                   32 & 0.829 & 0.565 & 0.641 \\
-    note\_dilated &                    8 & 0.686 & 0.362 & 0.656 \\
-    note\_dilated &                   16 & 0.766 & 0.474 & 0.649 \\
-    note\_dilated &                   32 & 0.694 & 0.395 & 0.646 \\
-        note\_note &                    8 & 0.758 & 0.424 & 0.666 \\
-        note\_note &                   16 & 0.711 & 0.368 & 0.662 \\
-        note\_note &                   32 & 0.676 & 0.338 & 0.659 \\
-    octave\_1layer &                    8 & 0.832 & 0.586 & 0.629 \\
-    octave\_1layer &                   16 & 0.842 & 0.588 & 0.636 \\
-    octave\_1layer &                   32 & 0.859 & 0.612 & 0.634 \\
-    octave\_octave &                    8 & 0.824 & 0.564 & 0.636 \\
-    octave\_octave &                   16 & 0.799 & 0.487 & 0.659 \\
-    octave\_octave &                   32 & 0.648 & 0.343 & 0.640 \\
-    \bottomrule
-    \end{tabular}
-
-\caption{Detekce melodie, vliv batch normalizace.}\label{tab:voicing_capacity}
-\end{table}
-
-\subsection{Vliv kontextu}
-
-\begin{figure}[h]\centering
-    \includegraphics[scale=0.6]{../img/figures/voicing_context}
-\caption{Detekce melodie, vliv kontextu.}\label{obr:voicing_context}
-\end{figure}
+% \begin{figure}[h]\centering
+%     \includegraphics[scale=0.6]{../img/figures/voicing_context}
+% \caption{Detekce melodie, vliv kontextu.}\label{obr:voicing_context}
+% \end{figure}
