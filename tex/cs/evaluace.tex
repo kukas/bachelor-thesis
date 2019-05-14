@@ -33,7 +33,9 @@ Obvyklý formát výstupu algoritmů je CSV soubor se dvěma sloupci. První slo
 
 \section{Trénovací, validační a testovací množina}
 
-Z dostupných dat, které pro úlohu máme k dispozici, musíme vyhradit množiny pro trénování, validaci a testování, aby byly metody porovnatelné jak mezi sebou, tak se stávajícími state-of-the-art metodami. Pro trénování se jeví jako nejvhodnější dataset MedleyDB, jednak pro svou délku a jednak pro žánrovou rozmanitost, proto je použit všechny popsané experimenty. Konkrétní rozdělení MedleyDB na tři části je přímo převzaté z práce \cite{Bittner2017} a \cite{DBasaranSEssid2018}, aby byly metriky porovnatelné s výsledky v uvedených článcích. 
+Z dostupných dat, které pro úlohu máme k dispozici, musíme vyhradit množiny pro trénování, validaci a testování, aby byly metody porovnatelné jak mezi sebou, tak se stávajícími state-of-the-art metodami. Pro trénování se jeví jako nejvhodnější dataset MedleyDB, jednak pro svou délku a jednak pro žánrovou rozmanitost, proto je použit pro všechny popsané experimenty. Rozdělení datasetu na trénovací, validační a testovací množiny jsme převzali z práce \cite{Bittner2017}, díky tomu je korektní naše výsledky na testovací množině MedleyDB přímo porovnávat s výsledky uvedenými v článku. Tento postup využití existujícího rozdělení dat používá ve své práci také \cite{DBasaranSEssid2018}, i s jeho výsledky proto naši práci můžeme porovnávat.
+
+Data byla rozdělena na trénovací, validační a testovací množinu tak, aby skladby od jednoho interpreta náležely právě do jedné z množin. Využili jsme existujícího rozdělení používaného v článcích \cite{Bittner2017} a \cite{DBasaranSEssid2018}, validační i testovací výsledky jsou tedy díky tomu porovnatelné s výsledky uvedenými v článcích.
 
 % Další výhodou použití stejného \textit{splitu} je možnost replikace výsledků, za použití popisované architektury, a tím pádem minimalizování možnosti nějaké velké implementační chyby v kódu. Pokud by se totiž výsledky nepodařilo replikovat se stejnými daty i architekturou, musela by být chyba jinde - tedy s největší určitostí v vyvinutém frameworku.
 
@@ -198,7 +200,7 @@ Histogram hodnot rozdílu $\mathcal{M}(\mathbf{f}) - \mathcal{M}(\mathbf{f^*})$,
 
 \subsubsection{Kvalitativní příklady}
 
-Pro lepší vyhodnocování vyvíjených metod je vhodné studovat také výsledky na kvalitativních ukázkách. Modely byly při práci vyhodnocovány na několikaminutových množinách výňatků z validačních a testovacích dat. Metodika výběru spočívala v poslechu nahrávek a ručním výběru zajímavých hudebních jevů. Několik ukázek bylo také vybráno na základě seřazení nahrávek podle úspěšnosti přepisu stávajícími metodami a výběrem výňatků z tohoto seznamu nejproblematičtějších příkladů.
+Modely byly při práci vyhodnocovány na několikaminutových množinách výňatků z validačních a testovacích dat. Metodika výběru spočívala v poslechu nahrávek a ručním výběru zajímavých hudebních jevů. Několik ukázek bylo také vybráno na základě seřazení nahrávek podle úspěšnosti přepisu stávajícími metodami a výběrem výňatků z tohoto seznamu nejproblematičtějších příkladů.
 
 
 

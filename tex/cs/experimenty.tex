@@ -2,7 +2,7 @@
 
 V této kapitole prezentujeme návrhy nových architektur hlubokých neuronových sítí pro extrakci melodie a jejich výsledky na validační množině. Modely byly trénované nad datasetem MedleyDB. Data byla rozdělena na trénovací, validační a testovací množinu tak, aby skladby od jednoho interpreta náležely právě do jedné z množin. Využili jsme existujícího rozdělení používaného v článcích \cite{Bittner2017} a \cite{DBasaranSEssid2018}, validační i testovací výsledky jsou tedy díky tomu porovnatelné s výsledky uvedenými v článcích.
 
-Navrhované sítě jsou koncipovány jako nové způsoby výpočtu funkce salience. Cílem je ze vstupního okna signálu získat ohodnocení znějících tónů, přičemž v ideálním případě nejvyšší ohodnocení bude mít nejvýraznější tón --- tedy ten, který nese melodii. Naopak tóny doprovodu a frekvenční složky perkusí by měly být v této výstupní reprezentaci co možná nejvíce upozaděny.
+Navrhované sítě jsou koncipovány jako nové způsoby výpočtu funkce salience. Cílem je ze vstupního okna signálu získat ohodnocení znějících tónů, přičemž v ideálním případě nejvyšší ohodnocení bude mít nejvýraznější tón --- tedy ten, který nese melodii. Naopak tóny doprovodu a frekvenční složky perkusí by měly být v této výstupní reprezentaci co možná nejvíce upozaděny. Zdůrazníme, že těžištěm této práce je odhad výšky tónů; pro detekci melodie používáme pouze jednoduchou metodu práhování. Po výpočtu funkce salience také nepoužíváme žádný modul pro vyhlazování predikcí v čase, pouze vybíráme maximální hodnotu výstupu v každém časovém okně. Tímto zaměřením pouze na výpočet funkce salience je práce podobná práci \cite{Bittner2017}.
 
 Pro výpočet salienční funkce porovnáváme tři různé architektury inspirované pracemi \cite{Kim2018}, \cite{Oord2016} a \cite{Bittner2017}, tyto architektury se pokoušíme systematickým hledáním přizpůsobit pro účel extrakce melodie pomocí vhodných úprav jak v jejich topologii tak nastavením hyperparametrů. První práce popisuje architekturu CREPE, původně navrženou pro sledování výšky tónů v jednohlasých nahrávkách. Architektura WaveNet popsaná týmem \cite{Oord2016} je složena z dilatovaných konvolucí a původně určena pro generování lidské řeči, autoři však zmiňují její možné použití i pro přepis řeči. \cite{Bittner2017} používá speciální vstupní reprezentaci signálu, kterou zpracovává pomocí hluboké konvoluční sítě, její práce se zabývá kompletním přepisem nahrávek i přepisem melodie. 
 
@@ -20,7 +20,7 @@ Jinými slovy je sledování jednohlasu speciálním případem extrakce melodie
 \label{obr:wavenet_dilated}
 \end{figure}
 
-Architektura CREPE se skládá ze šesti konvolučních a pooling vrstev, pro regularizaci používá batch normalization a dropout po každé konvoluční vrstvě, jako nelineární aktivace je použita funkce ReLU. Po konvolucích následuje výstupní plně propojená vrstva, jako finální aktivační funkce je použita sigmoida. Vstupem modelu je okno o velikosti 1024 vzorků jednokanálového audio signálu, převzorkovaného na 16 kHz. Před první konvolucí je signál normalizován tak, aby každé jednotlivé vstupní okno mělo střední hodnotu 0 a směrodatnou odchylku 1. Podrobnější popis modelu je naznačen na obrázku.
+Architektura CREPE se skládá ze šesti konvolučních a pooling vrstev, pro regularizaci používá batch normalization (\cite{Ioffe2015}) a dropout (\cite{Sutskever2014}) po každé konvoluční vrstvě, jako nelineární aktivace je použita funkce ReLU. Po konvolucích následuje výstupní plně propojená vrstva, jako finální aktivační funkce je použita sigmoida. Vstupem modelu je okno o velikosti 1024 vzorků jednokanálového audio signálu, převzorkovaného na 16 kHz. Před první konvolucí je signál normalizován tak, aby každé jednotlivé vstupní okno mělo střední hodnotu 0 a směrodatnou odchylku 1 --- aplikováním normalizace o signálu neztratíme pro nás důležité informace, protože výška tónu nezávisí na absolutním posunu signálu nebo na jeho amplitudě. Naopak tento krok zrychluje trénování, protože síť se nemusí učit být vůči těmto rozdílům v datech invariantní. Celková struktura a podrobnější popis modelu je naznačen na obrázku.
 
 Výsledný vektor o 640 složkách aproximuje pravděpodobnostní rozdělení výšky základní frekvence uprostřed vstupního okna, přičemž tento vektor pokrývá rozsah od noty $C_{-1}$ po $G_{9}$, mezi dvěma sousedními predikovanými výškami je tudíž vzdálenost 20 centů. Výšky tónů v centech označíme $\cent_1, \cent_2, \dots, \cent_{640}$. Rozsah výstupního vektoru tedy bezpečně pokrývá obvyklé rozsahy hlasů hudebních nástrojů a na jednu notu připadá 5 složek (tónů) výsledného vektoru.
 
@@ -34,7 +34,7 @@ Převod z pravděpodobnostní reprezentace výstupního vektoru na konkrétní h
 
     $$ \left. \hat{\cent} = \sum_{\scaleto{i, \lvert \cent_i - \cent_m \rvert < 50}{8pt}} {\hat{y}_i \cent_i} \middle/ \sum_{\scaleto{i, \lvert \cent_i - \cent_m \rvert < 50}{8pt}} \hat{y}_i \right., m = \mathrm{argmax}_i(\hat{y}_i)$$
 
-Optimalizovaná ztrátová funkce modelu (loss funkce) $\mathcal{L}(\mathbf{y}, \mathbf{\hat{y}})$ se počítá jako vzájemná korelace mezi vektorem cílových pravděpodobností $y$ a výstupním vektorem $\hat{y}$.
+Optimalizovaná ztrátová funkce modelu (loss funkce) $\mathcal{L}(\mathbf{y}, \mathbf{\hat{y}})$ se počítá jako cross-entropy mezi vektorem cílových pravděpodobností $y$ a výstupním vektorem $\hat{y}$.
 
     $$\mathcal{L}(\mathbf{y}, \mathbf{\hat{y}}) = \sum_{i = 1}^{640}{(-y_i\log\hat{y}_i - (1-y_i)\log(1-\hat{y_i}))}$$
 
@@ -68,13 +68,16 @@ Optimalizace probíhá pomocí algoritmu Adam \citep{Kingma2014} s parametrem le
 % - crepe model - např. nedává vůbec smysl velikost kernelu 64 v posledních vrstvách, zbytečně se tam přidávají nuly jako padding
 % - ukázat vizualizaci první vrstvy
 
+V následujících experimentech se zaměříme nejprve na replikaci výsledků pro sledování jednohlasu, následně v základním nastavení model spustíme i pro melodická data. Poté prozkoumáme nejvhodnější nastavení cílové reprezentace refereční anotace melodie, na základě které se síť učí. Tyto experimenty budou užitečné následně i pro další testované architektury, jelikož způsob reprezentace melodie využíváme ve všech experimentech práce stejný. V předposledním experimentu prozkoumáváme vliv zvětšení kontextu, který má síť k dispozici pro predikci výšky tónu. V závěru se pokusíme vyřešit autory zmíněný problém architektury, který se týká odhadu tónů, které mají vysokou frekvenci.
+
 \subsection{Replikace výsledků CREPE}
 
 Abychom ověřili správnost implementace architektury CREPE pro sledování jednohlasu, spustíme model na syntetických, jednohlasých datech MDB-stem-synth, která byla zvěřejněná spolu s článkem od \cite{Salamon2017}.
 
 Na rozdíl od článku \cite{Kim2018}, ve kterém autoři používají pro celkové vyhodnocení architektury pětinásobnou křížovou validaci, jsme použili pouze jednu trénovací a testovací množinu. Zásadní rozdíly mezi implementacemi modelu jsme na základě článku a veřejně dostupného kódu neobjevili.
 
-Po jedné epoše trénování model dosáhl na testovací množině $98.6\%$ přesnosti odhadu výšky. \cite{Kim2018} uvádí přesnost modelu $97\%$. V jejich případě jde o průměrný výsledek pěti nezávislých běhů trénování a testování na různě rozdělených datových množinách. Rozdíl mezi dosaženými přesnostmi tedy přičítáme odlišné evaluační strategii.
+Po jedné epoše trénování model dosáhl na testovací množině $98.6\%$ přesnosti odhadu výšky. \cite{Kim2018} uvádí přesnost modelu $97\%$. V jejich případě jde o průměrný výsledek pěti nezávislých běhů trénování a testování na různě rozdělených datových množinách. Rozdíl mezi dosaženými přesnostmi tedy přičítáme odlišné evaluační strategii. Přehled výsledků je uveden v tabulce \ref{tab:crepe_replicate}\footnote{Při replikaci experimentu jsme narazili na důležitost správného promíchání dat. Framework Tensorflow použitý pro trénování promíchává data vždy pomocí bufferu pevné velikosti pro dvojice vstupů a cílových výstupů. V praxi je však potřeba buď nastavit buffer na velikost větší než je celková velikost datasetu, a nebo implementovat vlastní míchání přes všechna dostupná data. Při nedostatečně promíchaných datech totiž trénovací dávka (batch) není reprezentativní pro celý dataset, ale pouze pro jeho podmnožinu, což se negativně projevuje kolísající validační přesností modelu.
+}
 
 \begin{table}[h!]
 
@@ -89,11 +92,9 @@ Po jedné epoše trénování model dosáhl na testovací množině $98.6\%$ př
     RPA  & 10 centů & 0.937 & 0.909 \\
     \bottomrule
     \end{tabular}
-\caption{Výsledky pokusu o replikaci. Přesnosti nejsou přímo srovnatelné kvůli různým evaluačním strategiím.}\label{tab:crepe_dimensions}
+\caption{Výsledky pokusu o replikaci. Přesnosti nejsou přímo srovnatelné kvůli různým evaluačním strategiím.}\label{tab:crepe_replicate}
 
 \end{table}
-
-Při replikaci experimentu jsme narazili na důležitost správného promíchání dat. Framework Tensorflow použitý pro trénování promíchává data vždy pomocí bufferu pevné velikosti pro dvojice vstupů a cílových výstupů. V praxi je však potřeba buď nastavit buffer na velikost větší než je celková velikost datasetu, a nebo implementovat vlastní míchání přes všechna dostupná data. Při nedostatečně promíchaných datech totiž trénovací dávka (batch) není reprezentativní pro celý dataset, ale pouze pro jeho podmnožinu, což se negativně projevuje kolísající validační přesností modelu.
 
 \subsection{CREPE pro extrakci melodie}
 
@@ -135,21 +136,25 @@ Mult. koef. kapacity &   RPA &   RCA \\
                   32 & 0.656 & 0.753 \\
 \bottomrule
 \end{tabular}
-\caption{Výsledky experimentu s různými kapacitami modelu.}\label{tab:crepe_capacity}
+\caption{Výsledky experimentu s nezměněnou architekturou CREPE spuštěnou pro extrakci melodie. Přesnosti uvádíme pro různé kapacity modelu.}\label{tab:crepe_capacity_experiment}
 \end{table}
 
 \begin{figure}[h]\centering
     \includegraphics[scale=0.6]{../img/figures/crepe_kapacita.pdf}
-\caption{Výsledky experimentu s různými kapacitami modelu.}
-\label{obr:crepe_capacity}
+\caption{Výsledky experimentu s nezměněnou architekturou CREPE spuštěnou pro extrakci melodie.}
+\label{obr:crepe_capacity_experiment}
 \end{figure}
 
-Z validačních výsledků po $200\,000$ iteracích (přibližně 6 epoch) vidíme, že se výsledek modelů CREPE 8x a CREPE 16x liší řádově o desetiny procentních bodů. Přitom model s větší kapacitou se trénuje o 35\% delší dobu. Proto pro další srovnávání zvolíme architektury s multiplikačním koeficientem 8, modely s dobrými výsledky případně přetrénujeme s vyšší kapacitou.
+V tabulce \ref{tab:crepe_capacity_experiment} a na obrázku \ref{obr:crepe_capacity_experiment} uvádíme výsledky tohoto experimentu. Z validačních výsledků po $200\,000$ iteracích (přibližně 6 epoch) vidíme, že se výsledek modelů CREPE 8x a CREPE 16x liší řádově o desetiny procentních bodů. Přitom model s větší kapacitou se trénuje o 35\% delší dobu. Proto pro většinu následujících srovnávání zvolíme architektury s multiplikačním koeficientem 8, modely s dobrými výsledky případně přetrénujeme s vyšší kapacitou.
 
-\subsection{Vliv rozlišení diskretizace výšky noty}
+\subsection{Vliv rozlišení diskretizace výšky noty}\label{sec:crepe_diskretizace}
 
-Otestujeme nastavení granularity výstupního vektoru. V článku \cite{Kim2018} se totiž důvod volby pěti frekvencí na půltón nediskutuje. Intuitivně by však mělo vyšší rozlišení spíše pomáhat, důvodem je, že nástroje a zejména lidský hlas se často při hraní odchylují od přesných, definovaných frekvencí hraných not a vyšší rozlišení tyto odchylky může lépe zachytit. Ve výsledku by pak síť s jemnějším výstupem měla dělat méně chyb, u kterých se skutečná a výstupní hodnota liší o jeden půltón.
+\begin{figure}[h]\centering
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/reprezentace_vstupu.pdf}
+\caption{Ukázky cílové reprezentace použité pro učení modelů. Pruhovaná linka značí dolní a horní hranici korektního odhadu výšky melodie.}\label{obr:reprezentace_vstupu}
+\end{figure}
 
+Otestujeme nastavení granularity výstupního vektoru. V článku \cite{Kim2018} se totiž důvod volby pěti frekvencí na půltón nediskutuje. Intuitivně by však mělo vyšší rozlišení spíše pomáhat, důvodem je, že nástroje a zejména lidský hlas se často při hraní odchylují od přesných, definovaných frekvencí hraných not a vyšší rozlišení tyto odchylky může lépe zachytit. Ve výsledku by pak síť s jemnějším výstupem měla dělat méně chyb, u kterých se skutečná a výstupní hodnota liší o jeden půltón. Na obrázku \ref{obr:reprezentace_vstupu} pro lepší představu uvádíme příklad cílových reprezentací s různým nastavením rozlišení diskretizace.
 
 \begin{table}[h!]
 
@@ -175,7 +180,7 @@ Otestujeme nastavení granularity výstupního vektoru. V článku \cite{Kim2018
 \caption{Architektura CREPE s různou jemností diskretizace.}\label{obr:crepe_diskretizace}
 \end{figure}
 
-Jak můžeme pozorovat na výsledných hodnotách, jemná granularita výstupu jednoznačně zlepšuje přesnost sítě. Abychom ověřili domněnku, že vyšší rozlišení pomáhá zmenšit počet chyb o půltón, vytvoříme histogram vzdáleností cílového a odhadovaného tónu. V tomto histogramu by pak měl být zřetelný pokles v příslušných třídách. Podle histogramu se počet chyb o půltón mezi zkoumanými modely liší téměř o polovinu, zlepšení tohoto druhu chyb je tedy podstatné.
+Jak můžeme pozorovat na výsledných hodnotách, jemná granularita výstupu zlepšuje přesnost sítě. Abychom ověřili domněnku, že vyšší rozlišení pomáhá zmenšit počet chyb o půltón, vytvoříme histogram vzdáleností cílového a odhadovaného tónu. V tomto histogramu by pak měl být zřetelný pokles v příslušných třídách. Podle histogramu se počet chyb o půltón mezi zkoumanými modely liší téměř o polovinu, zlepšení tohoto druhu chyb je tedy podstatné.
 
 \begin{figure}[h]\centering
     \includegraphics[scale=0.6]{../img/figures/crepe_diskretizace_hist.pdf}
@@ -186,7 +191,9 @@ Jak můžeme pozorovat na výsledných hodnotách, jemná granularita výstupu j
 
 Podle \cite{Bittner2017} pomáhá cílová distribuce s vyšším rozptylem snížit penalizaci sítě za téměř korektní odhady výšek tónů. Mimo to u dostupných dat často nejsou anotace naprosto perfektní, jisté rozostření hranice anotace tudíž pomáhá i v případě nepřesné cílové anotace, síť pak není tolik penalizována za svou případnou správnou odpověď. 
 
-V článku se však nediskutuje, proč bylo zvoleno nastavení směrodatné odchylky na 20 centů. \cite{Kim2018} používá odchylku 25 centů a není na první pohled zřejmé, jaká je optimální hodnota. Příliš vysoký rozptyl způsobí, že síť bude tolerovat více chyb o půltón, příliš nízký rozptyl naopak penalizuje i za téměř správné odhady. Intuitivně se nejlepší nastavení pravděpodobně bude pohybovat kolem používaných 25 centů, jelikož to je hranice chybné klasifikace, na druhou stranu optimální hodnota jistě bude závislá na nastavení rozlišení výstupního vektoru, jelikož nižší rozlišení bude jistě vyžadovat vyšší hodnotu rozptylu (v extrémním případě rozptylu blížícího se k nule a cílové frekvence mimo kvantizační hladiny by vzniklý cílový vektor nemusel obsahovat žádné ostré maximum).
+V článku se však nediskutuje, proč bylo zvoleno nastavení směrodatné odchylky na 20 centů. \cite{Kim2018} používá odchylku 25 centů a není na první pohled zřejmé, jaká je optimální hodnota. Příliš vysoký rozptyl způsobí, že síť bude tolerovat více chyb o půltón, příliš nízký rozptyl naopak penalizuje i za téměř správné odhady. Intuitivně se nejlepší nastavení pravděpodobně bude pohybovat kolem používaných 25 centů, jelikož to je hranice chybné klasifikace. Na obrázku \ref{obr:reprezentace_vstupu} pro lepší představu uvádíme příklad cílových reprezentací s různým nastavením rozptylu.
+
+%  na druhou stranu optimální hodnota jistě bude závislá na nastavení rozlišení výstupního vektoru, jelikož nižší rozlišení bude jistě vyžadovat vyšší hodnotu rozptylu (v extrémním případě rozptylu blížícího se k nule a cílové frekvence mimo kvantizační hladiny by vzniklý cílový vektor nemusel obsahovat žádné ostré maximum).
 
 % Poznamenám také technický detail, který je důležitý při samotné implementaci. Přestože jsem cílový výstup sítě zadefinoval jako diskrétní pravděpodobnostní rozdělení, při trénování je tento vektor hodnot pronásoben koeficientem tak, aby $\max(\mathbf{y}) = 1.0$ a tedy součet prvků vektoru není roven jedné (a o pravděpodobnostní rozdělení se doopravdy nejedná). Důvodem je použití aktivační funkce *sigmoid* u výstupní vrstvy, která nezaručuje výstup korektního rozdělení. Díky tomu se na výstupu může objevit různé množství stejně pravděpodobných kandidátů na melodii.
 
@@ -218,9 +225,7 @@ Testovaná síť má vstupní okno široké 4096 vzorků, používá multipliká
 \caption{Architektura CREPE, vliv rozptylu cílové distribuce.}\label{obr:crepe_diskretizace}
 \end{figure}
 
-
-
-Z experimentů vyplývá, že optimální směrodatná odchylka se pohybuje kolem hodnoty $0.177$, tedy níže než v porovnávaných pracích. 
+Z experimentů vyplývá, že optimální směrodatná odchylka se pohybuje kolem hodnoty $0.177$, tedy níže než v porovnávaných pracích. Spolu s výsledky ze sekce \nameref{sec:crepe_diskretizace}, ve které ověřujeme nejlepší nastavení frekvenčního rozlišení, tedy docházíme k optimálnímu nastavení cílové reprezentace melodie, které budeme používat i v následujících experimentech se zbylými architekturami.
 
 % ------
 % - cílová distribuce doopravdy není distribuce
@@ -311,8 +316,11 @@ První vrstvu s kernelem s 256 filtry (tj. počet filtrů první vrstvy s multip
 \caption{Architektura CREPE, vliv multirezoluční vstupní konvoluční vrstvy.}\label{obr:crepe_multirozliseni}
 \end{figure}
 
-Zlepšení výsledků se pohybuje v řádu desetin procentních bodů, tedy není příliš vysoké. Zlepšení je nejvíce patrné v případě pěti různě širokých konvolučních vrstev, kde dosahuje $1.3$ procentního bodu. Analýzou výsledků přesnosti podle výšky noty se mi nepodařilo prokázat domněnku, že by konvoluce s více rozlišeními pomáhala u odhadu not vyšších frekvencí. Její přínos je malý a projevuje se na většině frekvenčních pásem.
+Zlepšení výsledků se pohybuje v řádu desetin procentních bodů, nejvíce patrné je v případě pěti různě širokých konvolučních vrstev, kde dosahuje $1.3$ procentního bodu. Analýzou výsledků přesnosti podle výšky noty se mi nepodařilo prokázat domněnku, že by konvoluce s více rozlišeními pomáhala u odhadu not vyšších frekvencí. Její přínos je malý a projevuje se na většině frekvenčních pásem.
 
+\subsection{Shrnutí experimentů provedených s architekturou CREPE}
+
+\textcolor{red}{napsat shrnutí}
 
 \section{Architektura WaveNet}
 
@@ -357,7 +365,7 @@ Pro výpočet odhadů výšky tónu sečteme všechna skip propojení, tento sou
 %     \caption{Vývoj ztrátové funkce při učení architektury \cite{Martak2018} pro extrakci melodie. Zatímco hodnoty pro trénovací množinu mají klesající tendenci, hodnoty na validační množině rostou, síť se velmi rychle přeučuje.}\label{obr:wavenet_overfit}
 % \end{figure}
 
-Po $20\,000$ iteracích s velikostí dávky 20 a parametrem learning rate $0.001$ síť dosahuje na validačních datech přesnost odhadu tónu $0.583$ (RPA) a přesnost odhadu tónu nezávisle na oktávě $0.692$ (RCA). V porovnání s výsledky architektury CREPE jsou tyto výsledky výrazně nižší, krom toho učení sítě trvá velmi dlouho (14 minut na 1000 iterací), zejména kvůli obrovské kapacitě a topologické komplexitě modelu ($2\,009\,728$ trénovatelných parametrů). Veliká kapacita modelu také způsobuje přeučení sítě, pokusíme se tedy zrychlit trénování a zabránit přeučení výrazným snížením počtu filtrů dilatačních a skip propojení ze 128 na 16, a použitím pouze jednoho dilatačního bloku. Také snížíme velikost trénovací dávky na 8 pro další zrychlení učení. Nová síť obsahuje 10 vrstev s dilatacemi $(1, 2, 4, 8, \dots, 512)$, a tedy $34\,736$ parametrů a dosahuje RPA $0.598$ a RCA $0.696$ po $100\,000$ iteracích při rychlosti trénování 30 sekund na 1000 iterací. Síť tedy dosahuje stejných výsledků ve výrazně kratším čase.
+Po $20\,000$ iteracích s velikostí dávky 20 a parametrem learning rate $0.001$ síť dosahuje na validačních datech přesnost odhadu tónu $0.583$ (RPA) a přesnost odhadu tónu nezávisle na oktávě $0.692$ (RCA). V porovnání s výsledky architektury CREPE jsou tyto výsledky výrazně nižší, krom toho učení sítě trvá velmi dlouho (14 minut na 1000 iterací), zejména kvůli topologické komplexitě modelu. Síť také v této konfiguraci vykazuje známky přeučení. Pokusíme se tedy zrychlit trénování a zabránit přeučení použitím pouze jednoho dilatačního bloku a snížením počtu filtrů dilatačních a skip propojení ze 128 na 16. Také snížíme velikost trénovací dávky na 8 pro další zrychlení učení. Nová síť obsahuje 10 vrstev s dilatacemi $(1, 2, 4, 8, \dots, 512)$, celkový počet trénovatelných parametrů se z $2\,009\,728$ snížil na $34\,736$. Tato síť dosahuje RPA $0.598$ a RCA $0.696$ po $100\,000$ iteracích při rychlosti trénování 30 sekund na 1000 iterací. Síť tedy dosahuje stejných výsledků ve výrazně kratším čase.
 
 Z předchozích experimentů na architektuře CREPE víme, že jemnější výstupní reprezentace pomáhá snížit počet chyb o půltón, upravíme tedy síť tak, aby na jeden půltón připadalo 5 výstupních složek vektoru, zmenšíme výstupní frekvenční rozsah a hodnoty cílového vektoru změníme z ostré predikce konkrétního tónu na \uv{rozmlžený} gaussián se směrodatnou odchylkou $18\,\rm centů$ (pro podrobnější popis viz \ref{sec:crepe}). Síť po této úpravě dosahuje RPA 0.629 a RCA 0.731 po $100\,000$ iteracích. 
 
@@ -366,7 +374,7 @@ Z předchozích experimentů na architektuře CREPE víme, že jemnější výst
     \caption{Úprava posledních vrstev WaveNet architektury.}\label{obr:wavenet_lastlayer}
 \end{figure}
 
-Předběžným hledáním výchozí architektury pro nadcházející sadu experimentů jsme došli k následujícím úpravám. Dilatované konvoluce ve všech vrstvách mají šířku 3 místo 2, jejich vstup tedy závisí na všech okolních vzorcích, nikoli jen na předchozích, jak je naznačeno na obrázku \ref{obr:wavenet_dilated}. Dále jsme odstranili konvoluční vrstvu, která zpracovává vstup, ten je tedy přímo zpracován dilatačním blokem. Ze skip propojení se zpracovává pouze poslední, nedochází ke sčítání všech, což je úprava, kterou pro přepis řeči používají původní autoři článku WaveNet \cite{Oord2016}. Tento výstup je následně zpracován pooling vrstvou a dvěmi konvolucemi se skoky (stride), viz obrázek \ref{obr:wavenet_lastlayer}. Tato síť dosahuje RPA 0.655 a RCA 0.759 po $100\,000$ iteracích a je základem pro následující experimenty.
+Předběžným hledáním výchozí architektury pro nadcházející sadu experimentů jsme došli k následujícím úpravám. Dilatované konvoluce ve všech vrstvách mají šířku 3 místo 2, jejich vstup tedy závisí na všech okolních vzorcích, nikoli jen na předchozích, jak je naznačeno na obrázku \ref{obr:wavenet_dilated}. Dále jsme odstranili konvoluční vrstvu, která zpracovává vstup, ten je tedy přímo zpracován dilatačním blokem. Ze skip propojení se zpracovává pouze poslední, nedochází ke sčítání všech, což je úprava, kterou pro přepis řeči používají původní autoři článku WaveNet \cite{Oord2016}. Tento výstup je následně zpracován pooling vrstvou a dvěmi konvolucemi se skoky (stride), viz obrázek \ref{obr:wavenet_lastlayer}. Tato síť dosahuje RPA 0.655 a RCA 0.759 po $100\,000$ iteracích a je základem pro následující experimenty. V těch se zaměřujeme na hledání způsobů úpravy architektury WaveNet. Upravujeme celkovou kapacitu sítě pomocí nastavení počtu filtrů v dilatačních blocích, dále šířku kontextu, který je síti pro odhad jednoho bodu výšky tónu k dispozici, pomocí nastavení počtu dilatačních vrstev, bloků a velikosti šířky kernelů dilatací. Prozkoumáme také předzpracování vstupu do dilatačních bloků a způsob zpracování jejich výstupu.
 
 \subsection{Vliv počtu filtrů dilatačních vrstev a skip propojení}
 
@@ -518,6 +526,7 @@ Tým \cite{Oord2016} používá pro předzpracování zvukového signálu před 
 Sítě, které mají možnost využít první konvoluce jako banky filtrů, dosahují výrazně horší přesnosti, než sítě s menší konvolucí. Přeskočení tohoto předzpracování však také není nejlepším nastavením pro tuto architekturu. Vhodná šířka první konvoluce se pohybuje kolem 8 vstupních vzorků, do takové šířky se vejde jedna perioda signálu frekvence $2000\,\rm Hz$, jinými slovy vrstva jistě nemůže zastávat ani z části funkci banky filtrů. Mohla by však popisovat sklon křivky vstupních dat, ze kterých se v dalších vrstvách dilatovaných bloků složí již celý frekvenční popis vstupu.
 
 \textcolor{red}{vizualizace první vrstvy? Co tam vlastně může být, když pomáhá šestnácti samplová konvoluce?}
+\textcolor{red}{Zase by to tady chtělo nějaké shrnutí pokusů s WaveNetem — odkud kam jste se s ním dostal. Začlo se tím, že se použily triky nalezené na pokusech s CREPE, potom se dělaly ještě nějaké triky s WaveNet-specific choices}
 
 % \subsection{Vliv návrhu posledních vrstev}
 
@@ -564,6 +573,8 @@ Vstupní CQT počítáme z původních audio souborů se vzorkovací frekvencí 
 
 Cílový výstup počítáme v souladu s implementacemi v předchozích sekcích, tedy použijeme normální rozdělení se střední hodnotou rovnou výšce znějící melodie a rozptylem 18 centů.
 
+\textcolor{red}{napsat signpost}
+
 \subsection{Harmonické transformace}
 
 Abychom prokázali pozitivní vliv harmonické transformace, natrénujeme tři sady modelů. Jednu sadu bez jakýchkoliv transformací, sadu s transformací s posunutím o $\pm 12$ půltónů (zachycení druhé harmonické složky) a třetí sadu s posunutím o $\pm 12$ a o $\pm 19$ půltónů (zachycení druhé a třetí harmonické složky). Vstupem všech sítí bude HCQT (implementovaný efektivně pomocí harmonických posunů), aby byl posouzen vliv transformací uvnitř sítě, nikoli také na vstupu.
@@ -573,7 +584,7 @@ Abychom prokázali pozitivní vliv harmonické transformace, natrénujeme tři s
 \caption{Detekce melodie, vliv počáteční pooling vrstvy.}\label{obr:spectrogram_harmonic_stacking}
 \end{figure}
 
-Na základě porovnání všech kombinací počtů filtrů a bloků na obrázku \ref{obr:spectrogram_harmonic_stacking} je jisté, že použití harmonické transformace uvnitř konvolučních sítí pomáhá zvyšovat přesnost. U všech testovaných šířek a hloubek sítí došlo k několikaprocentnímu nárustu přesnosti přepisu. Zajímavé je, že k tomuto nárustu došlo přidáním pouze dvou posunutí --- posunutí o oktávu v ose frekvence nahoru a dolů. Přidáním další zachycené harmonické frekvence sice pomůžeme zvýšit přesnost modelů s menší kapacitou, modelům s vyšší kapacitou již úprava nepomáhá. 
+Na základě porovnání všech kombinací počtů filtrů a bloků na obrázku \ref{obr:spectrogram_harmonic_stacking} je jisté, že použití harmonické transformace uvnitř konvolučních sítí pomáhá zvyšovat přesnost. U všech testovaných šířek a hloubek sítí došlo k několikaprocentnímu nárustu přesnosti přepisu. Ukazuje se, že k tomuto nárustu došlo přidáním pouze dvou posunutí --- posunutí o oktávu v ose frekvence nahoru a dolů. Přidáním další zachycené harmonické frekvence sice pomůžeme zvýšit přesnost modelů s menší kapacitou, modelům s vyšší kapacitou již úprava nepomáhá. 
 
 \subsection{Parametr \texttt{hop\_size}}
 
@@ -588,20 +599,20 @@ Výsledek prezentovaný na obrázku \ref{obr:spectrogram_512_vs_256} je potenci�
 
 \subsection{Vícekanálový vstup CQT}
 
-Při výpočtu CQT spektrogramu můžeme specifikovat parametr \texttt{filter\_scale}, což je koeficient ovlivňující velikost okna transformace. S menší velikostí okna se pojí lepší časové rozlišení, s větší naopak lepší frekvenční. Otestujeme proto sítě, které mají na vstupu k dispozici více variant CQT spektrogramu. Další možností úpravy vstupní spektrogramu je druh práhování nastavitelný parametrem \texttt{top\_db} ve funkci \texttt{librosa.core.amplitude\_to\_db}, prozkoumáme i tato nastavení. Vstupní vícekanálový spektrogram se proto bude skládat ze tří spektrogramů s dvojicemi parametrů \texttt{filter\_scale}, \texttt{top\_db}: (0.5, 60), (1, 80), (2, 100).
+Při výpočtu CQT spektrogramu můžeme specifikovat parametr \texttt{filter\_scale}, což je koeficient ovlivňující velikost okna transformace. S menší velikostí okna se pojí lepší časové rozlišení, s větší naopak lepší frekvenční. Otestujeme proto sítě, které mají na vstupu k dispozici více variant CQT spektrogramu. Další možností úpravy vstupního spektrogramu je druh práhování nastavitelný parametrem \texttt{top\_db} ve funkci \texttt{librosa.core.amplitude\_to\_db}, prozkoumáme i tato nastavení. Vstupní vícekanálový spektrogram se proto bude skládat ze tří spektrogramů s dvojicemi parametrů \texttt{filter\_scale}, \texttt{top\_db}: (0.5, 60), (1, 80), (2, 100).
 
 \begin{figure}[h]\centering
     \includegraphics[scale=0.6]{../img/figures/spectrogram_fscqt}
 \caption{Vliv vstupního vícekanálového CQT}\label{obr:spectrogram_fscqt}
 \end{figure}
 
-Výsledné zlepšení se pohybuje v desetinách procentního bodu u většiny testovaných konfigurací, není tedy vysoké. Na druhou stranu vstupní reprezentace je nezávislá na architektuře zbytku modelu, tudíž je zde naděje, že toto zlepšení bude nezávislé na zvolené architektuře. Použití tohoto vstupu by tedy mohlo vylepšit i výsledky nejlepších objevených architektur.
+Výsledné zlepšení se pohybuje v desetinách procentního bodu u většiny testovaných konfigurací. Na druhou stranu vstupní reprezentace je nezávislá na architektuře zbytku modelu, tudíž je zde naděje, že toto zlepšení bude nezávislé na zvolené architektuře. Použití tohoto vstupu by tedy mohlo vylepšit i výsledky nejlepších objevených architektur.
 
-\subsection{Výška konvolucí}
+% \subsection{Výška konvolucí}
 
-Otestujeme vliv velikosti konvoluce na frekvenční ose změnou velikosti kernelu z 1x3 na 1x4 a na 1x5 (viz obrázek \ref{obr:hcnn_layer}). Protože na jeden půltón připadá v používané vstupní reprezentaci 5 frekvenčních složek, volba větší konvoluce se zdá logická. Na druhou stranu dvě následující vrstvy 1x3 mají receptivní pole ekvivalentní velikosti při menším počtu.
+% Otestujeme vliv velikosti konvoluce na frekvenční ose změnou velikosti kernelu z 1x3 na 1x4 a na 1x5 (viz obrázek \ref{obr:hcnn_layer}). Protože na jeden půltón připadá v používané vstupní reprezentaci 5 frekvenčních složek, volba větší konvoluce se zdá logická. Na druhou stranu dvě následující vrstvy 1x3 mají receptivní pole ekvivalentní velikosti při menším počtu.
 
-\textcolor{red}{trénuje se}
+% \textcolor{red}{trénuje se}
 
 \subsection{Kontext}
 
@@ -664,6 +675,13 @@ Konfigurace &                   Kontext &   RPA &   RCA \\
 \end{figure}
 
 Nejlepší výsledek překvapivě podává velmi mělká architektura se čtyřmi bloky, jde o konfiguraci filtrů a bloky \texttt{f16-s4} a o   -3,-3,-3,-1-d-8,-4,-2,-1 
+
+% \subsection{Augmentace vstupních spektrogramů}
+
+% \begin{figure}[h]\centering
+%     \includegraphics[scale=0.6]{../img/figures/spectrogram_specaugment}
+% \caption{Vliv úpravy architektury ovlivňující receptivní pole modelu.}\label{obr:spectrogram_specaugment}
+% \end{figure}
 
 
 % \section{Detekce melodie}

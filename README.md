@@ -1,20 +1,30 @@
 # Bakalářská práce
 
-## TODO do příští sch
+## TODO do odevzdání
 
-dnes:
-    - popsat voicing
-        - přetrénovat s HCNN výsledky
-    - výsledky
-    - hcnn
-    - večer dát echo Hajičovi
+- asi dát Flask do containeru
+- jako alespoň dát načítací kolečka do apliakce
+- chyba s orchsetem
+Traceback (most recent call last):
+  File "spectrogram.py", line 265, in <module>
+    common.main(sys.argv[1:], construct, parse_args)
+  File "/home/jirka/music-transcription/common.py", line 520, in main
+    network, train_dataset, validation_datasets, test_datasets = construct(args)
+  File "spectrogram.py", line 251, in construct
+    train_dataset, test_datasets, validation_datasets = common.prepare_datasets(args.datasets, args, preload_fn, dataset_transform, dataset_transform_train)
+  File "/home/jirka/music-transcription/common.py", line 477, in prepare_datasets
+    orchset_test_dataset = datasets.AADataset(orchset_test, args, dataset_transform)
+  File "/home/jirka/music-transcription/datasets/dataset.py", line 43, in __init__
+    raise RuntimeError("Window size is bigger than the audio.")
+RuntimeError: Window size is bigger than the audio.
 
-pátek: 
-
-- výsledky
 - github
     - readme tak, abych mohl navzázet za 5 let
     - příkladové skripty
+
+ÚPRAVY HAJIČ
+- 4.1.1Formát v ̋stupu v sout ûi MIREX
+    - duplicitní, sjednotit
 
 ## Progress
 
@@ -29,11 +39,13 @@ pátek:
 | Závěr       | 0%   | 0%      | 0%      |
 
 Typografické dodělávky, lahůdky a drobnosti:
+- ! zkontrolovat, jestli budou dva spektrogramy v úvodu na dvou různých stránkách
 - opravit skloňování citací
 - přidat nezalomitelné mezery
 - zbavit se černých obdélníčků
 - F0 nebo F_0?
-
+- seznam zkratek!
+- footnote za interpunkcí
 - obrázky barevně!
 
 - buď, nebo = čárka!
@@ -67,7 +79,21 @@ uvod.tex, 130 -  V této práci se pokusíme navázat na zmiňované práce a ot
 - related work
     - (Durrieu)
     - (krátký popis CREPE a Wavenetu, protože je používám v experimentech)
+    - ! popsat Hannovo okno
+    - ! opravit barvy v obrázku 2.4
     - taky popis neuronových sítí, convnetů, asi prostě bohužel všeho, co používám v experimentech
+        - architektura
+            = topologie
+        - hyperparametr
+        - kapacita sítě
+        - konvoluční vrstva
+            - filtry
+            - dilatace
+            - recepční pole
+                - recepční pole někkolika vrtev za esbou
+        - pooling vrstva
+        - dropout vrstva
+        - batchnorm
 
 - datasety
     "datasety mají mnohem delší poločas rozpadu, jejich pochopení je zásadní k interpretaci výsledků, jejich vznik formuje směr, kterým se výzkum ubírá"
@@ -84,6 +110,7 @@ uvod.tex, 130 -  V této práci se pokusíme navázat na zmiňované práce a ot
     - (popsat Prostředí pro spouštění, replikaci a evaluaci experimentů)
         - viz `experimenty.md`
 
+    - !! popsat práhování
     - ! zlepšit obrázek CREPE
     - víc obrázků! K experimentům
 
