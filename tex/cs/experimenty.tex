@@ -1,4 +1,4 @@
-\chapter{Experimenty}\label{experimenty}
+\chapter{Experimenty}\label{cha:experimenty}
 
 V této kapitole prezentujeme návrhy nových architektur hlubokých neuronových sítí pro extrakci melodie a jejich výsledky na validační množině. Modely byly trénované nad datasetem MedleyDB. Data byla rozdělena na trénovací, validační a testovací množinu tak, aby skladby od jednoho interpreta náležely právě do jedné z množin. Využili jsme existujícího rozdělení používaného v článcích \cite{Bittner2017} a \cite{DBasaranSEssid2018}, validační i testovací výsledky jsou tedy díky tomu porovnatelné s výsledky uvedenými v článcích.
 
@@ -92,7 +92,7 @@ Po jedné epoše trénování model dosáhl na testovací množině $98.6\%$ př
     RPA  & 10 centů & 0.937 & 0.909 \\
     \bottomrule
     \end{tabular}
-\caption{Výsledky pokusu o replikaci. Přesnosti nejsou přímo srovnatelné kvůli různým evaluačním strategiím.}\label{tab:crepe_replicate}
+\caption{Výsledky pokusu o replikaci architektury CREPE pro sledování jednohlasu. Přesnosti nejsou přímo srovnatelné kvůli různým evaluačním strategiím.}\label{tab:crepe_replicate}
 
 \end{table}
 
@@ -289,7 +289,7 @@ První vrstvu s kernelem s 256 filtry (tj. počet filtrů první vrstvy s multip
     8                   & 32  & 32  & 32  & 32 & 32 & 32 & 32 & 32 & 2000448 \\
     \bottomrule
     \end{tabular}
-\caption{Počet filtrů prvních vrstev multirezoluční vstupní konvoluční vrstvy.}\label{tab:crepe_velikosti_multirozliseni}
+\caption{Počet filtrů prvních vrstev multirezoluční vstupní konvoluční vrstvy v architektuře CREPE.}\label{tab:crepe_velikosti_multirozliseni}
 \end{table}
 
 \begin{table}[h!]
@@ -318,11 +318,11 @@ První vrstvu s kernelem s 256 filtry (tj. počet filtrů první vrstvy s multip
 
 Zlepšení výsledků se pohybuje v řádu desetin procentních bodů, nejvíce patrné je v případě pěti různě širokých konvolučních vrstev, kde dosahuje $1.3$ procentního bodu. Analýzou výsledků přesnosti podle výšky noty se mi nepodařilo prokázat domněnku, že by konvoluce s více rozlišeními pomáhala u odhadu not vyšších frekvencí. Její přínos je malý a projevuje se na většině frekvenčních pásem.
 
-\subsection{Shrnutí experimentů provedených s architekturou CREPE}
+% \subsection{Shrnutí experimentů provedených s architekturou CREPE}
 
-\textcolor{red}{napsat shrnutí}
+% \textcolor{red}{napsat shrnutí}
 
-\section{Architektura WaveNet}
+\section{Architektura WaveNet}\label{sec:wavenet}
 
 Generativní model WaveNet popsaný týmem \cite{Oord2016} je architektura navržená pro generování zvukového signálu. Autoři však v článku zmiňují, že se architekturu pokusili využít i pro převod mluvené řeči na text (dataset TIMIT), a podařilo se jim dosáhnout výsledků srovnatelných se state-of-the-art. Architektura spočívá ve vrstvení dilatovaných konvolucí s rozšiřujícím se rozsahem. Díky exponenciálně rostoucím dilatacím se také exponenciálně zvětšuje receptivní pole jednotlivých konvolučních vrstev. Díky této vlastnosti pak například stačí pro pokrytí 1024 vzorků vstupu pouze 9 vrstev s šířkou kernelu 2 a dilatacemi 1,2,4,8 ... 512. Pokud bychom stejného receptivního pole chtěli dosáhnout pomocí obvyklých konvolucí počet potřebných vrstev by byl lineární vzhledem k šířce pole. Vrstvení konvolucí je porovnáno na obrázcích \ref{obr:wavenet_conv} a \ref{obr:wavenet_dilated}. Síť tedy velmi snadno pokryje široký kontext, což je vlastnost, která je pro zpracování zvukového signálu užitečná.
 
@@ -340,7 +340,7 @@ Generativní model WaveNet popsaný týmem \cite{Oord2016} je architektura navr�
 
 Síť se pro Music Information Retrieval úlohy od svého zveřejnění příliš neuchytila. Její použití se v oblasti hudby se omezuje na generativní úlohy (\cite{Hawthorne2018a}, \cite{Yang2017}, \cite{Engel2017} a další), případně pro source-separation \citep{Stoller2018}. Jediný publikovaný pokus s použitím architektury WaveNet pro příbuznou úlohu kompletního automatického přepisu podnikli \cite{Martak2018} s použitím datasetu MusicNet. Jejich model však netestovali na standardních evaluačních datasetech ze soutěže MIREX, tudíž není zřejmé, jakých výsledků v porovnání s existujícími metodami autoři dosáhli.
 
-
+V dalších sekcích se pokusíme nejprve spustit model \cite{Martak2018} na melodická data. Následně se pokoušíme tento výchozí výsledek zlepšit pomocí úpravy architektury WaveNet. Upravujeme celkovou kapacitu sítě pomocí nastavení počtu filtrů v dilatačních blocích. Dále pak měníme šířku kontextu, který je síti pro odhad jednoho bodu výšky tónu k dispozici, pomocí nastavení počtu dilatačních vrstev, bloků a velikosti šířky kernelů dilatací. Prozkoumáme také předzpracování vstupu do dilatačních bloků a způsob zpracování jejich výstupu.
 
 \begin{figure}[h]\centering
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/wavenet_arch}
@@ -350,20 +350,9 @@ Síť se pro Music Information Retrieval úlohy od svého zveřejnění příli�
 
 \subsection{Baseline na základě \cite{Martak2018}}
 
-% python -u wavenet.py --evaluate --filter_width 2 --initial_filter_width 2 --max_dilation 512 --stack_number 2 --residual_channels 128 --skip_channels 128 \
-%     --batch_size 20 --min_note 0 --note_range 128 --bins_per_semitone 1 --annotation_smoothing 0 \
-%     --iterations 100000 --learning_rate_decay_steps 10000 --learning_rate_decay 0.8 --annotations_per_window 5 --context_width 2100 --use_biases --frame_width 160 \
-%     --skip add --postprocessing "conv_f128_k1_s1_Psame_arelu--conv_f128_k1_s1_Psame--avgpool_p160_s160_Psame"
-
-
 Pro extrakci melodie využijeme jako výchozí model upravenou architekturu od \cite{Martak2018}, jejíž struktura je naznačena na obrázku \ref{obr:wavenet_arch}. Vstupem je okno velikosti 4894 vzorků audia převzorkovaného na $16\,\rm kHz$, toto okno nejprve zpracujeme standardní konvoluční vrstvou s šířkou kernelu 2 a 128 výstupními kanály, takto zpracovaný signál dále prochází dvěma bloky po desíti vrstvách, které obsahují dilatované konvoluce. Vrstvy obsahují dvě dilatované konvoluce, jednu s aktivací hyperbolickým tangens a jednu s aktivační funkcí sigmoid. Výstupy těchto konvolucí jsou po složkách vynásobeny, díky čemuž konvoluce s aktivací sigmoid funguje jako nastavitelná propust signálu (Gated activation unit, \cite{Oord2016a}), poté je výstup opět zpracován dvěmi konvolucemi, tentokrát se šířkou kernelu 1x1. Výstup první sečteme s původním vstupem celé vrstvy (jedná se o residuální propojení poprvé popsané v práci \cite{He2015}) a zpracujeme ho nadcházející vrstvou. Výstup druhé konvoluce (autoři tuto cestu nazývají \emph{skip propojení}) zařadíme mezi výstupy skip propojení všech ostatních vrstev.
 
 Pro výpočet odhadů výšky tónu sečteme všechna skip propojení, tento součet zpracujeme dvěma konvolucemi, druhá z nich má na výstupu 128 kanálů zpracovaných sigmoidou, což odpovídá rozsahu odhadovaných not. Jelikož všechny popsané transformace zachovávají šířku vstupu, dostáváme po této konvoluci odhady výšek not pro každý vstupní vzorek zvuku, taková anotace je zbytečně podrobná, tudíž výsledné anotace podvzorkujeme pomocí pooling vrstvy počítající průměr hodnot.
-
-% \begin{figure}[h]\centering
-%     \includegraphics[scale=0.6]{../img/figures/wavenet_overfit}
-%     \caption{Vývoj ztrátové funkce při učení architektury \cite{Martak2018} pro extrakci melodie. Zatímco hodnoty pro trénovací množinu mají klesající tendenci, hodnoty na validační množině rostou, síť se velmi rychle přeučuje.}\label{obr:wavenet_overfit}
-% \end{figure}
 
 Po $20\,000$ iteracích s velikostí dávky 20 a parametrem learning rate $0.001$ síť dosahuje na validačních datech přesnost odhadu tónu $0.583$ (RPA) a přesnost odhadu tónu nezávisle na oktávě $0.692$ (RCA). V porovnání s výsledky architektury CREPE jsou tyto výsledky výrazně nižší, krom toho učení sítě trvá velmi dlouho (14 minut na 1000 iterací), zejména kvůli topologické komplexitě modelu. Síť také v této konfiguraci vykazuje známky přeučení. Pokusíme se tedy zrychlit trénování a zabránit přeučení použitím pouze jednoho dilatačního bloku a snížením počtu filtrů dilatačních a skip propojení ze 128 na 16. Také snížíme velikost trénovací dávky na 8 pro další zrychlení učení. Nová síť obsahuje 10 vrstev s dilatacemi $(1, 2, 4, 8, \dots, 512)$, celkový počet trénovatelných parametrů se z $2\,009\,728$ snížil na $34\,736$. Tato síť dosahuje RPA $0.598$ a RCA $0.696$ po $100\,000$ iteracích při rychlosti trénování 30 sekund na 1000 iterací. Síť tedy dosahuje stejných výsledků ve výrazně kratším čase.
 
@@ -374,7 +363,7 @@ Z předchozích experimentů na architektuře CREPE víme, že jemnější výst
     \caption{Úprava posledních vrstev WaveNet architektury.}\label{obr:wavenet_lastlayer}
 \end{figure}
 
-Předběžným hledáním výchozí architektury pro nadcházející sadu experimentů jsme došli k následujícím úpravám. Dilatované konvoluce ve všech vrstvách mají šířku 3 místo 2, jejich vstup tedy závisí na všech okolních vzorcích, nikoli jen na předchozích, jak je naznačeno na obrázku \ref{obr:wavenet_dilated}. Dále jsme odstranili konvoluční vrstvu, která zpracovává vstup, ten je tedy přímo zpracován dilatačním blokem. Ze skip propojení se zpracovává pouze poslední, nedochází ke sčítání všech, což je úprava, kterou pro přepis řeči používají původní autoři článku WaveNet \cite{Oord2016}. Tento výstup je následně zpracován pooling vrstvou a dvěmi konvolucemi se skoky (stride), viz obrázek \ref{obr:wavenet_lastlayer}. Tato síť dosahuje RPA 0.655 a RCA 0.759 po $100\,000$ iteracích a je základem pro následující experimenty. V těch se zaměřujeme na hledání způsobů úpravy architektury WaveNet. Upravujeme celkovou kapacitu sítě pomocí nastavení počtu filtrů v dilatačních blocích, dále šířku kontextu, který je síti pro odhad jednoho bodu výšky tónu k dispozici, pomocí nastavení počtu dilatačních vrstev, bloků a velikosti šířky kernelů dilatací. Prozkoumáme také předzpracování vstupu do dilatačních bloků a způsob zpracování jejich výstupu.
+Předběžným hledáním výchozí architektury pro nadcházející sadu experimentů jsme došli k následujícím úpravám. Dilatované konvoluce ve všech vrstvách mají šířku 3 místo 2, jejich vstup tedy závisí na všech okolních vzorcích, nikoli jen na předchozích, jak je naznačeno na obrázku \ref{obr:wavenet_dilated}. Dále jsme odstranili konvoluční vrstvu, která zpracovává vstup, ten je tedy přímo zpracován dilatačním blokem. Ze skip propojení se zpracovává pouze poslední, nedochází ke sčítání všech, což je úprava, kterou pro přepis řeči používají původní autoři článku WaveNet \cite{Oord2016}. Tento výstup je následně zpracován pooling vrstvou a dvěmi konvolucemi se skoky (stride), viz obrázek \ref{obr:wavenet_lastlayer}. Tato síť dosahuje RPA 0.655 a RCA 0.759 po $100\,000$ iteracích a je základem pro následující experimenty. 
 
 \subsection{Vliv počtu filtrů dilatačních vrstev a skip propojení}
 
@@ -441,7 +430,7 @@ V architektuře modelu jsme pro tento experiment provedli změnu ve zpracování
 \caption{Architektura WaveNet, systematické prohledávání počtu dilatačních vrstev a bloků, vlevo hodnoty RPA, vpravo RCA.}\label{obr:wavenet_stacks_gridsearch}
 \end{figure}
 
-Z tabulky lze dojít k pozorování, že přidávání počtu vrstev zvyšuje výslednou přesnost víceméně vždy, to neplatí o počtu bloků, u kterých se zdá, že nejvhodnější počet je 2. Pokud se zaměříme na srovnání výsledků s podobným dosahem, zdá se že výsledky jsou poměrně podobné, zejména pro širší dosahy, pro kratší se zdá lepší využít spíše více vrstev než více bloků.
+Z tabulky lze dojít k pozorování, že přidávání počtu vrstev zvyšuje výslednou přesnost víceméně vždy, to neplatí o počtu bloků, u kterých se zdá, že nejvhodnější počet je 2. Pokud se zaměříme na srovnání výsledků s podobným dosahem, zdá se že výsledky jsou poměrně podobné, zejména pro širší dosahy, pro kratší se zdá lepší využít spíše více vrstev než více bloků. Zajím
 
 \subsection{Vliv velikosti šířky kernelu dilatací}
 
@@ -552,6 +541,9 @@ V práci prezentujeme také novou architekturu pro zpracování harmonicky struk
 Dalším přínosem její práce je popis vstupní spektrální reprezentace HCQT. CQT spektrogramy mají logaritmickou osu frekvence, tato reprezentace má tu vlastnost, že dvě libovolné harmonické frekvence jednoho tónu mají na spektrogramu mezi sebou konstantní vzdálenost, nezávislou na fundamentální frekvenci. HCQT spočívá ve výpočtu několika CQT spektrogramů, jejichž frekvenční rozsahy jsou vzájemně posunuty právě o tyto konstatní vzdálenosti. Pokud pak tyto spektrogramy poskládáme za sebe v nové ose kolmé na osu frekvence a času, harmonické frekvence se překryjí (viz obrázek \ref{obr:hcqt}). Tento vícekanálový spektrogram pak může sloužit jako vstup pro konvoluční vrstvu, která má při výpočtu jedné frekvenční složky k dispozici také informace o souvisejících harmonických složkách.
 
 Z této myšlenky úpravy vstupní reprezentace pro rozšiřování receptivního pole konvoluce na související harmonické složky vychází naše architektura HCNN. Síť je koncipována jako obvyklé vrstvení konvolučních vrstev, každému konvolučnímu bloku však předchází úprava vstupu takovým způsobem, aby do výpočtu nadcházející konvoluce byly zahrnuty i potenciální harmonické složky dané frekvence. Naše metoda tedy nepracuje pouze s výpočtem různých CQT spektrogramů na vstupu jako práce \cite{Bittner2017}, upravujeme totiž mezivýsledky všech vrstev v síti a naše transformace spočívá v pouhém posunutí, nikoli přepočítávání. Na obrázku \ref{obr:hcnn_harmonic_stacking} tuto úpravu vstupu znázorňujeme; výstup předchozí konvoluční vrstvy duplikujeme a vzájemně posuneme o pevně dané počty půltónů tak, aby harmonicky související složky byly umístěny \uv{nad sebou} v dimenzi kanálů. Následně výstupy v této dimenzi spojíme a chybějící složky doplníme nulami.
+
+Tato úprava přináší dvě výhody. Jednak síť může využít relevantní harmonické informace v každé vrstvě a ne pouze na vstupu, což vede k lepší přesnosti modelů. Také ale můžeme díky harmonické transformaci velmi výrazně zmenšit samotné konvoluční vrstvy. Zatímco konvoluční vrstvy v architektuře \cite{Bittner2017} používají velké kernely (zejména pak ve frekveční ose) a na výstupu vrací velké množství kanálů, aby byly schopná zachytit vzdálené frekvenční závislosti, díky struktuře HCNN takto velké konvoluční vrstvy nejsou potřeba. Ve výsledku naše testované architektury obsahují řádově desetkrát méně parametrů a trénují se v rámci desítek až stovek minut.
+
 \begin{figure}[h]\centering
     \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/hcnn_harmonic_stacking_2}
 \caption{Diagram transformace vstupu konvoluční vrstvy pro zachycení harmonických souvislostí.}\label{obr:hcnn_harmonic_stacking}
@@ -569,19 +561,19 @@ Z této myšlenky úpravy vstupní reprezentace pro rozšiřování receptivníh
 
 Zbývající prvky architektury již čerpají ze zavedených postupů. Diagram \ref{obr:hcnn_layer} znázorňuje strukturu jednoho konvolučního bloku; po každé konvoluční vrstvě s aktivační funkcí ReLU následuje dropout vrstva a kolem konvoluce vedeme residuální propojení pro umožnění trénování hlubokých architektur. Celková architektura (obrázek \ref{obr:hcnn_arch}) pak spočívá v harmonické transformaci vstupní CQT (čímž efektivně vytvoříme reprezentaci odpovídající HCQT bez přepočítávání každého CQT zvlášť), aplikaci několika konvolučních bloků a aplikaci konvoluce 1x1 pro transformaci výstupu zpět na jeden dvoudimenzionání výstup.
 
-Vstupní CQT počítáme z původních audio souborů se vzorkovací frekvencí $44\,100\,\rm Hz$, používáme implementaci algoritmu z balíku \texttt{librosa} a parametry transformace jsou: počáteční frekvence (\texttt{fmin}) = 32.7 (Tón C1), počet složek na oktávu (\texttt{bins\_per\_octave}) = 60 (vychází 5 složek na půltón, jako v předchozích sekcích), počet složek (\texttt{n\_bins}) = 540 (vychází na 9 oktáv, po první harmonické transformaci však spektrogram ořízneme na výšku 360, zbylé složky jsou přítomny, aby zaplnily chybějící hodnoty při harmonických posunech), \texttt{hop\_size}=256 (tudíž jedno anotační okno MedleyDB odpovídá jednomu sloupci vstupního spektrogramu). Dále pak hodnoty vstupu převedeme na logaritmickou škálu dBFS (funkce \texttt{librosa.core.amplitude\_to\_db}).
+Vstupní CQT počítáme z původních audio souborů se vzorkovací frekvencí $44\,100\,\rm Hz$, používáme implementaci algoritmu z balíku \texttt{librosa} a parametry transformace jsou: počáteční frekvence (\texttt{fmin}) = 32.7 (Tón C1), počet složek na oktávu (\texttt{bins\_per\_octave}) = 60 (vychází 5 složek na půltón, jako v předchozích sekcích), počet složek (\texttt{n\_bins}) = 540 (vychází na 9 oktáv, po první harmonické transformaci však spektrogram ořízneme na výšku 360, zbylé složky jsou přítomny, aby zaplnily chybějící hodnoty při harmonických posunech), \texttt{hop\_size}=256 (tudíž jedno anotační okno MedleyDB odpovídá jednomu sloupci vstupního spektrogramu). Dále pak hodnoty vstupu převedeme na logaritmickou škálu dBFS (funkce \texttt{librosa.core.amplitude\_to\_db}). 
 
 Cílový výstup počítáme v souladu s implementacemi v předchozích sekcích, tedy použijeme normální rozdělení se střední hodnotou rovnou výšce znějící melodie a rozptylem 18 centů.
 
-\textcolor{red}{napsat signpost}
+V následujících experimentech nejprve prokážeme užitečnost aplikace harmonické transformace uvnitř sítí a nalezneme vhodnou hloubku a kapacitu modelů, dále prezentujeme jednu z limitací vstupní reprezentace práce \cite{Bittner2017} a pokusíme se navrhnout vlastní rozšíření vstupní reprezentace. V závěru se pokusíme rozšířit sítí zpracovávaný kontext a zběžně otestujeme i možnost použití augmentace vstupních spektrogramů.
 
 \subsection{Harmonické transformace}
 
 Abychom prokázali pozitivní vliv harmonické transformace, natrénujeme tři sady modelů. Jednu sadu bez jakýchkoliv transformací, sadu s transformací s posunutím o $\pm 12$ půltónů (zachycení druhé harmonické složky) a třetí sadu s posunutím o $\pm 12$ a o $\pm 19$ půltónů (zachycení druhé a třetí harmonické složky). Vstupem všech sítí bude HCQT (implementovaný efektivně pomocí harmonických posunů), aby byl posouzen vliv transformací uvnitř sítě, nikoli také na vstupu.
 
 \begin{figure}[h!]\centering
-    \includegraphics[scale=0.65]{../img/figures/spectrogram_harmonic_stacking}
-\caption{Detekce melodie, vliv počáteční pooling vrstvy.}\label{obr:spectrogram_harmonic_stacking}
+    \includegraphics[scale=0.55]{../img/figures/spectrogram_harmonic_stacking}
+\caption{Architektura HCNN, Detekce melodie, vliv počáteční pooling vrstvy.}\label{obr:spectrogram_harmonic_stacking}
 \end{figure}
 
 Na základě porovnání všech kombinací počtů filtrů a bloků na obrázku \ref{obr:spectrogram_harmonic_stacking} je jisté, že použití harmonické transformace uvnitř konvolučních sítí pomáhá zvyšovat přesnost. U všech testovaných šířek a hloubek sítí došlo k několikaprocentnímu nárustu přesnosti přepisu. Ukazuje se, že k tomuto nárustu došlo přidáním pouze dvou posunutí --- posunutí o oktávu v ose frekvence nahoru a dolů. Přidáním další zachycené harmonické frekvence sice pomůžeme zvýšit přesnost modelů s menší kapacitou, modelům s vyšší kapacitou již úprava nepomáhá. 
@@ -591,19 +583,19 @@ Na základě porovnání všech kombinací počtů filtrů a bloků na obrázku 
 Metoda \cite{Bittner2017} pracuje se spektrogramy CQT vypočítanými s velikostí skoku $\approx 11\,\rm ms$. Data MedleyDB, která v práci používáme, jsou však anotována s velikostí skoku $\approx 5.8\,\rm ms$. To znamená, že při trénování musíme anotace v trénovací množině MedleyDB podvzorkovat a podobně při vyhodnocování výsledků sítě musíme výstup převzorkovat zpět na původní časové rozlišení datasetu. V obou případech převzorkování můžeme ztratit informace, které se projeví v horší výsledné přesnosti. Je také otázkou, zda-li je nejlepší postup, pokud síť budeme trénovat na neoriginálních, převzorkovaných datech. Na druhou stranu výhodou většího skoku je větší receptivní pole konvoluce, kernel o šířce větší než 1 má na podvzorkovaných datech dvojnásobný dosah. Tento efekt lze nicméně napodobit nastavením dvojnásobné dilatace konvoluce. Na experimentech s kernely šířky 1 posoudíme dopad převzorkování bez této zmiňované výhody.
 
 \begin{figure}[h]\centering
-    \includegraphics[scale=0.6]{../img/figures/spectrogram_512_vs_256}
-\caption{Vliv velikosti skoku pro výpočet vstupního spektrogramu}\label{obr:spectrogram_512_vs_256}
+    \includegraphics[scale=0.55]{../img/figures/spectrogram_512_vs_256}
+\caption{Architektura HCNN, Vliv velikosti skoku pro výpočet vstupního spektrogramu}\label{obr:spectrogram_512_vs_256}
 \end{figure}
 
 Výsledek prezentovaný na obrázku \ref{obr:spectrogram_512_vs_256} je potenciálně využitelný i pro metodu \cite{Bittner2017}. Je možné, že pokud se původní architektura přetrénuje na datech s menším \texttt{hop\_size}, výsledky sítí se také zvýší, jako v našem případě.
 
-\subsection{Vícekanálový vstup CQT}
+\subsection{Vícekanálový vstup CQT}\label{exp:hcnn_multichannel}
 
 Při výpočtu CQT spektrogramu můžeme specifikovat parametr \texttt{filter\_scale}, což je koeficient ovlivňující velikost okna transformace. S menší velikostí okna se pojí lepší časové rozlišení, s větší naopak lepší frekvenční. Otestujeme proto sítě, které mají na vstupu k dispozici více variant CQT spektrogramu. Další možností úpravy vstupního spektrogramu je druh práhování nastavitelný parametrem \texttt{top\_db} ve funkci \texttt{librosa.core.amplitude\_to\_db}, prozkoumáme i tato nastavení. Vstupní vícekanálový spektrogram se proto bude skládat ze tří spektrogramů s dvojicemi parametrů \texttt{filter\_scale}, \texttt{top\_db}: (0.5, 60), (1, 80), (2, 100).
 
 \begin{figure}[h]\centering
-    \includegraphics[scale=0.6]{../img/figures/spectrogram_fscqt}
-\caption{Vliv vstupního vícekanálového CQT}\label{obr:spectrogram_fscqt}
+    \includegraphics[scale=0.55]{../img/figures/spectrogram_fscqt}
+\caption{Architektura HCNN, Vliv vstupního vícekanálového CQT}\label{obr:spectrogram_fscqt}
 \end{figure}
 
 Výsledné zlepšení se pohybuje v desetinách procentního bodu u většiny testovaných konfigurací. Na druhou stranu vstupní reprezentace je nezávislá na architektuře zbytku modelu, tudíž je zde naděje, že toto zlepšení bude nezávislé na zvolené architektuře. Použití tohoto vstupu by tedy mohlo vylepšit i výsledky nejlepších objevených architektur.
@@ -616,82 +608,126 @@ Výsledné zlepšení se pohybuje v desetinách procentního bodu u většiny te
 
 \subsection{Kontext}
 
-Doposud jsme trénovali sítě, které pro výpočet salience uvažovaly pouze jedno okno vstupního CQT, následující sadou experimentů se pokusíme prozkoumat možnosti zvětšení tohoto kontextu. Všechny úpravy spočívají ve změně konvoluční vrstvy v blocích architektury (viz obrázek \ref{obr:hcnn_layer})
+Doposud jsme trénovali sítě, které pro výpočet salience uvažovaly pouze jedno okno vstupního CQT. Tyto sítě pro odhad výšky měly k dispozici pouze okno šířky $\approx 5.8\,\rm ms$. Následující sadou experimentů se pokusíme prozkoumat možnosti zvětšení tohoto kontextu. Všechny úpravy spočívají ve změnách konvolučních vrstev v blocích architektury (viz obrázek \ref{obr:hcnn_context_archs}), konkrétně nastavujeme velikost konvoluce z 1x3 na jiné hodnoty. Také prozkoumáváme možnost využití dilatovaných konvolucí, jejichž princip vysvětlujeme v sekci \nameref{sec:wavenet}, které umožňují snadno zvětšovat zpracovávaný kontext pomocí menšího počtu vrstev než s použitím obvyklých konvolucí.
 
-\textcolor{red}{dopsat}
+\begin{figure}[h]\centering
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/hcnn_context_archs_4}
+\caption{Úpravy architektury HCNN z obrázku \ref{obr:hcnn_arch} pro rozšíření uvažovaného kontextu.}\label{obr:hcnn_context_archs}
+\end{figure}
 
-\begin{table}[h!]
+Protože v předchozích experimentech dosahujeme vysoké úspěšnosti i bez použití kontextu navíc, ve většině testovaných architekturách zachováváme část této původní architektury a rozšíření receptivního pole zajišťují pouze poslední vrstvy. Testujeme tedy řadu různých změn architektur, pro každou variantu budeme trénovat verzi s celkově čtyřmi konvolučními bloky a s celkově osmi. Také každou variantu přetrénujeme ve verzi s 8 a s 16 konvolučními filtry v každém bloku. Celkově tedy budeme trénovat 4 varianty od každé architektury. Všechny sítě aplikují harmonickou transformaci $\pm 12$ v každém konvolučním bloku, vstupní reprezentací je HCQT s \texttt{hop\_size}=256. Testované architektury mají následující struktury:
+\begin{itemize}
+    \item  noctx: síť bez kontextu navíc, celkový kontext pro výpočet jednoho odhadu výšky je $5.8\,\rm ms$.
+    \item  deep\_ctx\_3: síť s konvolucemi velikosti 3x3. Celkový kontext $2N \cdot 5.8\,\rm ms$ na jeden odhad je tedy dán hloubkou sítě $N$. Konkrétně tedy kontext vychází $46.4\,\rm ms$ pro verzi se čtyřmi konvolučními bloky a $92.8\,\rm ms$ pro verzi s osmi.
+    \item  first\_layers\_ctx: síť s konvolucemi velikosti 9x3, 7x3 a 5x3, které zpracovávají vstupní spektrogram, následované konvolucemi 1x3, které již kontext nerozšiřují. Celkový kontext vychází $(8+6+4) \cdot 5.8\,\rm ms = 104.4\,\rm ms$.
+    \item  last\_layers\_ctx: síť zpracovávající vstup konvolucemi 1x3, následované řadou vrstev s konvolucemi 9x3, 7x3 a 5x3. Celkový kontext $104.4\,\rm ms$.
+    \item  1\_last\_layer\_dilated: síť zpracovávající vstup konvolucemi 1x3, následované jednou konvoluční vrstvou 3x3 s dilatací 2 v dimenzi času. Celkový kontext $23.2\,\rm ms$.
+    \item  2\_last\_layers\_dilated: síť zpracovávající vstup konvolucemi 1x3, následované dvěma konvolučními vrstvami 3x3 s dilatací 2 v dimenzi času. Celkový kontext $46.4\,\rm ms$.
+    \item  3\_last\_layers\_dilated: síť zpracovávající vstup konvolucemi 1x3, následované třemi konvolučními vrstvami 3x3 s dilatací 2 v dimenzi času. Celkový kontext $69.6\,\rm ms$.
+    \item  2\_last\_layers\_wavenet: síť zpracovávající vstup konvolucemi 1x3, následované dvěma konvolučními vrstvami 3x3 s dilatacemi 2 a 4 v dimenzi času. Celkový kontext $69.6\,\rm ms$.
+    \item  3\_last\_layers\_wavenet: síť zpracovávající vstup konvolucemi 1x3, následované třemi konvolučními vrstvami 3x3 s dilatacemi 2, 4 a 8 v dimenzi času. Celkový kontext $162.4\,\rm ms$.
+\end{itemize}
+
+Poznamenáme také, že šířka vstupních spektrogramů v ose času je pro každý experiment rozšířena tak, aby konvoluční bloky měly k dispozici všechny potřebné informace pro výpočet hodnot na výstupním oknu. Například pokud tedy síť pro jeden bod anotace využívá také tři předcházející a tři nadcházející okna spektrogramu, rozšíříme vstupní spektrogram z obou stran o tři okna.
+
+\begin{table}[h]
 \centering
 \begin{tabular}{llrr}
 
 \toprule
-Konfigurace &                   Kontext &   RPA &   RCA \\
+Konfigurace bloků & Úprava architektury &   RPA &   RCA \\
 \midrule
-     f16-s4 &              -3,-1-d-2,-1 & 0.743 & 0.802 \\
-     f16-s4 &        -3,-3,-1-d-2,-2,-1 & 0.749 & 0.814 \\
-     f16-s4 &        -3,-3,-1-d-4,-2,-1 & 0.754 & 0.813 \\
-     f16-s4 &  -3,-3,-3,-1-d-2,-2,-2,-1 & 0.752 & 0.813 \\
-     f16-s4 &  -3,-3,-3,-1-d-8,-4,-2,-1 & 0.761 & 0.819 \\
-     f16-s4 &               -9,-7,-5,-1 & 0.757 & 0.817 \\
-     f16-s4 &                         1 & 0.737 & 0.802 \\
-     f16-s4 &                         3 & 0.744 & 0.806 \\
-     f16-s4 &                   9,7,5,1 & 0.744 & 0.804 \\
-     f16-s8 &              -3,-1-d-2,-1 & 0.753 & 0.817 \\
-     f16-s8 &        -3,-3,-1-d-2,-2,-1 & 0.758 & 0.819 \\
-     f16-s8 &        -3,-3,-1-d-4,-2,-1 & 0.759 & 0.819 \\
-     f16-s8 &  -3,-3,-3,-1-d-2,-2,-2,-1 & 0.757 & 0.817 \\
-     f16-s8 &  -3,-3,-3,-1-d-8,-4,-2,-1 & 0.749 & 0.809 \\
-     f16-s8 &               -9,-7,-5,-1 & 0.749 & 0.819 \\
-     f16-s8 &                         1 & 0.744 & 0.809 \\
-     f16-s8 &                         3 & 0.741 & 0.815 \\
-     f16-s8 &                   9,7,5,1 & 0.748 & 0.817 \\
-      f8-s4 &              -3,-1-d-2,-1 & 0.733 & 0.797 \\
-      f8-s4 &        -3,-3,-1-d-2,-2,-1 & 0.733 & 0.796 \\
-      f8-s4 &        -3,-3,-1-d-4,-2,-1 & 0.733 & 0.798 \\
-      f8-s4 &  -3,-3,-3,-1-d-2,-2,-2,-1 & 0.731 & 0.796 \\
-      f8-s4 &  -3,-3,-3,-1-d-8,-4,-2,-1 & 0.745 & 0.804 \\
-      f8-s4 &               -9,-7,-5,-1 & 0.737 & 0.800 \\
-      f8-s4 &                         1 & 0.722 & 0.786 \\
-      f8-s4 &                         3 & 0.728 & 0.796 \\
-      f8-s4 &                   9,7,5,1 & 0.728 & 0.795 \\
-      f8-s8 &              -3,-1-d-2,-1 & 0.745 & 0.806 \\
-      f8-s8 &        -3,-3,-1-d-2,-2,-1 & 0.751 & 0.814 \\
-      f8-s8 &        -3,-3,-1-d-4,-2,-1 & 0.754 & 0.814 \\
-      f8-s8 &  -3,-3,-3,-1-d-2,-2,-2,-1 & 0.749 & 0.806 \\
-      f8-s8 &  -3,-3,-3,-1-d-8,-4,-2,-1 & 0.751 & 0.803 \\
-      f8-s8 &               -9,-7,-5,-1 & 0.749 & 0.811 \\
-      f8-s8 &                         1 & 0.732 & 0.801 \\
-      f8-s8 &                         3 & 0.735 & 0.796 \\
-      f8-s8 &                   9,7,5,1 & 0.747 & 0.814 \\
-\bottomrule
-\end{tabular}
-
-\caption{Vliv úpravy architektury ovlivňující receptivní pole modelu.}\label{tab:spectrogram_ctx_archs}
+8 filtrů, 4 konv. bloky & noctx & 0.722 & 0.786 \\
+{} & deep\_ctx\_3 & 0.728 & 0.796 \\
+{} & first\_layers\_ctx & 0.728 & 0.795 \\
+{} & last\_layers\_ctx & 0.737 & 0.800 \\
+{} & 1\_last\_layer\_dilated & 0.733 & 0.797 \\
+{} & 2\_last\_layers\_dilated & 0.733 & 0.796 \\
+{} & 3\_last\_layers\_dilated & 0.731 & 0.796 \\
+{} & 2\_last\_layers\_wavenet & 0.733 & 0.798 \\
+{} & 3\_last\_layers\_wavenet & 0.745 & 0.804 \\
+\arrayrulecolor{black!30}\midrule
+16 filtrů, 4 konv. bloky & noctx & 0.737 & 0.802 \\
+{} & deep\_ctx\_3 & 0.744 & 0.806 \\
+{} & first\_layers\_ctx & 0.744 & 0.804 \\
+{} & last\_layers\_ctx & 0.757 & 0.817 \\
+{} & 1\_last\_layer\_dilated & 0.743 & 0.802 \\
+{} & 2\_last\_layers\_dilated & 0.749 & 0.814 \\
+{} & 3\_last\_layers\_dilated & 0.752 & 0.813 \\
+{} & 2\_last\_layers\_wavenet & 0.754 & 0.813 \\
+{} & 3\_last\_layers\_wavenet & 0.761 & 0.819 \\
+\arrayrulecolor{black!30}\midrule
+8 filtrů, 8 konv. bloků & noctx & 0.732 & 0.801 \\
+{} & deep\_ctx\_3 & 0.735 & 0.796 \\
+{} & first\_layers\_ctx & 0.747 & 0.814 \\
+{} & last\_layers\_ctx & 0.749 & 0.811 \\
+{} & 1\_last\_layer\_dilated & 0.745 & 0.806 \\
+{} & 2\_last\_layers\_dilated & 0.751 & 0.814 \\
+{} & 3\_last\_layers\_dilated & 0.749 & 0.806 \\
+{} & 2\_last\_layers\_wavenet & 0.754 & 0.814 \\
+{} & 3\_last\_layers\_wavenet & 0.751 & 0.803 \\
+\arrayrulecolor{black!30}\midrule
+16 filtrů, 8 konv. bloků & noctx & 0.744 & 0.809 \\
+{} & deep\_ctx\_3 & 0.741 & 0.815 \\
+{} & first\_layers\_ctx & 0.748 & 0.817 \\
+{} & last\_layers\_ctx & 0.749 & 0.819 \\
+{} & 1\_last\_layer\_dilated & 0.753 & 0.817 \\
+{} & 2\_last\_layers\_dilated & 0.758 & 0.819 \\
+{} & 3\_last\_layers\_dilated & 0.757 & 0.817 \\
+{} & 2\_last\_layers\_wavenet & 0.759 & 0.819 \\
+{} & 3\_last\_layers\_wavenet & 0.749 & 0.809 \\
+\arrayrulecolor{black}\bottomrule
+    \end{tabular}
+\caption{Architektura HCNN, Vliv úpravy architektury ovlivňující receptivní pole modelu.}\label{tab:spectrogram_ctx_archs}
 \end{table}
 
 \begin{figure}[h]\centering
-    \includegraphics[scale=0.6]{../img/figures/spectrogram_ctx_archs}
-\caption{Vliv úpravy architektury ovlivňující receptivní pole modelu.}\label{obr:spectrogram_ctx_archs}
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/figures/spectrogram_ctx_archs}
+\caption{Architektura HCNN, Vliv úpravy architektury ovlivňující receptivní pole modelu.}\label{obr:spectrogram_ctx_archs}
 \end{figure}
 
-Nejlepší výsledek překvapivě podává velmi mělká architektura se čtyřmi bloky, jde o konfiguraci filtrů a bloky \texttt{f16-s4} a o   -3,-3,-3,-1-d-8,-4,-2,-1 
+Výsledky uvádíme v tabulce \ref{tab:spectrogram_ctx_archs} a na obrázku \ref{obr:spectrogram_ctx_archs}. Prvním důležitým pozorováním je, že přidaný kontext oproti kontrolní síti bez kontextu výsledky sítí zlepšuje téměř ve všech případech. Sítě tedy jsou schopné přidaný kontext využít k lepším odhadům. Dále vidíme, že síť deep\_ctx\_3 si vede nejhůře ze všech testovaných, tato síť na rozdíl od ostatních neobsahuje žádné konvoluce 1x3, můžeme se tedy domnívat, že konvoluce 3x3 na datech v této architektuře nefungují natolik dobře, jako jejich užší varianty. Je však také možné, že informace o kontextu je pro síť obtížné využít, pokud tato informace má projít dlouhou kaskádou úzkých konvolucí, na které se architektura zakládá.
 
-% \subsection{Augmentace vstupních spektrogramů}
+Nejlepší výsledek podává mělká architektura se čtyřmi bloky, jde o konfiguraci s 16 filtry, 4 konvolučními bloky a architekturou 3\_last\_layers\_wavenet, tato architektura tedy obsahuje pouze jednu konvoluční vrstvu šířky 1x3 a pak následují dilatované konvoluce 3x3.
 
-% \begin{figure}[h]\centering
-%     \includegraphics[scale=0.6]{../img/figures/spectrogram_specaugment}
-% \caption{Vliv úpravy architektury ovlivňující receptivní pole modelu.}\label{obr:spectrogram_specaugment}
-% \end{figure}
+\subsection{Augmentace vstupních spektrogramů}
+
+Jak shrnujeme v kapitole \nameref{cha:souvisejici}, metody, které používají hlubokého učení k extrakci melodie, také často prozkoumávají možnosti augmentace vstupních dat, aby snížily míru přeučení svých modelů. Prozkoumáme proto zběžně novou techniku augmentace nazvanou SpecAugment, která byla představena v článku \cite{Park2019} a je určena pro úpravu vstupních časově-frekvenčních reprezentací. Augmentace je v principu velmi jednoduchá, spočívá ve vynechání náhodně zvolených frekvenčních pásem a časových úseků na vstupu sítě. Díky tomu se trénovaný model stává odolnější vůči neúplným a zkresleným příkladům. Na síť je také následně možné nahlížet i perspektivou generativních modelů, ve které se model snaží v místě chybějících informací predikovat příklad výstupu z distribuce podmíněné vstupním zvukovým okolím. Jinou motivací také může být paralela s lidským vnímáním, lidský sluch je totiž vůči vynechání frekvenčních pásem také odolný, zvuk po aplikaci pásmového filtru sice zní pozměněně, nicméně kvality jako je výška tónu si zachovává. Vzhledem ke stáří tohoto článku představujeme první pokus o aplikaci této augmentace na melodická data. Augmentaci testujeme na nejlepší síti z minulé sekce, tedy na architektuře 3\_last\_layers\_wavenet s 16 filtry a 4 konvolučními bloky. Navíc síti předkládáme vícekanálový vstup popsaný v sekci \nameref{exp:hcnn_multichannel}.
+
+Z článku SpecAugment implementujeme vynechávání frekvenčních pásem a časových úseků. Náhodnou část vstupních spektrogramů transformujeme ve frekvenční doméně překrytím dvou frekvenčních pásem šířky až 5.4 půltónu, v časové doméně pak vynecháváme jeden úsek délky až $29\,\rm ms$.
+
+\begin{figure}[h]\centering
+    \includegraphics[scale=0.6]{../img/figures/spectrogram_specaugment}
+\caption{Architektura HCNN, vliv použití SpecAugment na vstupní spektrogramy.}\label{obr:hcnn_specaugment}
+\end{figure}
+
+\begin{table}[h!]
+\centering
+    \begin{tabular}{lrr}
+    \toprule
+    Podíl augmentovaných dat &   RPA &   RCA \\
+    \midrule
+                        0.0 & 0.754 & 0.818 \\
+                        0.25 & 0.750 & 0.824 \\
+                        0.5 & 0.745 & 0.820 \\
+                        0.75 & 0.755 & 0.828 \\
+                        1.0 & 0.759 & 0.824 \\
+    \bottomrule
+    \end{tabular}
+\caption{Architektura HCNN, vliv použití SpecAugment na vstupní spektrogramy.}\label{tab:hcnn_specaugment}
+\end{table}
 
 
-% \section{Detekce melodie}
+Výsledky nalezneme v tabulce \ref{tab:hcnn_specaugment} a na obrázku \ref{obr:hcnn_specaugment}. Pro tuto síť se rozdíl mezi výsledky sítě bez augmentace vstupních dat a se vstupem pouze augmentovaných dat pohybuje kolem půl procentního bodu. Vzhledem k výsledkům prezentovaným v článku \cite{Park2019} se však domníváme, že augmentace má vyšší potenciál, zejména pak pro větší sítě s delším kontextem, které mají větší tendence k přeučení.
+
+% section{Detekce melodie}
 
 % \begin{figure}[h]\centering
 %     \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/voicing_struktura}
 % \caption{Diagram společné struktury modelů pro detekci melodie.}\label{obr:voicing_struktura}
 % \end{figure}
 
-% Podobně jako v práci \cite{Rigaud2016} jsme otestovali možnosti oddělení modulu pro odhad výšky melodie a pro její detekci. V této sekci proto nejprve provedeme sadu experimentů, ve kterých návrhy na modul pro detekci trénujeme samostatně a poté otestujeme jeho přesnost také v kombinaci s modulem pro odhad výšky.
+% Podobně jako v práci \cite{Rigaud2016} jsme otestovali možnosti oddělení modulu pro odhad výšky melodie a pro její detekci. V této sekci proto nejprve provedeme sadu experimentů, ve kterých návrhy na modul pro detekci trénujeme samostatně a poté otestujeme jeho přesnost také v kombinaci s modulem pro 16 filtrů, 8 konv. blokůšky.
 
 % Při hledání nejlepší architektury pro detekci jsme postupovali iterativním prohlubování návrhů sítí. Společná struktura všech experimentů je znázorněna na diagramu \ref{obr:voicing_struktura}. Vstupem modelů je CQT spektrogram, podobně jako pro modely HCNN. Ten v některých experimentech transformujeme pomocí harmonického posunu (viz diagram \ref{obr:hcnn_harmonic_stacking}). Dále tento spektrogram potenciálně zmenšíme pomocí jedné pooling vrstvy tak, aby na jeden půltón připadala jedna složka výstupu, u většiny experimetů však tuto transformaci vynecháváme. Tento upravený vstup pak zpracováváme jedním z konvolučních bloků znázorněných na obrázku \ref{obr:voicing_moduly}. Výstup bloku pomocí konvoluce a následné sigmoidy zredukujeme na výstupní hodnoty označující přítomnost melodie v každém ze vstupních oken. 
 

@@ -1,4 +1,4 @@
-\chapter{Úvod}\label{chap:uvod}
+\chapter{Úvod}\label{cha:uvod}
 \addcontentsline{toc}{chapter}{Úvod}
 
 Spolu s harmonií a rytmem představuje melodie základní stavební kámen většiny existující hudby. V průběhu vývoje od folklórních zpěvů přes orchestrální skladby po soudobou elektroniku si melodie téměř vždy zachovávala své dominantní postavení nositele esence jednotlivých písní. Melodie je to hlavní, co si člověk po poslechu skladby odnáší a nejsnadněji vybaví, a její důležitost je zejména v našem kulturním kontextu natolik jednoznačná, že se hudba, která ji postrádá, zřídkakdy dostává do širokého povědomí.
@@ -110,7 +110,7 @@ Celkový směr výzkumu je tak ve výsledku velmi podmíněn dostupnými daty. T
 \label{obr:diagram_systemy_ME}
 \end{figure}
 
-Základním a společným přístupem k problému extrakce melodie je dekompozice na podproblémy odhadu výšek znějících hlasů v signálu a následného výběru melodické linie z této reprezentace znějících výšek. Jednotlivé metody se pak liší ve způsobech řešení těchto podproblémů, mimo jiné také v míře abstrakce od původního signálu, které při zpracovávání dosahují --- zatímco některé přístupy po celou dobu pracují pouze se signálem jako takovým a důmyslnými způsoby ho transformují tak, aby získaly co nejpřesnější odhad výšky melodie, jiné metody při výpočtu vytváří symbolický popis jednotlivých not a následně i celých frází a melodii pak hledají v tomto vysokoúrovňovém popisu nahrávky. Přehled části používaných přístupů, blíže popsaných v kapitole \hyperref[chap:souvisejici]{Související práce}, můžeme vidět na diagramu \ref{obr:diagram_systemy_ME}.
+Základním a společným přístupem k problému extrakce melodie je dekompozice na podproblémy odhadu výšek znějících hlasů v signálu a následného výběru melodické linie z této reprezentace znějících výšek. Jednotlivé metody se pak liší ve způsobech řešení těchto podproblémů, mimo jiné také v míře abstrakce od původního signálu, které při zpracovávání dosahují --- zatímco některé přístupy po celou dobu pracují pouze se signálem jako takovým a důmyslnými způsoby ho transformují tak, aby získaly co nejpřesnější odhad výšky melodie, jiné metody při výpočtu vytváří symbolický popis jednotlivých not a následně i celých frází a melodii pak hledají v tomto vysokoúrovňovém popisu nahrávky. Přehled části používaných přístupů, blíže popsaných v kapitole \nameref{cha:souvisejici}, můžeme vidět na diagramu \ref{obr:diagram_systemy_ME}.
 
 \begin{figure}[h]\centering
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/salience}
@@ -132,17 +132,19 @@ Výhodou tohoto přístupu je, že o vstupních datech nemusíme dělat žádné
 
 První pokus o využití těchto metod představili \cite{Poliner}, vstupní signál transformovali pomocí krátkodobé Fourierovy transformace a část spektra po jednoduché normalizaci použili jako vstupní data pro metodu podpůrných vektorů (SVM). Jejich metoda měla své limitace, výstup byl kvantizován na úroveň jednoho půltónu a tudíž metoda nedokázala dobře postihnout například vibrata. I přesto však tým dosáhl srovnatelných výsledků s ostatními metodami. 
 
-Po roce 2005 jakékoli pokusy o aplikaci strojového učení ustávají a na nové metody se čeká až do roku 2016. Jedním z důvodů byl jistě nedostatek dat, tuto situaci zlepšil například dataset MedleyDB \citep{Bittner2014} nebo dnes již zaniklý iKala \citep{Chan2015}. Zájem o strojové učení však znovu stoupá, také díky úspěšnému využití hlubokých neuronových sítí napříč ostatními obory. Na konferenci International Society of Music Information Retrieval (ISMIR) 2016\footnote{International Society for Music Information Retrieval Conference} objevují dva články týmů \cite{Kum2016} a \cite{Rigaud2016}, založené právě na hlubokém učení. V roce 2017 publikuje své metody \cite{Bittner2017} (ISMIR), \cite{Balke2017} (ICASSP\footnote{International Conference on Acoustics, Speech, and Signal Processing}), následující rok přináší metody \cite{DBasaranSEssid2018} (ISMIR), \cite{Bittner2018}. Všechny zmíněné popisujeme v kapitole \hyperref[chap:souvisejici]{Související práce}. V oboru lze tedy od roku 2016 vidět velmi výrazný trend právě směrem k hlubokému učení, a stejný směr je patrný i v příbuzných úlohách přepisu hudby. Tým z laboratoře Google Brain dokázal výrazně zlepšit přepis klavírních skladeb pomocí kombinace konvoluční a rekurentní architektury \citep{Hawthorne2018}. Neuronové sítě také zlepšují výsledky na poli oddělení signálů \citep{Stoller2018}.
+Po roce 2005 jakékoli pokusy o aplikaci strojového učení ustávají a na nové metody se čeká až do roku 2016. Jedním z důvodů byl jistě nedostatek dat, tuto situaci zlepšil například dataset MedleyDB \citep{Bittner2014} nebo dnes již zaniklý iKala \citep{Chan2015}. Zájem o strojové učení však znovu stoupá, také díky úspěšnému využití hlubokých neuronových sítí napříč ostatními obory. Na konferenci International Society of Music Information Retrieval (ISMIR) 2016\footnote{International Society for Music Information Retrieval Conference} objevují dva články týmů \cite{Kum2016} a \cite{Rigaud2016}, založené právě na hlubokém učení. V roce 2017 publikuje své metody \cite{Bittner2017} (ISMIR), \cite{Balke2017} (ICASSP\footnote{International Conference on Acoustics, Speech, and Signal Processing}), následující rok přináší metody \cite{DBasaranSEssid2018} (ISMIR), \cite{Bittner2018}. Všechny zmíněné popisujeme v kapitole \nameref{cha:souvisejici}. V oboru lze tedy od roku 2016 vidět velmi výrazný trend právě směrem k hlubokému učení, a stejný směr je patrný i v příbuzných úlohách přepisu hudby. Tým z laboratoře Google Brain dokázal výrazně zlepšit přepis klavírních skladeb pomocí kombinace konvoluční a rekurentní architektury \citep{Hawthorne2018}. Neuronové sítě také zlepšují výsledky na poli oddělení signálů \citep{Stoller2018}.
 
 V této práci se pokusíme navázat na zmiňované práce a otestovat nové architektury hlubokých neuronových sítí pro úlohu extrakce melodie, zejména pak pro hledání nových způsobů výpočtu funkce salience. %, v menší míře také pro detekci melodie.
 
 \section{Přínosy práce}
 
 \textcolor{red}{TODO}
+- související práce je rozcestník do hloubek
+- 3 nové experimenty, 1 dosahuje nejlepších výsledků
 
 \section{Struktura práce}
 
-\textcolor{red}{napsat signpost}
+V následující kapitole \nameref{cha:souvisejici} shrnujeme dosavadní přístupy existujících metod extrakce melodie a vybíráme tři, které v této práci používáme pro srovnání výsledků. V kapitole \nameref{cha:datasety} uvádíme kompletní seznam všech veřejně dostupných dat k úloze, porozumění jejich obsahu nám dovolí interpretovat výsledky experimentů. Kapitola \nameref{cha:evaluace} obsahuje informace o způsobech porovnávání výsledků jednotlivých metod z teoretického i praktického hlediska. Popis nových přístupů k úloze, spolu s experimenty, které ke konkrétní podobě těchto přístupů vedly, popisujeme v kapitole \nameref{cha:experimenty}. A konečně srovnání těchto nových metod s existujícími nalezneme v kapitole \nameref{cha:vysledky}.
 
 % \cite{Thickstun2016} - musicnet
 % \cite{Hawthorne2018} - google magenta

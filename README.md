@@ -2,6 +2,7 @@
 
 ## TODO do odevzdání
 
+APPKA
 - asi dát Flask do containeru
 - jako alespoň dát načítací kolečka do apliakce
 - chyba s orchsetem
@@ -17,14 +18,12 @@ Traceback (most recent call last):
   File "/home/jirka/music-transcription/datasets/dataset.py", line 43, in __init__
     raise RuntimeError("Window size is bigger than the audio.")
 RuntimeError: Window size is bigger than the audio.
-
 - github
     - readme tak, abych mohl navzázet za 5 let
     - příkladové skripty
+    - skripty pro replikaci čísel
 
-ÚPRAVY HAJIČ
-- 4.1.1Formát v ̋stupu v sout ûi MIREX
-    - duplicitní, sjednotit
+- killall nvidia-smi (takže budu moct trénovat experimenty)
 
 ## Progress
 
@@ -34,8 +33,8 @@ RuntimeError: Window size is bigger than the audio.
 | Datasety    | 99%  | 100%    | --      |
 | Související | 99%  | --      | 100%    |
 | Evaluace    | 99%  | 100%    | 100%    |
-| Experimenty | 60%  | 50%     | 50%     |
-| Výsledky    | 50%  | 0%      | 0%      |
+| Experimenty | 90%  | 100%    | 80%     |
+| Výsledky    | 80%  | 0%      | 0%      |
 | Závěr       | 0%   | 0%      | 0%      |
 
 Typografické dodělávky, lahůdky a drobnosti:
@@ -68,9 +67,7 @@ uvod.tex, 130 -  V této práci se pokusíme navázat na zmiňované práce a ot
     - splits v csv souboru
         - pomocí http://10.0.0.42:6088/notebooks/bakalarka/datasety/dataset_info_summaries.ipynb 
 
-
 - úvod
-    - ! opravit diagram metod
     - ! přínosy metod
     - definice pojmů
         - monofonní v této práci je jednohlas, nikoli jeden kanál!
@@ -81,6 +78,7 @@ uvod.tex, 130 -  V této práci se pokusíme navázat na zmiňované práce a ot
     - (krátký popis CREPE a Wavenetu, protože je používám v experimentech)
     - ! popsat Hannovo okno
     - ! opravit barvy v obrázku 2.4
+
     - taky popis neuronových sítí, convnetů, asi prostě bohužel všeho, co používám v experimentech
         - architektura
             = topologie
@@ -102,32 +100,25 @@ uvod.tex, 130 -  V této práci se pokusíme navázat na zmiňované práce a ot
 
 - evaluation
     - ! splity do přílohy !
-    - dopsat zbytek metrik
-    - příkladové obrázky jednotlivých chyb
+    - přesunout formát z datasetů
 
 - experimenty
-    - popsat co je hluboké učení
-    - (popsat Prostředí pro spouštění, replikaci a evaluaci experimentů)
-        - viz `experimenty.md`
-
-    - !! popsat práhování
     - ! zlepšit obrázek CREPE
     - víc obrázků! K experimentům
-
-    - Salience function
-        - CREPE - překopat ještě asi dvě sekce, co jsem nepřepsal, jen trochu upravit, ať se to dá číst
-            - přidat obrázek první vrstvy? Je to vděčný podle mě
-        - WaveNet - je to naprd, ale asi skoro hotový - chybí popis poslední vrstvy
-        - HCNN - !!!!!!
-    - Voicing detection
-        - řada mých experimentů, mám k tomu fůru dat, stačí shrnout a popsat zajímavé příklady
+    - learning rate decay?
+    - dopsat minishrnutí
 
 - výsledky
     - Pitch Estimation
         - tabulka - kvantitativní
+        - popsat tabulku
         - kvalitativní příklady
-    - Voicing
-        - tabulka s celkovýma výsledkama
+            - přidat success
+    - (voicing)
+
+- závěr
+    - zopakovat přínosy
+    - jak navázat
 
 ## Experimenty
 
@@ -159,9 +150,12 @@ uvod.tex, 130 -  V této práci se pokusíme navázat na zmiňované práce a ot
         - případně label smoothing tf.losses.sigmoid_cross_entropy, focal loss
     - kontext - dilated konvoluce https://towardsdatascience.com/review-drn-dilated-residual-networks-image-classification-semantic-segmentation-d527e1a8fb5
 
+- specaugment ale uvnitř sítě??
+
 ## Programování
 
 - metrics
     - n-peak accuracy
     - output noise (sum of output/sum of reference output)
 - early stopping
+- opravit training RPA a RCA, nějak tam dělá problémy voicing asi
