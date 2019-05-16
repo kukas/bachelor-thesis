@@ -27,16 +27,6 @@ RuntimeError: Window size is bigger than the audio.
 
 ## Progress
 
-| Kapitola    | Text | Tabulky | Obrázky |
-| ----------- | ---- | ------- | ------- |
-| Úvod        | 90%  | -       | 100%    |
-| Datasety    | 99%  | 100%    | --      |
-| Související | 99%  | --      | 100%    |
-| Evaluace    | 99%  | 100%    | 100%    |
-| Experimenty | 90%  | 100%    | 80%     |
-| Výsledky    | 80%  | 0%      | 0%      |
-| Závěr       | 0%   | 0%      | 0%      |
-
 Typografické dodělávky, lahůdky a drobnosti:
 - ! zkontrolovat, jestli budou dva spektrogramy v úvodu na dvou různých stránkách
 - opravit skloňování citací
@@ -64,8 +54,16 @@ uvod.tex, 130 -  V této práci se pokusíme navázat na zmiňované práce a ot
 ## Písemná část
 - příloha
     - audio příklady
+    - napsat že čerpám z 
+        Obrázek 1.1: MedleyDB
+        Obrázek 1.2: https://www.philharmonia.co.uk/explore/sound_samples/clarinet
+        Obrázek 1.4: mirex05TrainFiles/train01.wav
+
+        doplnit
     - splits v csv souboru
         - pomocí http://10.0.0.42:6088/notebooks/bakalarka/datasety/dataset_info_summaries.ipynb 
+
+
 
 - úvod
     - ! přínosy metod

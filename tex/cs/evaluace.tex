@@ -8,6 +8,33 @@ Soutěž MIREX (Music Information Retrieval Evaluation eXchange) probíhá již 
 
 Na rozdíl od jiných úloh, kde debata o zvolení nejvhodnějších objektivních metrik pro porovnávání metod stále probíhá, metriky pro extrakci melodie se ustanovily již v prvním ročníku (na základě dřívějších zkušeností) a zůstaly neměnné dodnes \citep{Raffel2014}. Naopak data použitá pro testování se postupně kumulují a dnes soutěž probíhá již s řadou datasetů (ADC04, MIREX05, MIREX08, MIREX09, ORCHSET15). V tabulce \ref{tab:mirex_datasety} uvádíme přehled těchto evaluačních datasetů.
 
+\subsection{Formát výstupu v soutěži MIREX}
+
+Obvyklý formát výstupu algoritmů je CSV soubor se dvěma sloupci. První sloupec obsahuje pravidelné časové značky, standardně délky $10\,\rm ms$, případně $\frac{256}{44\,100} \doteq 5.8 \,\rm ms$. Druhý sloupec pak odhad základní frekvence melodie. Nepřítomnost melodie se označuje hodnotou frekvence 0. Některé algoritmy uvádí i odhady výšky základní frekvence mimo detekovanou melodii (může jít například o doprovod, který zní i po hlavním melodickém hlasu). Aby tyto odhady byly odlišené od odhadů hlavní melodie, jsou uvedeny v záporných hodnotách. Díky tomu pak lze nezávisle vyhodnotit přesnost \textit{odhadu výšky} a \textit{detekce melodie}. Odhad výšky se vyhodnocuje podle absolutní hodnoty frekvence ve všech časových oknech, ke kterým existuje anotace, detekce melodie pak na všech hodnotách vyšších než 0. 
+
+Formát CSV pro zápis anotací melodie, který byl zaveden v rámci soutěže MIREX, dodržují také všechny dostupné datasety a ačkoli existují pokusy o změnu tohoto formátu \citep{Humphrey2014a}, MIREX formát je natolik jednoduchý a prozatím dostačující, že k přechodu na sofistikovanější formáty zatím nedošlo. Pro ilustraci přikládáme část referenční anotace ženského zpěvu, v anotaci se vyskytuje krátká pomlka mezi znějícími tóny. Grafické znázornění referenční anotace melodie celé nahrávky můžeme nalézt v úvodu na obrázku \ref{obr:input_output}.
+
+%$
+\begin{code}[xrightmargin=20em]
+
+8.568     381.349
+8.574     379.959
+8.580     378.229
+8.586     376.067
+8.591     372.236
+8.597     369.793
+8.603     0.000
+8.609     0.000
+8.615     0.000
+8.620     0.000
+8.626     0.000
+8.632     0.000
+8.638     352.272
+8.644     338.922
+
+\end{code}
+%$
+
 \begin{table}[h!]
 \centering
 \begin{tabular}{p{2.5cm}p{11cm}}
@@ -25,11 +52,6 @@ ORCHSET15      & 64 orchestrálních výňatků z různých období vývoje klas
 \end{tabular}
 \caption{Přehled evaluačních datasetů v soutěži MIREX, částečně převzato z práce \cite{Salamon2014}.}\label{tab:mirex_datasety}
 \end{table}
-
-
-\subsection{Formát výstupu v soutěži MIREX}
-
-Obvyklý formát výstupu algoritmů je CSV soubor se dvěma sloupci. První sloupec obsahuje pravidelné časové značky, druhý sloupec pak odhad základní frekvence melodie. Některé algoritmy uvádí i odhady výšky základní frekvence mimo detekovanou melodii (může jít například o doprovod, který zní i po hlavním melodickém hlasu). Aby tyto odhady byly odlišené od odhadů hlavní melodie, jsou uvedeny v záporných hodnotách. Díky tomu pak lze nezávisle vyhodnotit přesnost \textit{odhadu výšky} a \textit{detekce melodie}. Odhad výšky se vyhodnocuje podle absolutní hodnoty frekvence ve všech časových oknech, ke kterým existuje anotace, detekce melodie pak na všech hodnotách vyšších než 0. 
 
 \section{Trénovací, validační a testovací množina}
 

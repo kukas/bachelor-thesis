@@ -53,8 +53,7 @@ Ačkoliv je přístupů ke spektrální analýze je více, nejpřímočařejší
 
 $$ X(f, \tau) = \abs{\sum^{\infty}_{n=-\infty}{x(n)w(n-\tau)e^{-2\pi i \cdot n \cdot f}}}^2 $$
 
-Pro diskrétní vstupní signál $x(n)$ a okénkovou funkci $w(n)$. V této práci budeme pro výpočty spektrogramů používat Hannovo okno, které omezuje tzv. prosakování ve spektru. 
-\textcolor{red}{POPSAT HANNOVO okno. citace? proč omezuje přeskakování?}
+Pro diskrétní vstupní signál $x(n)$ a okénkovou funkci $w(n)$. V této práci budeme pro výpočty spektrogramů používat Hannovo okno \citep{1455106}, které omezuje tzv. prosakování ve spektru pomocí zmenšení diskontinuity na okrajích okna Fourierovy transformace postupným snížením hodnot signálu k nule na těchto okrajích. 
 \[
 w_{hann}(n) =
 \begin{cases}

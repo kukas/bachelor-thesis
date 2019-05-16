@@ -17,32 +17,7 @@ V následující sekci uvádíme přehled veřejně dostupných dat a jejich spo
 
 \section{Struktura dostupných dat a jejich přehled}
 
-Dataset, který chceme použít pro řešení úlohy extrakci melodie, musí obsahovat soubory se zvukem a k nim příslušící anotace melodie. Standardním formátem zvukových souborů je jedno- nebo vícekanálový formát WAVE, se vzorkovací frekvencí $44\,100\,\rm Hz$. Anotace melodie je uložena jako CSV soubor s dvěma sloupci --- časem a frekvencí. Výška melodie je tedy určena její fundamentální frekvencí a je specifikována pro každý časový okamžik v nahrávce. Délka anotačního okna je standardně $10\,\rm ms$, případně $\frac{256}{44\,100} \doteq 5.8 \,\rm ms$. Nepřítomnost melodie se označuje hodnotou 0.
-
-Výjimkou je dataset ORCHSET, který neobsahuje přesné anotace fundamentální frekvence melodie, ale pouze frekvence not. Tedy frekvence nejsou spojité, nýbrž jsou omezené na přesnost jednoho půltónu (V tabulce \ref{tab:dataset_summary} je tato informace zohledněna řádkem MIDI melodie). Důležitou poznámkou je, že zde nejde o diskretizaci původní spojité křivky, ale opravdu jde o anotaci not, tedy pokud melodii nese nástroj hrající vibrato a svou výškou se dostane nad rozsah jednoho půltónu, v anotaci tato skutečnost není zaznamenána. 
-
-Formát CSV pro zápis anotací melodie, který byl zaveden v rámci soutěže MIREX, dodržují všechny dostupné datasety a ačkoli existují pokusy o změnu tohoto formátu \citep{Humphrey2014a}, MIREX formát je natolik jednoduchý a prozatím dostačující, že k přechodu na sofistikovanější formáty zatím nedošlo. Pro ilustraci přikládáme část referenční anotace ženského zpěvu, v anotaci se vyskytuje krátká pomlka mezi znějícími tóny. Grafické znázornění referenční anotace melodie celé nahrávky můžeme nalézt v úvodu na obrázku \ref{obr:input_output}.
-
-%$
-\begin{code}[xrightmargin=20em]
-
-8.568     381.349
-8.574     379.959
-8.580     378.229
-8.586     376.067
-8.591     372.236
-8.597     369.793
-8.603     0.000
-8.609     0.000
-8.615     0.000
-8.620     0.000
-8.626     0.000
-8.632     0.000
-8.638     352.272
-8.644     338.922
-
-\end{code}
-%$
+Dataset, který chceme použít pro řešení úlohy extrakci melodie, musí obsahovat soubory se zvukem a k nim příslušící anotace melodie. Standardním formátem zvukových souborů je jedno- nebo vícekanálový formát WAVE, se vzorkovací frekvencí $44\,100\,\rm Hz$. Anotace obsahuje spojitou informaci o znějící fundamentální frekvenci melodie v každém časovém okamžiku nahrávky. Výjimkou je dataset ORCHSET, který neobsahuje přesné anotace fundamentální frekvence melodie, ale pouze frekvence konkrétních not. Tedy frekvence nejsou spojité, nýbrž jsou omezené na přesnost jednoho půltónu (V tabulce \ref{tab:dataset_summary} je tato informace zohledněna řádkem MIDI melodie). Důležitou poznámkou je, že zde nejde o diskretizaci původní spojité křivky, ale opravdu jde o anotaci not, tedy pokud melodii nese nástroj hrající vibrato a svou výškou se dostane nad rozsah jednoho půltónu, v anotaci tato skutečnost není zaznamenána. 
 
 Datasety však mohou obsahovat více informací či audio souborů. Užitečné jsou například přiložené audio stopy, ze kterých je vytvořena výsledná píseň (mix), informace o všech znějících výškách (Multi-F0) nebo notách (MIDI), o melodické prioritě jednotlivých audio stop nebo o instrumentaci skladby.
 
