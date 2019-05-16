@@ -1,7 +1,7 @@
 % Metadata k uložení do PDF, podrobnější popis viz dokumentace balíčku pdfx.
 
-\Author{Jméno Příjmení}
-\Title{Název práce}
-\Keywords{klíčová slova\sep další taková\sep ještě jiná}
+\Author{Jiří Balhar}
+\Title{Extrakce melodie pomocí hlubokého učení}
+\Keywords{Music Information Retrieval\sep Extrakce Melodie\sep Odhad F0\sep Hluboké učení\sep Harmonická konvoluční neuronová síť}
 \Subject{Abstrakt práce}
 \Publisher{Univerzita Karlova}

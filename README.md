@@ -109,12 +109,6 @@ uvod.tex, 130 -  V této práci se pokusíme navázat na zmiňované práce a ot
     - dopsat minishrnutí
 
 - výsledky
-    - Pitch Estimation
-        - tabulka - kvantitativní
-        - popsat tabulku
-        - kvalitativní příklady
-            - přidat success
-    - (voicing)
 
 - závěr
     - zopakovat přínosy

@@ -430,7 +430,7 @@ V architektuře modelu jsme pro tento experiment provedli změnu ve zpracování
 \caption{Architektura WaveNet, systematické prohledávání počtu dilatačních vrstev a bloků, vlevo hodnoty RPA, vpravo RCA.}\label{obr:wavenet_stacks_gridsearch}
 \end{figure}
 
-Z tabulky lze dojít k pozorování, že přidávání počtu vrstev zvyšuje výslednou přesnost víceméně vždy, to neplatí o počtu bloků, u kterých se zdá, že nejvhodnější počet je 2. Pokud se zaměříme na srovnání výsledků s podobným dosahem, zdá se že výsledky jsou poměrně podobné, zejména pro širší dosahy, pro kratší se zdá lepší využít spíše více vrstev než více bloků. Zajím
+Na základě obrázku \ref{obr:wavenet_stacks_gridsearch} lze dojít k pozorování, že přidávání počtu vrstev zvyšuje výslednou přesnost víceméně vždy, to neplatí o počtu bloků, u kterých se zdá, že nejvhodnější počet je 2. Pokud se zaměříme na srovnání výsledků s podobným dosahem, zdá se že výsledky jsou poměrně podobné, zejména pro širší dosahy, pro kratší se zdá lepší využít spíše více vrstev než více bloků. 
 
 \subsection{Vliv velikosti šířky kernelu dilatací}
 
@@ -514,8 +514,8 @@ Tým \cite{Oord2016} používá pro předzpracování zvukového signálu před 
 
 Sítě, které mají možnost využít první konvoluce jako banky filtrů, dosahují výrazně horší přesnosti, než sítě s menší konvolucí. Přeskočení tohoto předzpracování však také není nejlepším nastavením pro tuto architekturu. Vhodná šířka první konvoluce se pohybuje kolem 8 vstupních vzorků, do takové šířky se vejde jedna perioda signálu frekvence $2000\,\rm Hz$, jinými slovy vrstva jistě nemůže zastávat ani z části funkci banky filtrů. Mohla by však popisovat sklon křivky vstupních dat, ze kterých se v dalších vrstvách dilatovaných bloků složí již celý frekvenční popis vstupu.
 
-\textcolor{red}{vizualizace první vrstvy? Co tam vlastně může být, když pomáhá šestnácti samplová konvoluce?}
-\textcolor{red}{Zase by to tady chtělo nějaké shrnutí pokusů s WaveNetem — odkud kam jste se s ním dostal. Začlo se tím, že se použily triky nalezené na pokusech s CREPE, potom se dělaly ještě nějaké triky s WaveNet-specific choices}
+% \textcolor{red}{vizualizace první vrstvy? Co tam vlastně může být, když pomáhá šestnácti samplová konvoluce?}
+% \textcolor{red}{Zase by to tady chtělo nějaké shrnutí pokusů s WaveNetem — odkud kam jste se s ním dostal. Začlo se tím, že se použily triky nalezené na pokusech s CREPE, potom se dělaly ještě nějaké triky s WaveNet-specific choices}
 
 % \subsection{Vliv návrhu posledních vrstev}
 
@@ -627,66 +627,15 @@ Protože v předchozích experimentech dosahujeme vysoké úspěšnosti i bez po
     \item  2\_last\_layers\_wavenet: síť zpracovávající vstup konvolucemi 1x3, následované dvěma konvolučními vrstvami 3x3 s dilatacemi 2 a 4 v dimenzi času. Celkový kontext $69.6\,\rm ms$.
     \item  3\_last\_layers\_wavenet: síť zpracovávající vstup konvolucemi 1x3, následované třemi konvolučními vrstvami 3x3 s dilatacemi 2, 4 a 8 v dimenzi času. Celkový kontext $162.4\,\rm ms$.
 \end{itemize}
-
-Poznamenáme také, že šířka vstupních spektrogramů v ose času je pro každý experiment rozšířena tak, aby konvoluční bloky měly k dispozici všechny potřebné informace pro výpočet hodnot na výstupním oknu. Například pokud tedy síť pro jeden bod anotace využívá také tři předcházející a tři nadcházející okna spektrogramu, rozšíříme vstupní spektrogram z obou stran o tři okna.
-
-\begin{table}[h]
-\centering
-\begin{tabular}{llrr}
-
-\toprule
-Konfigurace bloků & Úprava architektury &   RPA &   RCA \\
-\midrule
-8 filtrů, 4 konv. bloky & noctx & 0.722 & 0.786 \\
-{} & deep\_ctx\_3 & 0.728 & 0.796 \\
-{} & first\_layers\_ctx & 0.728 & 0.795 \\
-{} & last\_layers\_ctx & 0.737 & 0.800 \\
-{} & 1\_last\_layer\_dilated & 0.733 & 0.797 \\
-{} & 2\_last\_layers\_dilated & 0.733 & 0.796 \\
-{} & 3\_last\_layers\_dilated & 0.731 & 0.796 \\
-{} & 2\_last\_layers\_wavenet & 0.733 & 0.798 \\
-{} & 3\_last\_layers\_wavenet & 0.745 & 0.804 \\
-\arrayrulecolor{black!30}\midrule
-16 filtrů, 4 konv. bloky & noctx & 0.737 & 0.802 \\
-{} & deep\_ctx\_3 & 0.744 & 0.806 \\
-{} & first\_layers\_ctx & 0.744 & 0.804 \\
-{} & last\_layers\_ctx & 0.757 & 0.817 \\
-{} & 1\_last\_layer\_dilated & 0.743 & 0.802 \\
-{} & 2\_last\_layers\_dilated & 0.749 & 0.814 \\
-{} & 3\_last\_layers\_dilated & 0.752 & 0.813 \\
-{} & 2\_last\_layers\_wavenet & 0.754 & 0.813 \\
-{} & 3\_last\_layers\_wavenet & 0.761 & 0.819 \\
-\arrayrulecolor{black!30}\midrule
-8 filtrů, 8 konv. bloků & noctx & 0.732 & 0.801 \\
-{} & deep\_ctx\_3 & 0.735 & 0.796 \\
-{} & first\_layers\_ctx & 0.747 & 0.814 \\
-{} & last\_layers\_ctx & 0.749 & 0.811 \\
-{} & 1\_last\_layer\_dilated & 0.745 & 0.806 \\
-{} & 2\_last\_layers\_dilated & 0.751 & 0.814 \\
-{} & 3\_last\_layers\_dilated & 0.749 & 0.806 \\
-{} & 2\_last\_layers\_wavenet & 0.754 & 0.814 \\
-{} & 3\_last\_layers\_wavenet & 0.751 & 0.803 \\
-\arrayrulecolor{black!30}\midrule
-16 filtrů, 8 konv. bloků & noctx & 0.744 & 0.809 \\
-{} & deep\_ctx\_3 & 0.741 & 0.815 \\
-{} & first\_layers\_ctx & 0.748 & 0.817 \\
-{} & last\_layers\_ctx & 0.749 & 0.819 \\
-{} & 1\_last\_layer\_dilated & 0.753 & 0.817 \\
-{} & 2\_last\_layers\_dilated & 0.758 & 0.819 \\
-{} & 3\_last\_layers\_dilated & 0.757 & 0.817 \\
-{} & 2\_last\_layers\_wavenet & 0.759 & 0.819 \\
-{} & 3\_last\_layers\_wavenet & 0.749 & 0.809 \\
-\arrayrulecolor{black}\bottomrule
-    \end{tabular}
-\caption{Architektura HCNN, Vliv úpravy architektury ovlivňující receptivní pole modelu.}\label{tab:spectrogram_ctx_archs}
-\end{table}
-
 \begin{figure}[h]\centering
     \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/figures/spectrogram_ctx_archs}
 \caption{Architektura HCNN, Vliv úpravy architektury ovlivňující receptivní pole modelu.}\label{obr:spectrogram_ctx_archs}
 \end{figure}
 
-Výsledky uvádíme v tabulce \ref{tab:spectrogram_ctx_archs} a na obrázku \ref{obr:spectrogram_ctx_archs}. Prvním důležitým pozorováním je, že přidaný kontext oproti kontrolní síti bez kontextu výsledky sítí zlepšuje téměř ve všech případech. Sítě tedy jsou schopné přidaný kontext využít k lepším odhadům. Dále vidíme, že síť deep\_ctx\_3 si vede nejhůře ze všech testovaných, tato síť na rozdíl od ostatních neobsahuje žádné konvoluce 1x3, můžeme se tedy domnívat, že konvoluce 3x3 na datech v této architektuře nefungují natolik dobře, jako jejich užší varianty. Je však také možné, že informace o kontextu je pro síť obtížné využít, pokud tato informace má projít dlouhou kaskádou úzkých konvolucí, na které se architektura zakládá.
+Poznamenáme také, že šířka vstupních spektrogramů v ose času je pro každý experiment rozšířena tak, aby konvoluční bloky měly k dispozici všechny potřebné informace pro výpočet hodnot na výstupním oknu. Například pokud tedy síť pro jeden bod anotace využívá také tři předcházející a tři nadcházející okna spektrogramu, rozšíříme vstupní spektrogram z obou stran o tři okna.
+
+
+Výsledky uvádíme na obrázku \ref{obr:spectrogram_ctx_archs}, kvůli většímu rozměru tabulku s výsledky přesouváme do přílohy \ref{appendix:hcnn_ctx}. Prvním důležitým pozorováním je, že přidaný kontext oproti kontrolní síti bez kontextu výsledky sítí zlepšuje téměř ve všech případech. Sítě tedy jsou schopné přidaný kontext využít k lepším odhadům. Dále vidíme, že síť deep\_ctx\_3 si vede nejhůře ze všech testovaných, tato síť na rozdíl od ostatních neobsahuje žádné konvoluce 1x3, můžeme se tedy domnívat, že konvoluce 3x3 na datech v této architektuře nefungují natolik dobře, jako jejich užší varianty. Je však také možné, že informace o kontextu je pro síť obtížné využít, pokud tato informace má projít dlouhou kaskádou úzkých konvolucí, na které se architektura deep\_ctx\_3 zakládá.
 
 Nejlepší výsledek podává mělká architektura se čtyřmi bloky, jde o konfiguraci s 16 filtry, 4 konvolučními bloky a architekturou 3\_last\_layers\_wavenet, tato architektura tedy obsahuje pouze jednu konvoluční vrstvu šířky 1x3 a pak následují dilatované konvoluce 3x3.
 
@@ -701,7 +650,7 @@ Z článku SpecAugment implementujeme vynechávání frekvenčních pásem a ča
 \caption{Architektura HCNN, vliv použití SpecAugment na vstupní spektrogramy.}\label{obr:hcnn_specaugment}
 \end{figure}
 
-\begin{table}[h!]
+\begin{table}[h]
 \centering
     \begin{tabular}{lrr}
     \toprule

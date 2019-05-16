@@ -26,8 +26,6 @@
 % \let\openright=\cleardoublepage
 \usepackage[rgb,hyperref,usenames,table]{xcolor}  % barevná sazba
 
-
-
 %% Vytváříme PDF/A-2u
 \usepackage[a-2u]{pdfx}
 
@@ -109,18 +107,22 @@ Poděkování.
 
 % Abstrakt (doporučený rozsah cca 80-200 slov; nejedná se o zadání práce)
 \def\Abstrakt{%
-Abstrakt.
+Extrakce melodie patří mezi nejdůležitější a nejtěžší úlohy oboru Music Information Retrieval, jejíž šíře uplatnění zahrnuje zlepšení metod pro vyhledávání v hudebních datech (například pomocí zabroukání části skladby), automatický přepis improvizovaných sólových pasáží nebo zpracování zvukových nahrávek pro muzikologické studie. Právě melodie je totiž tím hlavním, co si člověk po poslechu skladby odnáší a zpětně vybavuje a z podstaty se tedy často jedná o její nejvýraznější rys. Přítomnost hudebního doprovodu, který melodii podbarvuje a dává možnost jí vyniknout, však pro dosavadní rigidní algoritmické metody znemožňuje její průběh spolehlivě zachytit. V posledních letech se proto obor posouvá směrem k využívání metod hlubokého učení, díky kterému je možné napodobit intuitivní schopnost člověka rozeznat melodii v nahrávce. Na tyto práce navazujeme a představujeme nové metody, zejména pak architekturu \emph{Harmonic Convolutional Neural Network}, založenou na úpravě vnitřního uspořádání obvyklých konvolučních sítí, pro snažší zachycení harmonické povahy jednotlivých tónů, která překonává poslední state-of-the-art metody na většině veřejně dostupných datasetech.
+
+
 }
 \def\AbstraktEN{%
-Abstract.
+
+\textcolor{red}{koukám, že šablona mi tu pasivně agresivně naznačuje, že abstrakt mám moc dlouhý, zítra to ještě seškrtám.}
+
 }
 
 % 3 až 5 klíčových slov (doporučeno), každé uzavřeno ve složených závorkách
 \def\KlicovaSlova{%
-{klíčová} {slova}
+{Music Information Retrieval} {Extrakce Melodie} {Odhad F0} {Hluboké učení} {Harmonická konvoluční neuronová síť}
 }
 \def\KlicovaSlovaEN{%
-{key} {words}
+{Music Information Retrieval} {Melody Extraction} {F0 estimation} {Deep Learning} {Harmonic Convolutional Neural Network}
 }
 
 %% Balíček hyperref, kterým jdou vyrábět klikací odkazy v PDF,
@@ -184,6 +186,59 @@ Abstract.
 
 % \appendix
 % \chapter{Přílohy}
+
+\section{Architektura HCNN, Vliv úpravy architektury ovlivňující receptivní pole modelu}\label{appendix:hcnn_ctx}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llrr}
+
+\toprule
+Konfigurace bloků & Úprava architektury &   RPA &   RCA \\
+\midrule
+8 filtrů, 4 konv. bloky & noctx & 0.722 & 0.786 \\
+{} & deep\_ctx\_3 & 0.728 & 0.796 \\
+{} & first\_layers\_ctx & 0.728 & 0.795 \\
+{} & last\_layers\_ctx & 0.737 & 0.800 \\
+{} & 1\_last\_layer\_dilated & 0.733 & 0.797 \\
+{} & 2\_last\_layers\_dilated & 0.733 & 0.796 \\
+{} & 3\_last\_layers\_dilated & 0.731 & 0.796 \\
+{} & 2\_last\_layers\_wavenet & 0.733 & 0.798 \\
+{} & 3\_last\_layers\_wavenet & 0.745 & 0.804 \\
+\arrayrulecolor{black!30}\midrule
+16 filtrů, 4 konv. bloky & noctx & 0.737 & 0.802 \\
+{} & deep\_ctx\_3 & 0.744 & 0.806 \\
+{} & first\_layers\_ctx & 0.744 & 0.804 \\
+{} & last\_layers\_ctx & 0.757 & 0.817 \\
+{} & 1\_last\_layer\_dilated & 0.743 & 0.802 \\
+{} & 2\_last\_layers\_dilated & 0.749 & 0.814 \\
+{} & 3\_last\_layers\_dilated & 0.752 & 0.813 \\
+{} & 2\_last\_layers\_wavenet & 0.754 & 0.813 \\
+{} & 3\_last\_layers\_wavenet & 0.761 & 0.819 \\
+\arrayrulecolor{black!30}\midrule
+8 filtrů, 8 konv. bloků & noctx & 0.732 & 0.801 \\
+{} & deep\_ctx\_3 & 0.735 & 0.796 \\
+{} & first\_layers\_ctx & 0.747 & 0.814 \\
+{} & last\_layers\_ctx & 0.749 & 0.811 \\
+{} & 1\_last\_layer\_dilated & 0.745 & 0.806 \\
+{} & 2\_last\_layers\_dilated & 0.751 & 0.814 \\
+{} & 3\_last\_layers\_dilated & 0.749 & 0.806 \\
+{} & 2\_last\_layers\_wavenet & 0.754 & 0.814 \\
+{} & 3\_last\_layers\_wavenet & 0.751 & 0.803 \\
+\arrayrulecolor{black!30}\midrule
+16 filtrů, 8 konv. bloků & noctx & 0.744 & 0.809 \\
+{} & deep\_ctx\_3 & 0.741 & 0.815 \\
+{} & first\_layers\_ctx & 0.748 & 0.817 \\
+{} & last\_layers\_ctx & 0.749 & 0.819 \\
+{} & 1\_last\_layer\_dilated & 0.753 & 0.817 \\
+{} & 2\_last\_layers\_dilated & 0.758 & 0.819 \\
+{} & 3\_last\_layers\_dilated & 0.757 & 0.817 \\
+{} & 2\_last\_layers\_wavenet & 0.759 & 0.819 \\
+{} & 3\_last\_layers\_wavenet & 0.749 & 0.809 \\
+\arrayrulecolor{black}\bottomrule
+    \end{tabular}
+\caption{Architektura HCNN, Vliv úpravy architektury ovlivňující receptivní pole modelu.}\label{tab:spectrogram_ctx_archs}
+\end{table}
 
 \section{Výsledky detekce melodie testovaných metod}\label{appendix:voicing}
 
