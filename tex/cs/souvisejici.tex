@@ -20,7 +20,7 @@ Výstupem monofonního trackingu je posloupnost frekvencí s maximální salienc
 
     $$\hat{\mathbf{f}} = \argmax_{\mathbf{f}}{[\sum_{\tau}{S_{x_{mono}}(f_\tau, \tau)} + C(\mathbf{f})]}$$
 
-Přejdeme-li k úloze extrakce melodie, obecně se vstupní polyfonní signál $x(t) = x_m(t) + x_d(t)$ skládá ze směsi melodického hlasu $x_m(t)$ a hudebního doprovodu $x_d(t)$, cílem metod pro extrakci je z pohledu přepisu fundamentální frekvence zvýšení robustnosti algoritmu vůči mnohem výraznějšímu druhu šumu - hudebnímu doprovodu $x_d(t)$. Výstupem našeho systému tedy bude posloupnost odhadů frekvence v každém časovém okně vstupního signálu, reprezentovaná vektorem $\hat{\mathbf{f}}$:
+Přejdeme-li k úloze extrakce melodie, vstupní polyfonní signál $x(t) = x_m(t) + x_d(t)$ se zde obecně skládá ze směsi melodického hlasu $x_m(t)$ a hudebního doprovodu $x_d(t)$, cílem metod pro extrakci je z pohledu přepisu fundamentální frekvence zvýšení odolnosti algoritmu vůči mnohem výraznějšímu druhu šumu - hudebnímu doprovodu $x_d(t)$. Výstupem našeho systému tedy bude posloupnost odhadů frekvence v každém časovém okně vstupního signálu, reprezentovaná vektorem $\hat{\mathbf{f}}$:
 
     $$\hat{\mathbf{f}} = \argmax_{\mathbf{f}}{[\sum_{\tau}{S'_x(f_\tau, \tau)} + C'(\mathbf{f})]}$$
 
@@ -37,7 +37,7 @@ Většina existujících metod sdílí podobnou základní strukturu při řeše
 Zvuk hraného tónu na melodickém nástroji je z fyzikálního pohledu periodická změna tlaku vzduchu. Perioda tohoto signálu se nazývá fundamentální frekvence (označujeme F0) a zpravidla je tento signál složen ze součtu řady sinusoid, jejichž frekvence jsou celočíselným násobkem fundamentální frekvence. V čase měnící se amplitudy těchto \emph{harmonických frekvencí} udávají hlasitost a barvu hlasu, výška první harmonické frekvence (tj. výška fundamentální frekvence) pak ve většině případů odpovídá posluchačem vnímané výšce tónu. 
 
 \begin{figure}[h]\centering
-\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/sig_spec_sal}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/sig_spec_sal_grey}
 \caption{Znázornění kroků spektrální analýzy a výpočtu funkce salience.}
 \label{obr:sig_spec_sal}
 \end{figure}
@@ -67,7 +67,7 @@ Kde $N$ je požadovaná velikost okna STFT tranformace (kvůli obvyklé praxi v�
 \subsubsection{Logaritmická osa spektrogramu}
 
 \begin{figure}[h]\centering
-\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/stft_triangular_filters}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/stft_triangular_filters_grey}
 \caption{Příklad trojúhelníkových filtrů pro transformaci frekvenční domény na logaritmickou škálu.}
 \label{obr:stft_triangular_filters}
 \end{figure}
@@ -167,14 +167,14 @@ Důležitou součástí algoritmů pro extrakci melodie je detekce melodie v sig
 \section{Srovnání existujících metod}
 
 \begin{figure}[h]\centering
-\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/mirex_results}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/mirex_results_grey}
 \caption{Výsledky metod v soutěži MIREX v letech 2015-2018 s vybranými metodami ze starších ročníků.}
 \label{obr:mirex_results}
 \end{figure}
 Pro celkové kvantitativní srovnání metod jsme zpracovali výsledky všech ročníků soutěže MIREX. Tuto soutěž a používané datasety blíže popisujeme v kapitole \nameref{cha:evaluace}. V této sekci prezentujeme shrnutí výsledků metod, pro které existují výsledky na všech evaluačních datasetech soutěže MIREX, vybíráme tedy převážně z metod od roku 2015, kdy byl vydán doposud nejnovější evaluační dataset ORCHSET. Díky práci \cite{Bosch2014}, který starší metody spustil na svém datasetu ORCHSET, můžeme ke srovnání přidat také výsledky metod \cite{Dressler2009}, \cite{Salamon2012a} a \cite{Durrieu2010}. Celkové srovnání nalezneme v tabulce \ref{obr:mirex_results}. Na základě těchto výsledků vybíráme metodu \cite{Salamon2012a}, jejíž implementace je volně dostupná a spolu s prací \cite{Dressler2009} dosahuje v průměru na datasetech MIREX nejlepších výsledků. V této práci ji lze považovat také jako zástupce metod, které nejsou založeny na strojovém učení.\footnote{Pro metodu \cite{Dressler2009} implementace zveřejněná není.}
 
 \begin{figure}[h]\centering
-\includegraphics[scale=0.5]{../img/mirex_results_cumulative}
+\includegraphics[scale=0.5]{../img/mirex_results_cumulative_grey}
 \caption{Stagnující vývoj metod pro extrakci melodie.}
 \label{obr:mirex_results_cumulative}
 \end{figure}
@@ -188,7 +188,7 @@ Pro srovnání metod představovaných v této práci spouštíme metody \cite{S
 
 Poznamenáme, že implementace algoritmu \cite{Salamon2012a} existují dvě, druhá v rámci knihovny Essentia,\footnote{https://essentia.upf.edu/documentation/} tato implementace však v porovnání s implementací VAMP podávala výrazně horší výsledky napříč datasety. V kapitole Výsledky proto používáme implementaci VAMP.
 
-Pokusili jsme se také o replikaci výsledků \cite{Bosch2014}, bohužel se nám ale kvůli nekompatibilitě mezi verzemi knihoven nepodařilo tuto 5 let starou metodu spustit
+Pokusili jsme se také o replikaci výsledků \cite{Bosch2014}, bohužel se nám ale kvůli nekompatibilitě mezi verzemi knihoven nepodařilo tuto 5 let starou metodu spustit.
 
 % Pro srovnání jsme se také pokusili spustit metodu \cite{Durrieu2010}, délka běhu algoritmu je však při zachování výchozího nastavení parametrů neúnosně dlouhá, 23 minut dat (ORCHSET) nám trvalo zpracovat dva dny. Tudíž její spuštění na větší korpusy (MedleyDB, WJazzD) je mimo možnosti autora práce.
 

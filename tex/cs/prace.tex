@@ -3,27 +3,27 @@
 %% Verze pro jednostranný tisk:
 % Okraje: levý 40mm, pravý 25mm, horní a dolní 25mm
 % (ale pozor, LaTeX si sám přidává 1in)
-\documentclass[12pt,a4paper]{report}
-\setlength\textwidth{145mm}
-\setlength\textheight{247mm}
-\setlength\oddsidemargin{15mm}
-\setlength\evensidemargin{15mm}
-\setlength\topmargin{0mm}
-\setlength\headsep{0mm}
-\setlength\headheight{0mm}
-% \openright zařídí, aby následující text začínal na pravé straně knihy
-\let\openright=\clearpage
-
-%% Pokud tiskneme oboustranně:
-% \documentclass[12pt,a4paper,twoside,openright]{report}
+% \documentclass[12pt,a4paper]{report}
 % \setlength\textwidth{145mm}
 % \setlength\textheight{247mm}
-% \setlength\oddsidemargin{14.2mm}
-% \setlength\evensidemargin{0mm}
+% \setlength\oddsidemargin{15mm}
+% \setlength\evensidemargin{15mm}
 % \setlength\topmargin{0mm}
 % \setlength\headsep{0mm}
 % \setlength\headheight{0mm}
-% \let\openright=\cleardoublepage
+% % \openright zařídí, aby následující text začínal na pravé straně knihy
+% \let\openright=\clearpage
+
+%% Pokud tiskneme oboustranně:
+\documentclass[12pt,a4paper,twoside,openright]{report}
+\setlength\textwidth{145mm}
+\setlength\textheight{247mm}
+\setlength\oddsidemargin{14.2mm}
+\setlength\evensidemargin{0mm}
+\setlength\topmargin{0mm}
+\setlength\headsep{0mm}
+\setlength\headheight{0mm}
+\let\openright=\cleardoublepage
 \usepackage[rgb,hyperref,usenames,table]{xcolor}  % barevná sazba
 
 %% Vytváříme PDF/A-2u
@@ -87,11 +87,11 @@
 \def\TypPracovisteEN{Institute}
 
 % Vedoucí práce: Jméno a příjmení s~tituly
-\def\Vedouci{Mgr. Jan Hajič \textcolor{red}{Ph.D.??}}
+\def\Vedouci{Mgr. Jan Hajič}
 
 % Pracoviště vedoucího (opět dle Organizační struktury MFF)
-\def\KatedraVedouciho{ústav}
-\def\KatedraVedoucihoEN{institute}
+\def\KatedraVedouciho{Ústav formální a aplikované lingvistiky}
+\def\KatedraVedoucihoEN{Institute of Formal and Applied Linguistics}
 
 % Studijní program a obor
 \def\StudijniProgram{Informatika}
@@ -100,21 +100,20 @@
 % Nepovinné poděkování (vedoucímu práce, konzultantovi, tomu, kdo
 % zapůjčil software, literaturu apod.)
 \def\Podekovani{%
-Poděkování.
-
-.
+Rád bych tímto poděkoval svému vedoucímu práce Mgr. Janu Hajičovi za jeho trpělivé, dlouhodobé směřování, podnětné připomínky a za pečlivou pomoc při psaní textu, bez jeho vhledu by se tato práce neobešla. Díky patří také Ondřeji Plátkovi za zkušenosti, které mi předal v době společné spolupráce, díky nim jsem tuto práci mohl stavět na pevných základech, které mi před rokem chyběly. V neposlední řadě bych chtěl také poděkovat své rodině a blízkým za podporu při psaní.
 }
 
 % Abstrakt (doporučený rozsah cca 80-200 slov; nejedná se o zadání práce)
 \def\Abstrakt{%
-Extrakce melodie patří mezi nejdůležitější a nejtěžší úlohy oboru Music Information Retrieval, jejíž šíře uplatnění zahrnuje zlepšení metod pro vyhledávání v hudebních datech (například pomocí zabroukání části skladby), automatický přepis improvizovaných sólových pasáží nebo zpracování zvukových nahrávek pro muzikologické studie. Právě melodie je totiž tím hlavním, co si člověk po poslechu skladby odnáší a zpětně vybavuje a z podstaty se tedy často jedná o její nejvýraznější rys. Přítomnost hudebního doprovodu, který melodii podbarvuje a dává možnost jí vyniknout, však pro dosavadní rigidní algoritmické metody znemožňuje její průběh spolehlivě zachytit. V posledních letech se proto obor posouvá směrem k využívání metod hlubokého učení, díky kterému je možné napodobit intuitivní schopnost člověka rozeznat melodii v nahrávce. Na tyto práce navazujeme a představujeme nové metody, zejména pak architekturu \emph{Harmonic Convolutional Neural Network}, založenou na úpravě vnitřního uspořádání obvyklých konvolučních sítí, pro snažší zachycení harmonické povahy jednotlivých tónů, která překonává poslední state-of-the-art metody na většině veřejně dostupných datasetech.
+Extrakce melodie patří mezi nejdůležitější a nejtěžší úlohy oboru Music Information Retrieval, právě melodie je totiž tím hlavním, co si člověk po poslechu skladby odnáší a z podstaty se tedy často jedná o její nejvýraznější rys. Přítomnost hudebního doprovodu, který melodii podbarvuje, však pro algoritmické metody znemožňuje její průběh spolehlivě zachytit. V posledních letech se proto obor posouvá směrem k využívání metod hlubokého učení, které jsou schopny dřívější pravidlové systémy překonat. Na tyto práce navazujeme, představujeme tři nové metody a experimentálně ověřujeme volby, které jsme při jejich návrhu učinili. Ukazujeme, že nová architektura \emph{Harmonic Convolutional Neural Network}, založená na úpravě vnitřního uspořádání obvyklé konvoluční sítě, díky které je schopna lépe zachytit harmonickou povahu jednotlivých tónů ze vstupních spektrogramů s logaritmickou osou frekvence, překonává state-of-the-art metody pro extrakci melodie na většině veřejně dostupných datasetech.
 
+% díky kterému je možné napodobit intuitivní schopnost člověka rozeznat melodii v nahrávce
 
+% jejíž šíře uplatnění zahrnuje zlepšení metod pro vyhledávání v hudebních datech (například pomocí zabroukání části skladby), automatický přepis improvizovaných sólových pasáží nebo zpracování zvukových nahrávek pro muzikologické studie.
 }
 \def\AbstraktEN{%
-
-\textcolor{red}{koukám, že šablona mi tu pasivně agresivně naznačuje, že abstrakt mám moc dlouhý, zítra to ještě seškrtám.}
-
+Melody extraction is arguably one of the most important and challenging problems in Music Information Retrieval. It is melody that we are likely to recall after listening to a song and so it is one of the most relevant aspects of music. However the presence of accompaniment in songs makes the task hard to address using rule-based methods. During the last years data-driven methods based on deep learning started to outperform methods traditionally used in the field. In this thesis we continue in these efforts and propose three new methods for melody extraction. Among these an architecture called \emph{Harmonic Convolutional Neural Network}, based on a modification of convolutional neural networks to better capture harmonically related information in an input spectrogram with logarithmic frequency axis, was able to achieve state-of-the-art performance on several publicly available melody datasets.
+ 
 }
 
 % 3 až 5 klíčových slov (doporučeno), každé uzavřeno ve složených závorkách
@@ -208,6 +207,7 @@ HCNN & Harmonic Convolutional Neural Network \\
 
 \begin{table}[h]
 \centering
+\scalebox{0.90}{%
 \begin{tabular}{llrr}
 
 \toprule
@@ -253,54 +253,10 @@ Konfigurace bloků & Úprava architektury &   RPA &   RCA \\
 {} & 2\_last\_layers\_wavenet & 0.759 & 0.819 \\
 {} & 3\_last\_layers\_wavenet & 0.749 & 0.809 \\
 \arrayrulecolor{black}\bottomrule
-    \end{tabular}
+\end{tabular}
+}%
 \caption{Architektura HCNN, Vliv úpravy architektury ovlivňující receptivní pole modelu.}\label{tab:spectrogram_ctx_archs}
 \end{table}
-
-\section{Výsledky detekce melodie testovaných metod}\label{appendix:voicing}
-
-\begin{table}[h]
-\centering
-\scalebox{1.0}{%
-\begin{tabular}{lrrrrrr}
-\toprule
-Metoda & ADC04 & \shortstack[r]{MDB-m-s\\ test} & \shortstack[r]{MIREX05\\train.} & \shortstack[r]{MDB\\test} & \shortstack[r]{ORCH-\\SET} & \shortstack[r]{WJazzD\\test} \\
-\midrule
-\arrayrulecolor{black!30}\midrule
-    Salamon &          0.774 &       \bf{0.729}&      \bf{0.841}&         0.705 &       0.603 &       0.794 \\
-    Bittner &          0.796 &           0.638 &          0.796 &         0.675 &       0.614 &       0.846 \\
-    Basaran &          0.732 &           0.704 &          0.713 &         0.676 &       0.605 &       0.841 \\
-      CREPE &          0.584 &           0.431 &          0.576 &         0.449 &       0.326 &       0.680 \\
-    WaveNet &          0.765 &           0.595 &          0.747 &         0.618 &       0.494 &       0.784 \\
- HCNN noctx &      \bf{0.806}&           0.684 &          0.824 &         0.728 &   \bf{0.729}&   \bf{0.880}\\
-       HCNN &          0.794 &           0.692 &          0.836 &     \bf{0.741}&       0.721 &       0.872 \\
-\arrayrulecolor{black}\bottomrule
-\end{tabular}
-}%
-\caption{Výsledky úplnosti detekce (Voicing Recall).}\label{tab:vysledky_VR}
-\end{table}
-\begin{table}[h]
-\centering
-\scalebox{1.0}{%
-\begin{tabular}{lrrrrrr}
-\toprule
-Metoda & ADC04 & \shortstack[r]{MDB-m-s\\ test} & \shortstack[r]{MIREX05\\train.} & \shortstack[r]{MDB\\test} & \shortstack[r]{ORCH-\\SET} & \shortstack[r]{WJazzD\\test} \\
-\midrule
-\arrayrulecolor{black!30}\midrule
-    Salamon &      \bf{0.103}&           0.394 &          0.263 &         0.300 &        0.385 &       0.271 \\
-    Bittner &          0.278 &           0.273 &          0.308 &         0.306 &        0.490 &       0.333 \\
-    Basaran &          0.188 &           0.271 &      \bf{0.160}&         0.290 &        0.407 &       0.274 \\
-      CREPE &          0.178 &       \bf{0.252}&          0.171 &     \bf{0.243}&    \bf{0.235}&   \bf{0.213}\\
-    WaveNet &          0.311 &           0.383 &          0.387 &         0.397 &        0.426 &       0.370 \\
- HCNN noctx &          0.246 &           0.312 &          0.336 &         0.333 &        0.535 &       0.339 \\
-       HCNN &          0.222 &           0.258 &          0.278 &         0.310 &        0.511 &       0.300 \\
-\arrayrulecolor{black}\bottomrule
-\end{tabular}
-}%
-\caption{Výsledky nesprávné detekce (Voicing False Alarm). Nižší hodnota je lepší.}\label{tab:vysledky_VFA}
-\end{table}
-
-
 
 \openright
 \end{document}

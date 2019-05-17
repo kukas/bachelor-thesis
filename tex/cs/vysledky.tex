@@ -8,6 +8,8 @@ Pro srovnání jsme vybrali nejlepší natrénované modely z kapitoly \nameref{
 
 Všechny testované modely mají společnou reprezentaci cílového výstupu při trénování. Rozlišení diskretizace výšky noty je nastaveno na 5 hodnot na půltón, rozptyl distribuce výšky noty je nastaven na 0.18, na základě experimentů v sekci \nameref{sec:crepe}.
 
+Modely byly trénovány pomocí grafické karty NVIDIA GeForce GTX 1070.
+
 \subsection{Architektura CREPE}
 
 Zvolený model dosáhl na validačních datech přesnosti odhadu výšky 0.682 a přesnosti odhadu výšky nezávisle na oktávě 0.783. Počet trénovatelných parametrů tohoto modelu je $2\,016\,350$. Proběhlo $360\,000$ iterací trénování. Trénování probíhalo přes dvě hodiny. Parametry vybrané architektury uvádíme v tabulce \ref{tab:crepe_hyperparams}.
@@ -97,17 +99,17 @@ Zvolený model dosáhl na validačních datech přesnosti odhadu výšky 0.755 a
 
 \subsection{Detekce melodie}
 
-Pro detekci melodie jsme použili techniku práhování. Pro odhad přítomnosti melodie nalezneme maximální hodnotu funkce salience v daném okamžiku --- pokud tato hodnota přesahuje jistý práh, daný časový okamžik se uvažuje jako obsahující melodii. Konkrétní nastavení práhu jsme určili na základě validačních dat pro každou metodu zvlášť. Tato metoda práhování je použita například také v práci \cite{Bittner2017}.
+Pro detekci melodie z vypočítané funkce salience jsme použili techniku práhování (thresholding). Pro odhad přítomnosti melodie nalezneme maximální hodnotu funkce salience v daném okamžiku --- pokud tato hodnota přesahuje jistý práh, daný časový okamžik se uvažuje jako obsahující melodii. Konkrétní nastavení práhu jsme určili na základě validačních dat pro každou metodu zvlášť. Tato metoda práhování je použita například také v práci \cite{Bittner2017}.
 
 \section{Kvantitativní srovnání}
 
 % , která je představuje evaluační páteř oboru a je každoročně pořádána pro nezávislé srovnávání metod úloh Music Information Retrieval
 
-V tabulkách \ref{tab:vysledky_OA}, \ref{tab:vysledky_RPA} a \ref{tab:vysledky_RCA} prezentujeme výsledky nově představovaných metod v porovnání s velmi silnými baseline metodami pro extrakci melodie. Jak uvádíme v kapitole \nameref{cha:souvisejici}, práce \cite{Salamon2012a} dosahuje spolu s prací \cite{Dressler2009} v průměru nejlepších výsledků v soutěži MIREX. Práce \cite{Bittner2017} a \cite{DBasaranSEssid2018} představují metody, které dosahují nejlepších výsledků na prozatím nejrozmanitějším datasetu MedleyDB. 
+V tabulkách \ref{tab:vysledky_OA}, \ref{tab:vysledky_RPA}, \ref{tab:vysledky_RCA}, \ref{tab:vysledky_VR} a \ref{tab:vysledky_VFA} prezentujeme výsledky nově představovaných metod v porovnání s velmi silnými baseline metodami pro extrakci melodie. Jak uvádíme v kapitole \nameref{cha:souvisejici}, práce \cite{Salamon2012a} dosahuje spolu s prací \cite{Dressler2009} v průměru nejlepších výsledků v soutěži MIREX. Práce \cite{Bittner2017} a \cite{DBasaranSEssid2018} představují metody, které dosahují nejlepších výsledků na prozatím nejrozmanitějším datasetu MedleyDB. 
 
 Pro srovnání metod používáme datasety ADC04, MIREX05train a ORCHSET, které jsme v práci vyhradili pouze pro testování. Také používáme testovací množiny datasetů MedleyDB a MDB-melody-synth, převzaté z prací \cite{Bittner2017} a \cite{DBasaranSEssid2018}, pro dataset WJazzD používáme vlastní testovací množinu. Metodika výběru příkladů do testovací množiny WJazzD je popsána v kapitole \nameref{cha:datasety}, všechny množiny jsou výčtem popsány v elektronické příloze.
 
-Protože se v práci zaměřujeme zejména na odhad výšky, v tabulkách uvádíme standardní metriky celkové přesnosti (OA), přesnosti odhadu výšky (RPA) a přesnosti odhadu výšky nezávisle na oktávě (RCA). Metriky pro evaluaci detekce melodie (úplnost detekce a nesprávné detekce) přikládáme do přílohy \ref{appendix:voicing}. Připomínáme však, že metrika celkové přesnosti (OA) zahrnuje vyhodnocení odhadu výšky i vyhodnocení detekce melodie. K vyhodnocování používáme knihovnu \texttt{mir\_eval}, která poskytuje transparentní a standardizovaný způsob výpočtu metrik pro úlohy oboru Music Information Retrieval.
+V následujících tabulkách uvádíme standardní metriky, používané pro srovnání metod pro extrakci melodie, jde o metriky celkové přesnosti (OA), přesnosti odhadu výšky (RPA), přesnosti odhadu výšky nezávisle na oktávě (RCA), úplnosti detekce melodie (VR) a nesprávné detekce (VFA). Připomínáme, že metrika celkové přesnosti (OA) zahrnuje vyhodnocení odhadu výšky i vyhodnocení detekce melodie, zbylé metriky měří úspěšnost pouze jedné z obou podúloh. K vyhodnocování používáme knihovnu \texttt{mir\_eval}, která poskytuje transparentní a standardizovaný způsob výpočtu metrik pro úlohy oboru Music Information Retrieval.
 
 \begin{table}[p]
 \centering
@@ -172,6 +174,49 @@ Metoda & ADC04 & \shortstack[r]{MDB-m-s\\ test} & \shortstack[r]{MIREX05\\train.
 \caption{Výsledky přesnosti odhadu výšky nezávisle na oktávě (Raw Chroma Accuracy). Vyznačené výsledky jsou pro daný dataset nejvyšší z porovnávaných v rámci daného datasetu.}\label{tab:vysledky_RCA}
 \end{table}
 
+
+\begin{table}[h]
+\centering
+\scalebox{1.0}{%
+\begin{tabular}{lrrrrrr}
+\toprule
+Metoda & ADC04 & \shortstack[r]{MDB-m-s\\ test} & \shortstack[r]{MIREX05\\train.} & \shortstack[r]{MDB\\test} & \shortstack[r]{ORCH-\\SET} & \shortstack[r]{WJazzD\\test} \\
+\midrule
+\arrayrulecolor{black!30}\midrule
+    Salamon &          0.774 &       \bf{0.729}&      \bf{0.841}&         0.705 &       0.603 &       0.794 \\
+    Bittner &          0.796 &           0.638 &          0.796 &         0.675 &       0.614 &       0.846 \\
+    Basaran &          0.732 &           0.704 &          0.713 &         0.676 &       0.605 &       0.841 \\
+      CREPE &          0.584 &           0.431 &          0.576 &         0.449 &       0.326 &       0.680 \\
+    WaveNet &          0.765 &           0.595 &          0.747 &         0.618 &       0.494 &       0.784 \\
+ HCNN noctx &      \bf{0.806}&           0.684 &          0.824 &         0.728 &   \bf{0.729}&   \bf{0.880}\\
+       HCNN &          0.794 &           0.692 &          0.836 &     \bf{0.741}&       0.721 &       0.872 \\
+\arrayrulecolor{black}\bottomrule
+\end{tabular}
+}%
+\caption{Výsledky úplnosti detekce (Voicing Recall).}\label{tab:vysledky_VR}
+\end{table}
+\begin{table}[h]
+\centering
+\scalebox{1.0}{%
+\begin{tabular}{lrrrrrr}
+\toprule
+Metoda & ADC04 & \shortstack[r]{MDB-m-s\\ test} & \shortstack[r]{MIREX05\\train.} & \shortstack[r]{MDB\\test} & \shortstack[r]{ORCH-\\SET} & \shortstack[r]{WJazzD\\test} \\
+\midrule
+\arrayrulecolor{black!30}\midrule
+    Salamon &      \bf{0.103}&           0.394 &          0.263 &         0.300 &        0.385 &       0.271 \\
+    Bittner &          0.278 &           0.273 &          0.308 &         0.306 &        0.490 &       0.333 \\
+    Basaran &          0.188 &           0.271 &      \bf{0.160}&         0.290 &        0.407 &       0.274 \\
+      CREPE &          0.178 &       \bf{0.252}&          0.171 &     \bf{0.243}&    \bf{0.235}&   \bf{0.213}\\
+    WaveNet &          0.311 &           0.383 &          0.387 &         0.397 &        0.426 &       0.370 \\
+ HCNN noctx &          0.246 &           0.312 &          0.336 &         0.333 &        0.535 &       0.339 \\
+       HCNN &          0.222 &           0.258 &          0.278 &         0.310 &        0.511 &       0.300 \\
+\arrayrulecolor{black}\bottomrule
+\end{tabular}
+}%
+\caption{Výsledky nesprávné detekce (Voicing False Alarm). Nižší hodnota je lepší.}\label{tab:vysledky_VFA}
+\end{table}
+
+
 \subsection{Popis výsledků}
 
 Metody HCNN a HCNN noctx překonávají srovnávané algoritmy v metrikách celkové přesnosti (OA), přesnosti odhadu výšky (RPA) a přesnosti odhadu výšky nezávisle na oktávě (RCA) na datasetech ADC04, MIREX05train a WJazzD. Metoda HCNN pak překonává všechny srovnávané přístupy i na datasetu MedleyDB. Na obrázku \ref{obr:final_medleydb} porovnáváme rozdělení dosažených výsledků na datasetu MedleyDB, na uvedeném krabicovém grafu lze navíc porovnat rozptyl výsledků. V metrice RCA metody HCNN dosahují menší variability na sadě testovacích příkladů. Na zbylých datasetech MDB-melody-synth a ORCHSET překonává architektura HCNN ve všech uvažovaných metrikách pouze práce \cite{Salamon2012a} a \cite{Bittner2017}.
@@ -180,7 +225,7 @@ Co se týče zbylých architektur CREPE a WaveNet, v metrikách přesnosti odhad
 
 Podle očekávání na základě výsledků ze soutěže MIREX se na datasetu ORCHSET výsledky algoritmů liší nejvíce, v některých případech až o desítky procent. Jak popisujeme v kapitole \nameref{cha:datasety}, dataset je složen z orchestrálních nahrávek a kvůli vysokému stupni polyfonie a rozmanitým kombinacím barev nástrojů se jedná pro metody extrakce melodie o velmi náročný materiál. Naopak nejblíže, zejména v metrikách RPA a RCA, jsou si výsledky na datasetech ADC04, MIREX05train a WJazzD. Výňatky v těchto datasetech často obsahují velmi zřetelnou melodii a v porovnání s datasetem MedleyDB je jejich hudební obsah žánrově homogenní.
 
-Vzhledem k dosaženým výsledkům, jednoduchosti sítí a rychlému trénování považujeme návrh architektury HCNN jako nadějný pro další rozšiřování. Abychom mohli uvedené výsledky interpretovat, provedeme nejprve také kvalitativní srovnání algoritmů. 
+Vzhledem k dosaženým výsledkům, jednoduchosti sítí a rychlému trénování považujeme návrh architektury HCNN jako nadějný podklad pro navazující práci. Abychom mohli uvedené výsledky interpretovat, provedeme nejprve také kvalitativní srovnání algoritmů. 
 
 % \textcolor{red}{dopsat}
 % - basaran má vyhlazování, bittnerová ne, tu překovávám vždy (porovnat velikosti oken)
@@ -204,11 +249,11 @@ Na základě kvantitativního vyhodnocení vybíráme metody Bittnerové a Basar
 
 \begin{figure}[h]\centering
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/vysledky/mirex05_train01}
-\caption{Příklad s vysokou úspěšností přepisu \texttt{mirex05\_train01} z datasetu MIREX05train, se kterým je čtenář seznámen z úvodu práce.}
+\caption{Příklad s vysokou úspěšností přepisu \texttt{train01} z datasetu MIREX05\-train, se kterým je čtenář seznámen z úvodu práce.}
 \label{obr:mirex05_train01}
 \end{figure}
 
-Na obrázku \ref{obr:mirex05_train01} můžeme vidět výsledky metod spuštěných na popové nahrávce, ve které melodii nese hlas zpěvačky. Napříč metodami je přepis této nahrávky, kterou uvádíme v úvodu práce, velmi spolehlivý, přesnost odhadu výšky se pohybuje mezi 0.86 a 0.89. Protože v následujících srovnáních ukazujeme zejména chyby přepisu a metody porovnáváme na obtížných příkladech, nechceme, aby si po přečtení sekce čtenář odnesl, že existující metody přepisu nefungují. Proto uvádíme tento příklad jako pozitivní ukázku toho, že na obvyklých vstupních datech všechny porovnávané metody fungují velmi dobře.
+Na obrázku \ref{obr:mirex05_train01} můžeme vidět výsledky metod spuštěných na popové nahrávce, ve které melodii nese hlas zpěvačky. Napříč metodami je přepis této nahrávky, kterou uvádíme v úvodu práce, velmi spolehlivý, přesnost odhadu výšky se pohybuje mezi 0.86 a 0.89. Protože v následujících srovnáních ukazujeme zejména chyby přepisu a metody porovnáváme na obtížných příkladech, nechceme, aby si po přečtení sekce čtenář odnesl, že existující metody přepisu nefungují. Proto uvádíme tento příklad (obr. \ref{obr:mirex05_train01}) jako pozitivní ukázku toho, že na obvyklých vstupních datech všechny porovnávané metody fungují velmi dobře.
 
 
 % \begin{table}[h]
@@ -231,13 +276,13 @@ Na obrázku \ref{obr:mirex05_train01} můžeme vidět výsledky metod spuštěn�
 % \end{table}
 \begin{figure}[h]\centering
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/vysledky/orchset_Musorgski-Ravel-PicturesExhibition-ex6}
-\caption{Výstup metod na testovacím souboru \texttt{Musorgski-Ravel-PicturesExhibition-ex6} z datasetu ORCHSET.}
+\caption{Výstup metod na testovacím souboru \texttt{Musorg\allowbreak{}ski\-Ravel\-Pictures\allowbreak{}Exhibition\-ex6} z datasetu ORCHSET.}
 \label{obr:orchset_Musorgski-Ravel-PicturesExhibition-ex6}
 \end{figure}
 
 \begin{figure}[h]\centering
 \includegraphics[scale=0.4]{../img/vysledky/orchset_Musorgski-Ravel-PicturesExhibition-ex6_salience}
-\caption{Výstupní salience metody HCNN na testovacím souboru \texttt{Musorgski-Ravel-PicturesExhibition-ex6} z datasetu ORCHSET.}
+\caption{Výstupní salience metody HCNN na testovacím souboru \texttt{Musorg\allowbreak{}ski\-Ravel\-Pictures\allowbreak{}Exhibition\-ex6} z datasetu ORCHSET.}
 \label{obr:orchset_Musorgski-Ravel-PicturesExhibition-ex6_salience}
 \end{figure}
 
@@ -267,7 +312,7 @@ Největší slabinou sítě HCNN noctx se stala podle očekávání časová kon
 
 \begin{figure}[h]\centering
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/vysledky/wjazzd_CannonballAdderley_SoWh}
-\caption{Detail přepisu metod na testovacím souboru \texttt{CannonballAdderley\_SoWhat} z datasetu WJazzD.}
+\caption{Detail přepisu metod na testovacím souboru \texttt{Cannonball\allowbreak{}Adderley\allowbreak{}\_\allowbreak{}So\allowbreak{}What} z datasetu WJazzD.}
 \label{obr:wjazzd_CannonballAdderley_SoWhat_detail}
 \end{figure}
 
@@ -293,7 +338,7 @@ Basaranova metoda pro tuto koherenci výsledných kontur však obětovala frekve
 % \label{obr:wjazzd_CannonballAdderley_SoWhat}
 % \end{figure}
 
-\caption{Přesnost metod na testovacím souboru \texttt{CannonballAdderley\_SoWhat} z datasetu WJazzD.}\label{tab:wjazzd_CannonballAdderley_SoWhat}
+\caption{Přesnost metod na testovacím souboru \texttt{Cannonball\allowbreak{}Adderley\allowbreak{}\_So\allowbreak{}What} z datasetu WJazzD.}\label{tab:wjazzd_CannonballAdderley_SoWhat}
 \end{table}
 
 
@@ -312,7 +357,7 @@ Dalším problémem Basaranovy metody je zhoršená schopnost extrakce na syntet
 
 \begin{figure}[h]\centering
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{../img/vysledky/mdb_MatthewEntwistle_FairerHopes}
-\caption{Výstup metod na testovacím souboru \texttt{MatthewEntwistle\_FairerHopes} z datasetu MedleyDB.}
+\caption{Výstup metod na testovacím souboru \texttt{Matthew\allowbreak{}Entwistle\allowbreak{}\_Fairer\allowbreak{}Hopes} z datasetu MedleyDB.}
 \label{obr:mdb_MatthewEntwistle_FairerHopes}
 \end{figure}
 Pokud srovnáme metody HCNN a metodu Bittner, rozdílem v predikcích jsou zejména jiné priority, které přiřazují barvám hlasů. Lze tudíž nalézt mnoho příkladů, kde HCNN zároveň přepisuje melodii a nesprávně místy přeskakuje k nástrojům v doprovodu, zatímco metoda Bittnerové na stejném příkladu tuto chybu nedělá, podobně však existují i opačné příklady. Příkladem, ve kterém se tyto metody nejvíce rozchází, je soubor \texttt{MatthewEntwistle\_FairerHopes} z kolekce MedleyDB, ve kterém melodii hraje harfa. Zvuk harfy se však nevyskytuje v množině trénovacích dat, rozdílem proto je, že zatímco metoda HCNN zvládá alespoň částečně generalizovat i na tuto dosud neslyšenou barvu hlasu, metoda Bittnerové tyto tóny úplně ignoruje a přepisuje doprovod pod harfou (viz obrázek \ref{obr:mdb_MatthewEntwistle_FairerHopes}).
@@ -322,6 +367,10 @@ Pokud srovnáme metody HCNN a metodu Bittner, rozdílem v predikcích jsou zejm�
 Zásadní výhodou metody Basaran oproti HCNN a Bittner je zpracování výsledků funkce salience pomocí rekuretní sítě. Tento rozdíl spolu s jinou výchozí časově-frekvenční reprezentací signálu jeho metodu zvýhodňuje zejména na datasetu ORCHSET, kde jeho metoda v metrice RPA dosahuje o deset procentních bodů lepších výsledků. Pro metodu Basaran je na tomto datasetu také výhodné, že jeho referenční anotace mají půltónové frekvenční rozlišení, tedy stejné, jako výstup této metody. Tudíž jeho metoda při použití tohoto hrubého rozlišení nijak netratí. Na zbylých datasetech se však nižší frekvenční rozlišení projevuje více a metodu pravděpodobně spíše znevýhodňuje. Přesto jsou jeho predikce, zejména pak na složitějších vstupních datech, často koherentnější, obsahují méně šumu. 
 
 Výsledky HCNN a Bittner jsou si oproti výsledkům metody Basaran mnohem podobnější, ačkoliv je mezi nimi větší procentuální rozdíl. Při kvalitativním vyhodnocování jsme nenalezli příliš mnoho příkladů, na kterém by se výstupy metod výrazně lišily. Mezi sítěmi je však řada podobností, zejména stejná vstupní reprezentace, přibližně stejně velký zpracovávaný kontext, přeskočení vyhlazování výstupu ale i celková struktura sítě. Kvantitativní rozdíly na všech datasetech tedy přičítáme spíše lépe naučeným barvám nástrojů a jejich priorit v celkovém mixu. Podobnost výsledků ilustrujeme také výpočtem korelace, zatímco výsledky metriky RPA pro metody Bittner a HCNN mezi sebou mají korelaci 0.932, mezi Basaran a HCNN vychází nižší korelace 0.736.
+
+\section{Online demo}
+
+Pro kvalitativní srovnání výsledků všech metod představovaných v práci je zpřístupněno jednoduché online demo na url \url{http://jirkabalhar.cz:6090/}. 
 
 % \begin{table}[h!]
 % \centering

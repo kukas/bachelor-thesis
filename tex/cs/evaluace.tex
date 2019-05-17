@@ -6,6 +6,24 @@ V této sekci prezentujeme zavedené a standardní způsoby vzájemného kvantit
 
 Soutěž MIREX (Music Information Retrieval Evaluation eXchange) probíhá již od roku 2005 a v MIR komunitě zastává hlavní postavení jakožto každoroční událost pro nezávislé, objektivní srovnání state-of-the-art metod a algoritmů pro řešení širokého spektra úloh souvisejících se zpracováním hudebních dat. Mezi tyto úlohy patří například rozpoznání žánru, odhad tempa, odhad akordů, identifikace coveru a samozřejmě také extrakce melodie.
 
+\begin{table}[h!]
+\centering
+\begin{tabular}{p{2.5cm}p{11cm}}
+\toprule
+Dataset        & Popis \\
+\midrule
+ADC2004        & 20 výňatků délky kolem 20 sekund, žánry pop, jazz, opera. Obsahuje živé a syntetické MIDI nahrávky. Celková délka 369 sekund. Dataset je kompletně zveřejněn. \\
+MIREX05        & 25 výňatků délky 10-40 sekund, žánry rock, R\&B, pop, jazz a sólové piano. Obsahuje živé a syntetické MIDI nahrávky. Celková délka 686 sekund. K datasetu je dostupná trénovací množina MIREX05train \\
+INDIAN08       & Čtyři minutové výňatky tradičního zpěvu z oblasti severní Indie. Ke každému výňatku existují dvě verze s různě hlasitým doprovodem, celkově se tedy dataset skládá z osmi nahrávek. Celková délka 501 sekund. Dataset je neveřejný \\
+MIREX09 ($0\,\rm dB$)  & 374 čínských karaoke písní. Poměr hlasitosti zpěvu k doprovodu je 0dB. Celková délka $10\,020$ sekund. K datasetu je dostupná trénovací množina MIR1K \\
+MIREX09 ($-5\,\rm dB$) & Stejné výňatky jako v případě MIREX09 ($0\,\rm dB$), poměr hlasitosti zpěvu k doprovodu je však -5dB. Celková délka $10\,020$ sekund. \\
+MIREX09 ($+5\,\rm dB$) & Stejné výňatky jako v případě MIREX09 ($0\,\rm dB$), poměr hlasitosti zpěvu k doprovodu je však +5dB. Celková délka $10\,020$ sekund. \\
+ORCHSET15      & 64 orchestrálních výňatků z různých období vývoje klasické hudby. Anotace melodie je uvedena s přesností jednoho půltónu, Celková délka 1404 sekund. Dataset je kompletně zveřejněn. \\
+\bottomrule
+\end{tabular}
+\caption{Přehled evaluačních datasetů v soutěži MIREX, částečně převzato z práce \cite{Salamon2014}.}\label{tab:mirex_datasety}
+\end{table}
+
 Na rozdíl od jiných úloh, kde debata o zvolení nejvhodnějších objektivních metrik pro porovnávání metod stále probíhá, metriky pro extrakci melodie se ustanovily již v prvním ročníku (na základě dřívějších zkušeností) a zůstaly neměnné dodnes \citep{Raffel2014}. Naopak data použitá pro testování se postupně kumulují a dnes soutěž probíhá již s řadou datasetů (ADC04, MIREX05, MIREX08, MIREX09, ORCHSET15). V tabulce \ref{tab:mirex_datasety} uvádíme přehled těchto evaluačních datasetů.
 
 \subsection{Formát výstupu v soutěži MIREX}
@@ -35,23 +53,6 @@ Formát CSV pro zápis anotací melodie, který byl zaveden v rámci soutěže M
 \end{code}
 %$
 
-\begin{table}[h!]
-\centering
-\begin{tabular}{p{2.5cm}p{11cm}}
-\toprule
-Dataset        & Popis \\
-\midrule
-ADC2004        & 20 výňatků délky kolem 20 sekund, žánry pop, jazz, opera. Obsahuje živé a syntetické MIDI nahrávky. Celková délka 369 sekund. Dataset je kompletně zveřejněn. \\
-MIREX05        & 25 výňatků délky 10-40 sekund, žánry rock, R\&B, pop, jazz a sólové piano. Obsahuje živé a syntetické MIDI nahrávky. Celková délka 686 sekund. K datasetu je dostupná trénovací množina MIREX05train \\
-INDIAN08       & Čtyři minutové výňatky tradičního zpěvu z oblasti severní Indie. Ke každému výňatku existují dvě verze s různě hlasitým doprovodem, celkově se tedy dataset skládá z osmi nahrávek. Celková délka 501 sekund. Dataset je neveřejný \\
-MIREX09 ($0\,\rm dB$)  & 374 čínských karaoke písní. Poměr hlasitosti zpěvu k doprovodu je 0dB. Celková délka $10\,020$ sekund. K datasetu je dostupná trénovací množina MIR1K \\
-MIREX09 ($-5\,\rm dB$) & Stejné výňatky jako v případě MIREX09 ($0\,\rm dB$), poměr hlasitosti zpěvu k doprovodu je však -5dB. Celková délka $10\,020$ sekund. \\
-MIREX09 ($+5\,\rm dB$) & Stejné výňatky jako v případě MIREX09 ($0\,\rm dB$), poměr hlasitosti zpěvu k doprovodu je však +5dB. Celková délka $10\,020$ sekund. \\
-ORCHSET15      & 64 orchestrálních výňatků z různých období vývoje klasické hudby. Anotace melodie je uvedena s přesností jednoho půltónu, Celková délka 1404 sekund. Dataset je kompletně zveřejněn. \\
-\bottomrule
-\end{tabular}
-\caption{Přehled evaluačních datasetů v soutěži MIREX, částečně převzato z práce \cite{Salamon2014}.}\label{tab:mirex_datasety}
-\end{table}
 
 \section{Trénovací, validační a testovací množina}
 
@@ -69,19 +70,19 @@ Délky a počty nahrávek datových množin používaných v této práci shrnuj
 
 \begin{table}[h!]
 \centering
-\begin{tabular}{llll}
+\begin{tabular}{lllll}
 \toprule
-Dataset          & Množina & Počet nahrávek & Délka \\
+Dataset          & Množina & Počet nahrávek & Délka & Použita v práci \\
 \midrule
-MedleyDB         & train   & 67             & $3.06\,\rm h$ \\
-                 & valid   & 15             & $0.85\,\rm h$ \\
-                 & test    & 27             & $1.71\,\rm h$ \\
-MDB-melody-synth & train   & 44             & $1.88\,\rm h$ \\
-                 & valid   & 8              & $0.46\,\rm h$ \\
-                 & test    & 14             & $0.87\,\rm h$ \\
-WJazzD           & train   & 169            & $5.49\,\rm h$ \\
-                 & valid   & 54             & $1.25\,\rm h$ \\
-                 & test    & 74             & $2.08\,\rm h$ \\
+MedleyDB         & train   & 67             & $3.06\,\rm h$ & Ano \\
+                 & valid   & 15             & $0.85\,\rm h$ & Ano \\
+                 & test    & 27             & $1.71\,\rm h$ & Ano \\
+MDB-melody-synth & train   & 44             & $1.88\,\rm h$ & Ne \\
+                 & valid   & 8              & $0.46\,\rm h$ & Ne \\
+                 & test    & 14             & $0.87\,\rm h$ & Ano \\
+WJazzD           & train   & 169            & $5.49\,\rm h$ & Ne \\
+                 & valid   & 54             & $1.25\,\rm h$ & Ne \\
+                 & test    & 74             & $2.08\,\rm h$ & Ano \\
 \bottomrule
 \end{tabular}
 \caption{Přehled trénovacích, validačních a testovacích množin použitých v práci.}\label{tab:data_splits}
@@ -222,7 +223,7 @@ Histogram hodnot rozdílu $\mathcal{M}(\mathbf{f}) - \mathcal{M}(\mathbf{f^*})$,
 
 \subsubsection{Kvalitativní příklady}
 
-Modely byly při práci vyhodnocovány na několikaminutových množinách výňatků z validačních a testovacích dat. Metodika výběru spočívala v poslechu nahrávek a ručním výběru zajímavých hudebních jevů. Několik ukázek bylo také vybráno na základě seřazení nahrávek podle úspěšnosti přepisu stávajícími metodami a výběrem výňatků z tohoto seznamu nejproblematičtějších příkladů.
+Modely byly při práci vyhodnocovány na několika krátkých výňatcích z validačních a testovacích dat. Metodika výběru spočívala v poslechu nahrávek a ručním výběru zajímavých hudebních jevů. Několik ukázek bylo také vybráno na základě seřazení nahrávek podle úspěšnosti přepisu stávajícími metodami a výběrem výňatků z tohoto seznamu nejproblematičtějších příkladů.
 
 
 

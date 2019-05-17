@@ -17,14 +17,6 @@ V následující sekci uvádíme přehled veřejně dostupných dat a jejich spo
 
 \section{Struktura dostupných dat a jejich přehled}
 
-Dataset, který chceme použít pro řešení úlohy extrakci melodie, musí obsahovat soubory se zvukem a k nim příslušící anotace melodie. Standardním formátem zvukových souborů je jedno- nebo vícekanálový formát WAVE, se vzorkovací frekvencí $44\,100\,\rm Hz$. Anotace obsahuje spojitou informaci o znějící fundamentální frekvenci melodie v každém časovém okamžiku nahrávky. Výjimkou je dataset ORCHSET, který neobsahuje přesné anotace fundamentální frekvence melodie, ale pouze frekvence konkrétních not. Tedy frekvence nejsou spojité, nýbrž jsou omezené na přesnost jednoho půltónu (V tabulce \ref{tab:dataset_summary} je tato informace zohledněna řádkem MIDI melodie). Důležitou poznámkou je, že zde nejde o diskretizaci původní spojité křivky, ale opravdu jde o anotaci not, tedy pokud melodii nese nástroj hrající vibrato a svou výškou se dostane nad rozsah jednoho půltónu, v anotaci tato skutečnost není zaznamenána. 
-
-Datasety však mohou obsahovat více informací či audio souborů. Užitečné jsou například přiložené audio stopy, ze kterých je vytvořena výsledná píseň (mix), informace o všech znějících výškách (Multi-F0) nebo notách (MIDI), o melodické prioritě jednotlivých audio stop nebo o instrumentaci skladby.
-
-V tabulce \ref{tab:dataset_summary} nalezneme přehledné shrnutí obsahu všech dostupných datasetů.
-
-% \textcolor{red}{TODO: Motivační obrázek pianoroll a zarovnaného audia}
-
 \begin{table}[h!]
 
 \scalebox{0.68}{%
@@ -53,6 +45,14 @@ V tabulce \ref{tab:dataset_summary} nalezneme přehledné shrnutí obsahu všech
 
 \caption{Souhrnná tabulka se základními informacemi o veřejně dostupných datasetech.}\label{tab:dataset_summary}
 \end{table}
+Dataset, který chceme použít pro řešení úlohy extrakci melodie, musí obsahovat soubory se zvukem a k nim příslušící anotace melodie. Standardním formátem zvukových souborů je jedno- nebo vícekanálový formát WAVE, se vzorkovací frekvencí $44\,100\,\rm Hz$. Anotace obsahuje spojitou informaci o znějící fundamentální frekvenci melodie v každém časovém okamžiku nahrávky. Výjimkou je dataset ORCHSET, který neobsahuje přesné anotace fundamentální frekvence melodie, ale pouze frekvence konkrétních not. Tedy frekvence nejsou spojité, nýbrž jsou omezené na přesnost jednoho půltónu (V tabulce \ref{tab:dataset_summary} je tato informace zohledněna řádkem MIDI melodie). Důležitou poznámkou je, že zde nejde o diskretizaci původní spojité křivky, ale opravdu jde o anotaci not, tedy pokud melodii nese nástroj hrající vibrato a svou výškou se dostane nad rozsah jednoho půltónu, v anotaci tato skutečnost není zaznamenána. 
+
+Datasety však mohou obsahovat více informací či audio souborů. Užitečné jsou například přiložené audio stopy, ze kterých je vytvořena výsledná píseň (mix), informace o všech znějících výškách (Multi-F0) nebo notách (MIDI), o melodické prioritě jednotlivých audio stop nebo o instrumentaci skladby.
+
+V tabulce \ref{tab:dataset_summary} nalezneme přehledné shrnutí obsahu všech dostupných datasetů.
+
+% \textcolor{red}{TODO: Motivační obrázek pianoroll a zarovnaného audia}
+
 
 % pěkný podobný seznam datasetů: https://arxiv.org/pdf/1612.08727.pdf
 

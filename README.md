@@ -46,10 +46,6 @@ Typografické dodělávky, lahůdky a drobnosti:
     - monofonní=jednohlas, jednokanálový zvuk píšu jen česky
 
 
-POKUD ODSTRANIM VOICING:
-uvod.tex, 130 -  V této práci se pokusíme navázat na zmiňované práce a otestovat nové architektury hlubokých neuronových sítí pro úlohu extrakce melodie, zejména pak pro hledání nových způsobů výpočtu funkce salience, v menší míře také pro detekci melodie.
-
-
 
 ## Písemná část
 - příloha
@@ -66,7 +62,6 @@ uvod.tex, 130 -  V této práci se pokusíme navázat na zmiňované práce a ot
 
 
 - úvod
-    - ! přínosy metod
     - definice pojmů
         - monofonní v této práci je jednohlas, nikoli jeden kanál!
         - harmonické subharmonické
@@ -74,7 +69,6 @@ uvod.tex, 130 -  V této práci se pokusíme navázat na zmiňované práce a ot
 - related work
     - (Durrieu)
     - (krátký popis CREPE a Wavenetu, protože je používám v experimentech)
-    - ! popsat Hannovo okno
     - ! opravit barvy v obrázku 2.4
 
     - taky popis neuronových sítí, convnetů, asi prostě bohužel všeho, co používám v experimentech
@@ -98,7 +92,6 @@ uvod.tex, 130 -  V této práci se pokusíme navázat na zmiňované práce a ot
 
 - evaluation
     - ! splity do přílohy !
-    - přesunout formát z datasetů
 
 - experimenty
     - ! zlepšit obrázek CREPE
@@ -109,8 +102,6 @@ uvod.tex, 130 -  V této práci se pokusíme navázat na zmiňované práce a ot
 - výsledky
 
 - závěr
-    - zopakovat přínosy
-    - jak navázat
 
 ## Experimenty
 
