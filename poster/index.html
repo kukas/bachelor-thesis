@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
+    <title>Poster Extrakce melodie pomocí hlubokého učení</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/paper-css/0.3.0/paper.css">
+
+    <style>
+        body.A0 .sheet {
+            width: 110cm;
+            height: 140cm;
+
+            width: 841mm;
+            height: 1189mm;
+        }
+
+        html {
+            font-size: 175%;
+        }
+
+        header {
+            text-align: center;
+        }
+
+        @page {
+            size: A0;
+        }
+
+        .text-cell {
+            border: 0.3mm #DDD solid;
+            padding: 1.5rem;
+            margin: 0.5rem;
+            border-radius: 0.25em;
+        }
+
+        .sep-my-methods td,
+        .sep-my-methods th {
+            border-top: 1mm solid #9da0a3;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            /* font-size: 200%; */
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-family: Roboto;
+            font-weight: 400;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            font-weight: 300;
+        }
+    </style>
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML'
+        async></script>
+
+
+</head>
+
+<body class="A0">
+    <div class="container-fluid sheet padding-10mm">
+        <div class="row">
+            <div class="col">
+                <img src="waveform.png" style="width:auto;height:7rem;margin:0 2rem" alt="waveform">
+            </div>
+            <div class="col-8">
+                <header>
+                    <h1>Extrakce melodie pomocí hlubokého učení</h1>
+                    <h2>autor práce: Jiří Balhar&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vedoucí práce: Mgr. Jan Hajič, Ph.D.</h2>
+                </header>
+            </div>
+            <div class="col text-right">
+                <img src="note.png" style="width:auto;height:7rem;margin:0 2rem" alt="Neuronová síť ikona">
+            </div>
+        </div>
+        <div class=row>
+            <div class="col" style="position: relative;">
+                <img src="scott.svg" style="margin: 0 auto; width: 90%; height: auto; display: block;"
+                    alt="Příklad výstupu">
+                <img src="qrcode.png" alt="qr kód" style="position:absolute;top:2rem;right:7.6rem;">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col text-cell">
+                        <h3>Extrakce melodie</h3>
+                        <p>Extrakce melodie patří mezi nejdůležitější a nejtěžší úlohy oboru Music Information
+                            Retrieval, právě melodie je totiž
+                            tím hlavním, co si člověk po poslechu skladby odnáší a z podstaty se tedy často jedná o její
+                            nejvýraznější rys.
+                            Přítomnost hudebního doprovodu, který melodii podbarvuje, však pro algoritmické metody
+                            znemožňuje její průběh spolehlivě
+                            zachytit. V posledních letech se proto obor posouvá směrem k využívání metod hlubokého
+                            učení, které jsou schopny
+                            dřívější pravidlové systémy překonat. Na tyto práce navazujeme, představujeme tři nové
+                            metody a experimentálně ověřujeme
+                            volby, které jsme při jejich návrhu učinili. Ukazujeme, že nová architektura <i>Harmonic
+                                Convolutional Neural
+                                Network</i>, založená na úpravě vnitřního uspořádání obvyklé konvoluční sítě, díky které
+                            je schopna lépe zachytit
+                            harmonickou povahu jednotlivých tónů ze vstupních spektrogramů s logaritmickou osou
+                            frekvence, překonává
+                            state-of-the-art metody pro extrakci melodie na většině veřejně dostupných datasetech.</p>
+                        <!-- 
+                        <p>Úloha extrakce melodie spočívá v získání křivky základní frekvence hlavního melodického
+                            nástroje v každém okamžiku vstupní
+                            nahrávky.</p>
+                        <p>Spolehlivý přepis melodie by usnadnil vyhledávání v hudebních datech, ať už na základě
+                            notového zápisu, pomocí nekvalitní nahrávky z rádia,
+                            pomocí broukání nebo dokonce pomocí coveru hledané písně. Mimo
+                            vyhledávání by byl algoritmus užitečný pro další zpracování zvukového signálu, ať už pro
+                            manipulaci a úpravu melodického hlasu, nebo naopak jeho odstranění a vytvoření
+                            karaoke doprovodu. V neposlední řadě by extrakce melodie pomohla při
+                            kategorizaci hudebních dat,
+                            například podle žánru nebo podle zpěváka. A konečně
+                            široké spektrum využití by nalezla i v (etno)muzikologii pro
+                            kvantitativní i kvalitativní studii hudebních motivů a postupů.</p> -->
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col text-cell">
+                        <h3>Současné přístupy</h3>
+
+                        <img src="diagram_systemy_ME.svg" class="w-100" alt="diagram_systemy_ME">
+
+                        <p>Metody pro extrakci melodie se obvykle sestávají ze dvou kroků:</p>
+
+                        <ul>
+                            <li>Výpočet <i>funkce salience</i>, která v každém časovém okamžiku vstupní skladby udává
+                                pravděpodobnosti (a nebo obecná skóre) pro každé frekvenční pásmo, zda se melodie
+                                nachází právě na dotyčné frekvenci.</li>
+                            <li>Výběr melodie včetně označování úseků bez melodie na základě výsledků funkce salience.
+                            </li>
+                        </ul>
+
+                        <p>Práce se zaměřuje hledání nových způsobů výpočtu funkce salience s použitím postupů hlubokého
+                            učení.</p>
+
+                        <!-- Základním a společným přístupem k problému extrakce melodie je dekompozice na podproblémy odhadu výšek znějících hlasů v
+                        signálu a následného výběru melodické linie z této reprezentace znějících výšek. Jednotlivé metody se pak liší ve
+                        způsobech řešení těchto podproblémů. V této práci se soustředíme zejména na využití  -->
+
+                        <h4>Výběr baseline metod</h4>
+
+                        <p>Pro srovnání navrhovaných architektur v této práci jsme vybrali tři existující metody, které
+                            se řadí mezi nejlepší v oboru.</p>
+
+                        <ul>
+                            <li><b>Salamon</b> (2012) [1]: Metoda založená na výpočtu funkce salience pomocí sčítání
+                                harmonických frekvencí, extrakci kandidátních melodických kontur a jejich výběru pomocí
+                                pravidel.</li>
+                            <li><b>Bittner</b> (2017) [2]: První práce využívající hlubokých konvolučních sítí (CNN) pro
+                                výpočet funkce salience.</li>
+                            <li><b>Basaran</b> (2018) [3]: Zlepšení výsledků [2] pomocí přidání rekurentních vrstev do
+                                hlubokého modelu (RNN) a využití alternativní frekvenčně-časové reprezentace vstupního
+                                signálu</li>
+                        </ul>
+                    </div>
+                    <div class="col text-cell">
+                        <h3>Používané datasety</h3>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col">MedleyDB</th>
+                                    <th scope="col">Orchset</th>
+                                    <th scope="col">ADC04</th>
+                                    <th scope="col">MIREX05 train.</th>
+                                    <th scope="col">MDB-synth</th>
+                                    <th scope="col">WJazzD</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Celková délka</th>
+                                    <td>5.59 h</td>
+                                    <td>23.4 m</td>
+                                    <td>6.1 m</td>
+                                    <td>6.5 m</td>
+                                    <td>3.19 h</td>
+                                    <td>8.85 h</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Počet nahrávek</th>
+                                    <td>108</td>
+                                    <td>64</td>
+                                    <td>20</td>
+                                    <td>13</td>
+                                    <td>65</td>
+                                    <td>299</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Žánr</th>
+                                    <td>mnoho-žánrový</td>
+                                    <td>klasika</td>
+                                    <td>pop, jazz, opera, midi</td>
+                                    <td>pop, midi</td>
+                                    <td>mnoho-žánrový</td>
+                                    <td>jazz</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Účel v práci</th>
+                                    <td>Trénování, Validace, Testování</td>
+                                    <td>Testování</td>
+                                    <td>Testování</td>
+                                    <td>Testování</td>
+                                    <td>Testování</td>
+                                    <td>Testování</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="row">
+                    <div class="col text-cell">
+                        <!-- <h3>Navrhované přístupy</h3> -->
+                        <!-- <p>U všech navrhovaných architektur jsme pomocí systematického prohledávání nalezli vhodné nastavení hyperparametrů, na
+                        základě výsledků na validační množině.</p> -->
+                        <h3>Architektura HCNN</h3>
+                        <figure class="figure w-100">
+                            <img src="harm_transf.svg" class="w-75 mx-auto d-block figure-img rounded"
+                                alt="Harmonická transformace">
+                            <figcaption class="figure-caption text-right">Diagram harmonické úpravy v architektuře HCNN.
+                            </figcaption>
+                        </figure>
+
+                        <p>
+                            Architektura HCNN je založena na speciálně upravené hluboké konvoluční síti.
+                            Cílem sítě je transformovat vstupní spektrogram hudby na výstupní pravděpodobností rozložení
+                            přítomnosti melodie dané frekvence v daném okamžiku (funkce salience).
+                            Obvyklé konvoluční filtry mají pouze omezené zorné pole (ve strojovém vidění například 3x3
+                            pixely), přitom související informace na spektrogramu (časově-frekveční reprezentaci
+                            vstupního hudebního signálu) jsou rozmístěny po celé výšce vstupního obrázku.
+                            Proto se vyplatí vstup každé konvoluční vrstvy transformovat tak,
+                            aby vrstva měla související informace při výpočtu dané hodnoty k dispozici.
+                        </p>
+                        <p>
+                            Protože harmonické složky znějících tónů melodie jsou na spektrogramu s logaritmickou osou
+                            frekvence rozmístěny v konstantních vzdálenostech od základní frekvence tónu, pokud vstup
+                            konvoluční vrstvy duplikujeme a vzájemně tyto kopie posuneme v rámci frekvenční osy o tyto
+                            vzdálenosti, následná konvoluční vrstva bude mít díky této <i>harmonické úpravě</i> při
+                            výpočtu přístup i k harmonickým složkám dané frekvence.
+                        </p>
+                        <p>
+                            Pro testování vybíráme dvě varianty této architektury. Varianta <i>HCNN noctx</i> pro
+                            výpočet funkce salience využívá pouze ~ 5.8 ms vstupního audio signálu. Varianta <i>HCNN</i>
+                            pak zahrnuje i informaci o zvukovém okolí délky ~ 162 ms daného časového okamžiku skladby.
+                        </p>
+                        <h3>Architektura CREPE</h3>
+                        <figure class="figure w-100">
+                            <img src="crepe_arch.svg" class="w-100 figure-img rounded" alt="CREPE architektura">
+                            <figcaption class="figure-caption text-right">Architektura CREPE upravená pro extrakci
+                                melodie.</figcaption>
+                        </figure>
+
+                        <p>Při návrhu této architektury jsme vycházeli z existující metody CREPE [4] určené pro odhad
+                            frekvence v jednohlasé
+                            nahrávce. Metoda pracuje s nezpracovaným signálem a pomocí šesti konvolučních vrstev tento
+                            vstup transformuje do
+                            výsledného vektoru pravděpodobností přítomnosti melodie na dané frekvenci v daném časovém
+                            okamžiku (funkce salience).</p>
+                        <h3>Architektura WaveNet</h3>
+                        <figure class="figure w-100">
+                            <img src="wavenet_dilatace_konvoluce.svg" class="w-100 figure-img rounded"
+                                alt="Dilatovaná konvoluce">
+                            <figcaption class="figure-caption text-right">Princip architektury WaveNet - postupně se
+                                zvětšující dilatační faktor po sobě následujících vrstev.</figcaption>
+                        </figure>
+
+                        <p>Generativní model WaveNet popsaný v práci [5] je architektura navržená pro generování
+                            zvukového signálu, v této práci ji upravujeme pro účel extrakce melodie. Architektura
+                            spočívá ve vrstvení dilatovaných konvolucí („konvoluce s dírami“) s rozšiřujícím se
+                            rozsahem. Díky exponenciálně rostoucím dilatacím se také exponenciálně zvětšuje receptivní
+                            pole jednotlivých konvolučních vrstev. Síť tedy velmi snadno pokryje široký kontext, což je
+                            vlastnost, která je pro zpracování zvukového signálu užitečná.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="row">
+                    <div class="col text-cell">
+                        <h3>Výsledky</h3>
+                        <p><b>Metoda HCNN dosahuje na 4 z 6 uvažovaných datasetech state-of-the-art výsledků.</b>
+                            Zajímavé jsou také výsledky sítě HCNN-noctx, která dosahuje podobných výsledků navzdory
+                            odhadu frekvence melodie na základě velmi krátkého vstupního okna (~ 5.8 ms)</p>
+
+                        <figure class="figure w-100">
+                            <table class="table table-sm results-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>MedleyDB</th>
+                                        <th>Orchset</th>
+                                        <th>ADC04</th>
+                                        <th>MIREX05 train.</th>
+                                        <th>MDB-synth</th>
+                                        <th>WJazzD</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>Salamon</th>
+                                        <td>0.518983</td>
+                                        <td>0.23484</td>
+                                        <td>0.713797</td>
+                                        <td>0.71452</td>
+                                        <td>0.526605</td>
+                                        <td>0.66701</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Bittner</th>
+                                        <td>0.610536</td>
+                                        <td>0.407476</td>
+                                        <td>0.715937</td>
+                                        <td>0.701514</td>
+                                        <td>0.632738</td>
+                                        <td>0.691608</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Basaran</th>
+                                        <td>0.640077</td>
+                                        <td class="font-weight-bold">0.482725</td>
+                                        <td>0.668765</td>
+                                        <td>0.734208</td>
+                                        <td class="font-weight-bold">0.689269</td>
+                                        <td>0.700011</td>
+                                    </tr>
+                                    <tr class="sep-my-methods">
+                                        <th>CREPE</th>
+                                        <td>0.590358</td>
+                                        <td>0.56177</td>
+                                        <td>0.651833</td>
+                                        <td>0.502414</td>
+                                        <td>0.248407</td>
+                                        <td>0.671294</td>
+                                    </tr>
+                                    <tr>
+                                        <th>WaveNet</th>
+                                        <td>0.503019</td>
+                                        <td>0.256312</td>
+                                        <td>0.681222</td>
+                                        <td>0.648555</td>
+                                        <td>0.527904</td>
+                                        <td>0.648373</td>
+                                    </tr>
+                                    <tr>
+                                        <th>HCNN noctx</th>
+                                        <td>0.634686</td>
+                                        <td>0.439265</td>
+                                        <td class="font-weight-bold">0.736834</td>
+                                        <td>0.723013</td>
+                                        <td>0.625988</td>
+                                        <td>0.715354</td>
+                                    </tr>
+                                    <tr>
+                                        <th>HCNN</th>
+                                        <td class="font-weight-bold">0.651832</td>
+                                        <td>0.458948</td>
+                                        <td>0.726164</td>
+                                        <td class="font-weight-bold">0.755328</td>
+                                        <td>0.660897</td>
+                                        <td class="font-weight-bold">0.724758</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <figcaption class="figure-caption text-right">Výsledky metriky <b>Overall Accuracy</b>
+                                na testovacích datech. Nejlepší výsledky jsou zvýrazněny.</figcaption>
+                        </figure>
+
+                        <p>Metrika Overall Accuracy je vypočítána jako poměr správných predikcí výšky melodie nebo
+                            správného určení její
+                            nepřítomnosti ku celkovému počtu anotačních bodů.</p>
+
+                        <figure class="figure w-100">
+                            <table class="table table-sm results-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>MedleyDB</th>
+                                        <th>ORCHSET</th>
+                                        <th>ADC04</th>
+                                        <th>MIREX05 train.</th>
+                                        <th>MDB-synth</th>
+                                        <th>WJazzD</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>Salamon</th>
+                                        <td>0.525844</td>
+                                        <td>0.280616</td>
+                                        <td>0.767063</td>
+                                        <td>0.760712</td>
+                                        <td>0.513802</td>
+                                        <td>0.693208</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Bittner</th>
+                                        <td>0.670104</td>
+                                        <td>0.518621</td>
+                                        <td>0.814213</td>
+                                        <td>0.806656</td>
+                                        <td>0.605959</td>
+                                        <td>0.773577</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Basaran</th>
+                                        <td>0.706123</td>
+                                        <td class="font-weight-bold">0.634579</td>
+                                        <td>0.79281</td>
+                                        <td>0.797663</td>
+                                        <td class="font-weight-bold">0.733417</td>
+                                        <td>0.767087</td>
+                                    </tr>
+                                    <tr class="sep-my-methods">
+                                        <th>CREPE</th>
+                                        <td>0.615894</td>
+                                        <td>0.407638</td>
+                                        <td>0.794163</td>
+                                        <td>0.778658</td>
+                                        <td>0.549987</td>
+                                        <td>0.782237</td>
+                                    </tr>
+                                    <tr>
+                                        <th>WaveNet</th>
+                                        <td>0.594588</td>
+                                        <td>0.345431</td>
+                                        <td>0.796026</td>
+                                        <td>0.791643</td>
+                                        <td>0.52825</td>
+                                        <td>0.758669</td>
+                                    </tr>
+                                    <tr>
+                                        <th>HCNN noctx</th>
+                                        <td>0.701167</td>
+                                        <td>0.510867</td>
+                                        <td>0.827419</td>
+                                        <td>0.833242</td>
+                                        <td>0.646518</td>
+                                        <td>0.805312</td>
+                                    </tr>
+                                    <tr>
+                                        <th>HCNN</th>
+                                        <td class="font-weight-bold">0.715023</td>
+                                        <td>0.535162</td>
+                                        <td class="font-weight-bold">0.840672</td>
+                                        <td class="font-weight-bold">0.851405</td>
+                                        <td>0.65383</td>
+                                        <td class="font-weight-bold">0.805913</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <figcaption class="figure-caption text-right">Výsledky metriky <b>Raw Pitch Accuracy</b>
+                                na testovacích datech.</figcaption>
+                        </figure>
+                        <p>Metrika Raw Pitch Accuracy je vypočítána jako poměr správných predikcí výšky melodie ku
+                            celkovému počtu anotačních bodů. Metrika tedy nezahrnuje přesnost detekce melodie, pouze
+                            přesnost určení výšky, na kterou se práce zaměřovala.</p>
+
+
+                        <script>
+                            document.querySelectorAll(".results-table td").forEach((cell) => {
+                                console.log(cell)
+                                cell.innerHTML = parseFloat(cell.innerHTML).toFixed(3)
+                            })
+                        </script>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col text-cell">
+                        <h3>Závěr</h3>
+                        <p>V práci jsme nastínili principy dosavadních přístupů k extrakci melodie, uvedli výčet veřejně
+                            dostupných dat a
+                            vysvětlili způsoby evaluace. Na těchto základech jsme pak prezentovali experimentální
+                            výsledky nových architektur
+                            určených pro výpočet funkce salience s důrazem na odhad výšky tónů v nahrávkách, jejichž
+                            návrhy čerpají z příbuzných
+                            oborů a úloh. Následně jsme tyto architektury porovnali s vybranými state-of-the-art
+                            metodami pro výpočet salienčních
+                            funkcí. Ze tří navrhovaných dosáhla architektura HCNN na většině veřejně dostupných
+                            datasetech nejlepších výsledků.</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col text-cell" style="font-size:85%;">
+                        <h5>Citované práce</h5>
+                        <ul>
+                            <li>[1] Salamon, J., & Gomez, E. (2012). Melody extraction from polyphonic music signals
+                                using pitch
+                                contour characteristics. IEEE Transactions on Audio, Speech and Language Processing,
+                                20(6),
+                                1759–1770.</li>
+                            <li>[2] Bittner, R. M., Mcfee, B., Salamon, J., Li, P., & Bello, J. P. (2017). Deep Salience
+                                Representations for F0 Estimation in Polyphonic Music. Ismir, 23–27.</li>
+                            <li>[3] Basaran, D., Essid, S., & Peeters, G. (2018). Main melody extraction with
+                                source-filter NMF
+                                and CRNN. Ismir, 82–89.</li>
+                            <li>[4] Kim, J. W., Salamon, J., Li, P., & Bello, J. P. (2018). Crepe: A Convolutional
+                                Representation for Pitch Estimation. ICASSP, IEEE International Conference on Acoustics,
+                                Speech
+                                and Signal Processing - Proceedings, 2018-April, 161–165.</li>
+                            <li>[5] Oord, A. van den, Dieleman, S., Zen, H., Simonyan, K., Vinyals, O., Graves, A., …
+                                Kavukcuoglu, K. (2016). WaveNet: A Generative Model for Raw Audio, 1–15.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col text-cell">
+                        <b>Jiří Balhar</b> (balhar.j@gmail.com), bakalářská práce 2019<br>
+                        Ústav formální a aplikované lingvistiky - MFF UK - Univerzita Karlova
+                    </div>
+                </div>
+
+
+                <!-- <div class="col">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="card">
+                                    <img src="chyba_RPA.svg" alt="chyba_RPA">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Raw Pitch Accuracy (RPA)</h5>
+                                        <p class="card-text">
+                                            Poměr správně odhadnutých tónů k celkovému počtu oken, které obsahují
+                                            melodii. Výška správně určeného tónu se může lišit
+                                            až o jeden půltón.
+
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card">
+                                    <img src="chyba_RCA.svg" alt="chyba_RCA">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Raw Chroma Accuracy (RCA)</h5>
+                                        <p class="card-text">
+                                            Počítá se podobně jako <i>Raw Pitch Accuracy</i>, výstupní a cílové tóny
+                                            jsou však mapovány na společnou oktávu.
+                                            Metrika tedy ignoruje chyby odhadu způsobené špatným určením oktávy tónu.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card">
+                                    <img src="chyba_FA.svg" alt="chyba_FA">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Voicing False Alarm (VFA)</h5>
+                                        <p class="card-text">
+
+                                            Poměr počtu časových oken, které byly nesprávně označené jako obsahující
+                                            melodii, a počtu časových oken, které doopravdy
+                                            melodii neobsahují. Pro interpretaci této metriky platí, že nižší hodnota je
+                                            lepší, vyšší hodnota je horší.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card">
+                                    <img src="chyba_VR.svg" alt="chyba_VR">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Voicing Recall (VR)</h5>
+                                        <p class="card-text">
+                                            Poměr počtu časových oken, které byly správně označené jakožto obsahující
+                                            melodii, a počtu časových oken doopravdy
+                                            obsahujících melodii podle anotace.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <h3>Popis evaluačních metrik</h3>
+
+                        <h4>Overall Accuracy</h4>
+                        <p>
+                            Označme vektor odhadovaných základních frekvencí \(\mathbf{f}\) a cílový vektor
+                            \(\mathbf{f^*}\), složka \(f_\tau\) je buď
+                            rovna hodnotě \(f_0\) melodie, nebo \(0\), pokud v daném čase melodie nezní. Obdobně zaveďme
+                            vektor indikátorů \(\mathbf{v}\),
+                            jehož prvek na pozici \(\tau\) je roven \(v_\tau=1\), pokud je v daném časovém okamžiku
+                            detekována melodie a \(v_\tau = 0\) v
+                            opačném případě. Podobným způsobem zavedeme i vektor cílových indikátorů melodického hlasu
+                            \(\mathbf{v^*}\) a také vektor
+                            indikátorů absence melodie \(\bar{v}_\tau = 1 - v_\tau\).
+                        </p>
+                    </div> -->
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
