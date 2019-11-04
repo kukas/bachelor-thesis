@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d (TeX Live 2019/Arch Linux)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: MIREX2019.aux
+The style file: plain.bst
+Database file #1: library.bib
+Warning--empty journal in Oord2016
+You've used 13 entries,
+            2118 wiz_defined-function locations,
+            582 strings with 7111 characters,
+and the built_in function-call counts, 5579 in all, are:
+= -- 545
+> -- 335
+< -- 7
++ -- 131
+- -- 118
+* -- 411
+:= -- 923
+add.period$ -- 39
+call.type$ -- 13
+change.case$ -- 97
+chr.to.int$ -- 0
+cite$ -- 14
+duplicate$ -- 196
+empty$ -- 350
+format.name$ -- 118
+if$ -- 1153
+int.to.chr$ -- 0
+int.to.str$ -- 13
+missing$ -- 13
+newline$ -- 68
+num.names$ -- 27
+pop$ -- 97
+preamble$ -- 1
+purify$ -- 85
+quote$ -- 0
+skip$ -- 160
+stack$ -- 0
+substring$ -- 333
+swap$ -- 65
+text.length$ -- 7
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 50
+warning$ -- 1
+while$ -- 53
+width$ -- 15
+write$ -- 141
+(There was 1 warning)

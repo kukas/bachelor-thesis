@@ -1,0 +1,89 @@
+\begin{thebibliography}{10}
+
+\bibitem{DBasaranSEssid2018}
+Dogac Basaran, Slim Essid, and Geoffroy Peeters.
+\newblock {Main Melody Estimation with Source-Filter NMF and CRNN}.
+\newblock {\em Proceedings of the 19th International Society for Music
+  Information Retrieval Conference}, pages 82--89, 2018.
+
+\bibitem{Bittner2014}
+Rachel Bittner, Justin Salamon, Mike Tierney, Matthias Mauch, Chris Cannam, and
+  Juan Bello.
+\newblock {MedleyDB: A multitrack dataset for annotation - intensive mir
+  research}.
+\newblock {\em International Society for Music Information Retrieval
+  Conference}, 2014.
+
+\bibitem{Bittner2017}
+Rachel~M. Bittner, Brian Mcfee, Justin Salamon, Peter Li, and Juan~P. Bello.
+\newblock {Deep Salience Representations for F0 Estimation in Polyphonic
+  Music}.
+\newblock {\em Proceedings of the 18th International Society for Music
+  Information Retrieval Conference (ISMIR 2017)}, pages 63--70, 2017.
+
+\bibitem{Bosch2016}
+Juan~J. Bosch, Ricard Marxer, and Emilia G{\'{o}}mez.
+\newblock {Evaluation and combination of pitch estimation methods for melody
+  extraction in symphonic classical music}.
+\newblock {\em Journal of New Music Research}, 45(2):101--117, 2016.
+
+\bibitem{He2015}
+Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.
+\newblock {Deep residual learning for image recognition}.
+\newblock {\em Proceedings of the IEEE Computer Society Conference on Computer
+  Vision and Pattern Recognition}, 2016-December:770--778, 2016.
+
+\bibitem{Kim2018}
+Jong~Wook Kim, Justin Salamon, Peter Li, and Juan~Pablo Bello.
+\newblock {CREPE: A Convolutional Representation for Pitch Estimation}.
+\newblock {\em IEEE International Conference on Acoustics, Speech and Signal
+  Processing (ICASSP)}, pages 161--165, 2018.
+
+\bibitem{Kum2016}
+Sangeun Kum, Changheun Oh, and Juhan Nam.
+\newblock {Melody Extraction on Vocal Segments Using Multi-Column Deep Neural
+  Networks}.
+\newblock {\em Proceedings of the 17th International Society for Music
+  Information Retrieval Conference, (ISMIR)}, pages 819--825, 2016.
+
+\bibitem{Park_2019}
+Daniel~S Park, William Chan, Yu~Zhang, Chung-Cheng Chiu, Barret Zoph, Ekin~D
+  Cubuk, and Quoc~V Le.
+\newblock {SpecAugment: A Simple Data Augmentation Method for Automatic Speech
+  Recognition}.
+\newblock {\em Interspeech 2019}, 2019.
+
+\bibitem{Pfleiderer}
+Martin Pfleiderer, Klaus Frieler, Jakob Abe{\ss}er, Wolf-Georg Zaddach, and
+  Benjamin Burkhart, editors.
+\newblock {\em {Inside the Jazzomat}}.
+\newblock Schott Campus, 2017.
+
+\bibitem{Rigaud2016}
+Francois~Fran{\c{c}}ois Rigaud and Mathieu Radenen.
+\newblock {Singing Voice Melody Transcription using Deep Neural Networks}.
+\newblock {\em Proceedings of the International Conference on Music Information
+  Retrieval (ISMIR)}, pages 737--743, 2016.
+
+\bibitem{Salamon2017}
+Justin Salamon, Rachel~M. Bittner, Jordi Bonada, Juan~J. Bosch, Emilia Gomez,
+  and Juan~Pablo Bello.
+\newblock {An Analysis/Synthesis Framework for Automatic F0 Annotation of
+  Multitrack Datasets}.
+\newblock {\em 18th International Society for Music Information Retrieval
+  Conference}, pages 71--78, 2017.
+
+\bibitem{Salamon2012a}
+Justin Salamon and Emilia Gomez.
+\newblock {Melody extraction from polyphonic music signals using pitch contour
+  characteristics}.
+\newblock {\em IEEE Transactions on Audio, Speech and Language Processing},
+  20(6):1759--1770, 2012.
+
+\bibitem{Oord2016}
+Aaron van~den Oord, Sander Dieleman, Heiga Zen, Karen Simonyan, Oriol Vinyals,
+  Alex Graves, Nal Kalchbrenner, Andrew Senior, and Koray Kavukcuoglu.
+\newblock {WaveNet: A Generative Model for Raw Audio}.
+\newblock pages 1--15, 2016.
+
+\end{thebibliography}

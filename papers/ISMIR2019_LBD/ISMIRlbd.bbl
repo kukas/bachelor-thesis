@@ -1,0 +1,43 @@
+\begin{thebibliography}{1}
+
+\bibitem{DBasaranSEssid2018}
+Dogac Basaran, Slim Essid, and Geoffroy Peeters.
+\newblock {Main Melody Estimation with Source-Filter NMF and CRNN}.
+\newblock {\em Proceedings of the 19th International Society for Music
+  Information Retrieval Conference}, pages 82--89, 2018.
+
+\bibitem{Bittner2017}
+Rachel~M. Bittner, Brian Mcfee, Justin Salamon, Peter Li, and Juan~P. Bello.
+\newblock {Deep Salience Representations for F0 Estimation in Polyphonic
+  Music}.
+\newblock {\em Proceedings of the 18th International Society for Music
+  Information Retrieval Conference (ISMIR 2017)}, pages 63--70, 2017.
+
+\bibitem{Bosch2016}
+Juan~J. Bosch, Ricard Marxer, and Emilia G{\'{o}}mez.
+\newblock {Evaluation and combination of pitch estimation methods for melody
+  extraction in symphonic classical music}.
+\newblock {\em Journal of New Music Research}, 45(2):101--117, 2016.
+
+\bibitem{Pfleiderer}
+Martin Pfleiderer, Klaus Frieler, Jakob Abe{\ss}er, Wolf-Georg Zaddach, and
+  Benjamin Burkhart, editors.
+\newblock {\em {Inside the Jazzomat}}.
+\newblock Schott Campus, 2017.
+
+\bibitem{Salamon2017}
+Justin Salamon, Rachel~M. Bittner, Jordi Bonada, Juan~J. Bosch, Emilia Gomez,
+  and Juan~Pablo Bello.
+\newblock {An Analysis/Synthesis Framework for Automatic F0 Annotation of
+  Multitrack Datasets}.
+\newblock {\em 18th International Society for Music Information Retrieval
+  Conference}, pages 71--78, 2017.
+
+\bibitem{Salamon2012a}
+Justin Salamon and Emilia Gomez.
+\newblock {Melody extraction from polyphonic music signals using pitch contour
+  characteristics}.
+\newblock {\em IEEE Transactions on Audio, Speech and Language Processing},
+  20(6):1759--1770, 2012.
+
+\end{thebibliography}
